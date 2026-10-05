@@ -1,4 +1,5 @@
 import "server-only";
+import { env } from "../env";
 import { seedDemoDatabase } from "./demo/seed";
 import type { DemoDatabase } from "./schema";
 
@@ -16,11 +17,14 @@ type GlobalWithDb = typeof globalThis & { [KEY]?: DemoDatabase };
 const g = globalThis as GlobalWithDb;
 
 export function getDb(): DemoDatabase {
+  // Demo data must never appear in the real app, labelled or not.
+  if (env.DATA_SOURCE !== "demo") throw new Error("The in-memory demo store is only available with DATA_SOURCE=demo.");
   g[KEY] ??= seedDemoDatabase(new Date());
   return g[KEY];
 }
 
 export function resetDb(): DemoDatabase {
+  if (env.DATA_SOURCE !== "demo") throw new Error("The in-memory demo store is only available with DATA_SOURCE=demo.");
   g[KEY] = seedDemoDatabase(new Date());
   return g[KEY];
 }

@@ -74,11 +74,21 @@ describe("parseEnv", () => {
       SMS_WEBHOOK_SECRET: "s",
       INNGEST_EVENT_KEY: "e",
       INNGEST_SIGNING_KEY: "s",
+      EMAIL_PROVIDER: "smtp",
+      SMTP_URL: "smtp://mail.example.com:587",
     });
     expect(env.DEMO_MODE).toBe(false);
   });
 
   it("requires credentials for a real AI provider", () => {
     expect(issues({ AI_PROVIDER: "anthropic" }).join()).toMatch(/AI_API_KEY/);
+  });
+});
+
+describe("email provider rules", () => {
+  it("requires an SMTP URL for smtp and a real provider in production", () => {
+    expect(issues({ EMAIL_PROVIDER: "smtp" }).join()).toMatch(/SMTP_URL/);
+    expect(parseEnv({ EMAIL_PROVIDER: "smtp", SMTP_URL: "smtp://127.0.0.1:54325" }).EMAIL_PROVIDER).toBe("smtp");
+    expect(issues({ APP_ENV: "production" }).join()).toMatch(/mock email provider/);
   });
 });

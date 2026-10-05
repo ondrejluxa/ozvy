@@ -46,16 +46,16 @@ jobs:
           retention-days: 7
 
   database:
-    name: Migrations from scratch + DB tests
+    name: Migrations from scratch, DB tests, auth E2E on Supabase
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v1
         with:
           version: 2.119.0
-      # Starts only the database container and applies every migration from scratch.
-      - run: supabase db start
+      # Applies every migration from scratch; only the services the tests need.
+      - run: supabase start -x studio,imgproxy,storage-api,realtime,edge-runtime,logflare,vector,supavisor,postgres-meta
       - name: Database tests (RLS, constraints)
         if: hashFiles('supabase/tests/**/*.sql') != ''
         run: supabase test db
@@ -68,3 +68,20 @@ jobs:
           if [ -n "$unprotected" ]; then
             echo "Tables without enabled + forced RLS:"; echo "$unprotected"; exit 1
           fi
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Local-stack keys only (well-known Supabase development keys).
+      - run: pnpm env:local
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Auth E2E on Supabase (login, MFA, invitations, password reset, scoping)
+        run: pnpm test:e2e:supabase
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-supabase
+          path: playwright-report/
+          retention-days: 7

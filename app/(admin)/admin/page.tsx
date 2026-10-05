@@ -3,9 +3,11 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { AttentionRequired } from "@/components/admin/attention-required";
 import { ClientsTable } from "@/components/admin/clients-table";
+import { RealCompaniesTable } from "@/components/admin/real-companies";
 import { KpiCard } from "@/components/common/kpi-card";
 import { PageHeader, SectionTitle } from "@/components/shell/page-header";
 import { getAdminOverview } from "@/lib/db/queries";
+import { env } from "@/lib/env";
 import { formatCZK, formatInt } from "@/lib/domain/money";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -16,6 +18,16 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AdminOverviewPage() {
   const t = await getTranslations("admin.overview");
   const tAlerts = await getTranslations("alerts");
+  if (env.DATA_SOURCE === "supabase") {
+    // Real overview: KPIs and Attention Required arrive with the dashboards slice (spec §40.15).
+    return (
+      <>
+        <PageHeader title={t("title")} description={t("subtitle")} />
+        <SectionTitle>{t("clients")}</SectionTitle>
+        <RealCompaniesTable />
+      </>
+    );
+  }
   const data = getAdminOverview();
   const k = data.kpis;
 

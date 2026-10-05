@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { AuthError } from "../auth/context";
 import { DomainError } from "../db/mutations";
 
 /**
@@ -20,6 +21,7 @@ export async function run<T>(fn: () => T | Promise<T>): Promise<ActionResult<T>>
     return ok(await fn());
   } catch (err) {
     if (err instanceof DomainError) return fail(err.code);
+    if (err instanceof AuthError) return fail(err.reason === "forbidden" ? "forbidden" : "unauthenticated");
     if (err instanceof z.ZodError) return fail("validation");
     console.error("[action] unexpected error", err instanceof Error ? err.message : err);
     return fail("internal");

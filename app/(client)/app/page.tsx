@@ -9,9 +9,10 @@ import { DemoTag } from "@/components/demo/demo-labels";
 import { RevenueChart } from "@/components/dashboard/revenue-chart";
 import { SectionTitle } from "@/components/shell/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { requireClientCompany } from "@/lib/auth/client-company";
 import { getSupportView } from "@/lib/auth/context";
 import { getClientDashboard } from "@/lib/db/queries";
-import { isDemo } from "@/lib/env";
+import { env, isDemo } from "@/lib/env";
 import { formatDate, formatMonthLong, formatMonthShort } from "@/lib/domain/dates";
 import { formatCZK, formatInt, formatPercent, formatROI } from "@/lib/domain/money";
 
@@ -22,6 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Client dashboard (spec §9): answers "how much money came back" before anything else. */
 export default async function ClientDashboardPage() {
+  if (env.DATA_SOURCE === "supabase") return <RealClientHome />;
   const view = await getSupportView();
   if (!view) redirect("/admin");
   const data = getClientDashboard(view.companyId);
@@ -181,5 +183,21 @@ export default async function ClientDashboardPage() {
         </section>
       )}
     </div>
+  );
+}
+
+/**
+ * DATA_SOURCE=supabase: the shop's own home. Results appear here once the
+ * first campaign has been sent (dashboards slice, spec §40.15).
+ */
+async function RealClientHome() {
+  const { session, membership } = await requireClientCompany("/app");
+  const t = await getTranslations("realData.clientHome");
+  return (
+    <section className="rounded-xl border border-line bg-surface px-5 py-6 sm:px-8 sm:py-8">
+      <h1 className="text-[22px] font-semibold tracking-tight text-ink">{membership.companyName}</h1>
+      <p className="mt-2 text-sm text-ink-2">{t("welcome", { name: session.fullName ?? session.email ?? "" })}</p>
+      <p className="mt-1 text-sm text-muted">{t("empty")}</p>
+    </section>
   );
 }

@@ -1,0 +1,632 @@
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+
+export type Database = {
+  public: {
+    Tables: {
+      audit_logs: {
+        Row: {
+          action: string;
+          actor_type: string;
+          actor_user_id: string | null;
+          company_id: string | null;
+          created_at: string;
+          entity_id: string | null;
+          entity_type: string | null;
+          id: number;
+          ip: unknown;
+          metadata: NonNullable<Json>;
+          user_agent: string | null;
+        };
+        Insert: {
+          action: string;
+          actor_type: string;
+          actor_user_id?: string | null;
+          company_id?: string | null;
+          created_at?: string;
+          entity_id?: string | null;
+          entity_type?: string | null;
+          id?: never;
+          ip?: unknown;
+          metadata?: NonNullable<Json>;
+          user_agent?: string | null;
+        };
+        Update: {
+          action?: string;
+          actor_type?: string;
+          actor_user_id?: string | null;
+          company_id?: string | null;
+          created_at?: string;
+          entity_id?: string | null;
+          entity_type?: string | null;
+          id?: never;
+          ip?: unknown;
+          metadata?: NonNullable<Json>;
+          user_agent?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      companies: {
+        Row: {
+          address_line: string | null;
+          average_job_value_minor: number;
+          city: string | null;
+          contact_person: string | null;
+          country: string;
+          created_at: string;
+          default_locale: string;
+          default_sender_name: string | null;
+          dic: string | null;
+          dpa_document_path: string | null;
+          dpa_signed_at: string | null;
+          email: string | null;
+          ico: string | null;
+          id: string;
+          logo_path: string | null;
+          name: string;
+          opening_hours: NonNullable<Json>;
+          phone: string | null;
+          postal_code: string | null;
+          preferred_channel: string;
+          requires_client_approval: boolean;
+          sending_enabled: boolean;
+          service_mode: Database["public"]["Enums"]["service_mode"];
+          settings: NonNullable<Json>;
+          status: string;
+          timezone: string;
+          updated_at: string;
+          website: string | null;
+        };
+        Insert: {
+          address_line?: string | null;
+          average_job_value_minor?: number;
+          city?: string | null;
+          contact_person?: string | null;
+          country?: string;
+          created_at?: string;
+          default_locale?: string;
+          default_sender_name?: string | null;
+          dic?: string | null;
+          dpa_document_path?: string | null;
+          dpa_signed_at?: string | null;
+          email?: string | null;
+          ico?: string | null;
+          id?: string;
+          logo_path?: string | null;
+          name: string;
+          opening_hours?: NonNullable<Json>;
+          phone?: string | null;
+          postal_code?: string | null;
+          preferred_channel?: string;
+          requires_client_approval?: boolean;
+          sending_enabled?: boolean;
+          service_mode?: Database["public"]["Enums"]["service_mode"];
+          settings?: NonNullable<Json>;
+          status?: string;
+          timezone?: string;
+          updated_at?: string;
+          website?: string | null;
+        };
+        Update: {
+          address_line?: string | null;
+          average_job_value_minor?: number;
+          city?: string | null;
+          contact_person?: string | null;
+          country?: string;
+          created_at?: string;
+          default_locale?: string;
+          default_sender_name?: string | null;
+          dic?: string | null;
+          dpa_document_path?: string | null;
+          dpa_signed_at?: string | null;
+          email?: string | null;
+          ico?: string | null;
+          id?: string;
+          logo_path?: string | null;
+          name?: string;
+          opening_hours?: NonNullable<Json>;
+          phone?: string | null;
+          postal_code?: string | null;
+          preferred_channel?: string;
+          requires_client_approval?: boolean;
+          sending_enabled?: boolean;
+          service_mode?: Database["public"]["Enums"]["service_mode"];
+          settings?: NonNullable<Json>;
+          status?: string;
+          timezone?: string;
+          updated_at?: string;
+          website?: string | null;
+        };
+        Relationships: [];
+      };
+      customers: {
+        Row: {
+          company_id: string;
+          created_at: string;
+          email: string | null;
+          external_id: string | null;
+          first_name: string | null;
+          id: string;
+          last_name: string | null;
+          last_visit_at: string | null;
+          legal_basis: Database["public"]["Enums"]["legal_basis"];
+          legal_basis_recorded_at: string | null;
+          legal_basis_source: string | null;
+          lifecycle_status: Database["public"]["Enums"]["lifecycle_status"];
+          lifetime_value_minor: number;
+          notes: string | null;
+          phone_e164: string | null;
+          phone_type: string;
+          source_import_id: string | null;
+          updated_at: string;
+          visit_count: number;
+        };
+        Insert: {
+          company_id: string;
+          created_at?: string;
+          email?: string | null;
+          external_id?: string | null;
+          first_name?: string | null;
+          id?: string;
+          last_name?: string | null;
+          last_visit_at?: string | null;
+          legal_basis?: Database["public"]["Enums"]["legal_basis"];
+          legal_basis_recorded_at?: string | null;
+          legal_basis_source?: string | null;
+          lifecycle_status?: Database["public"]["Enums"]["lifecycle_status"];
+          lifetime_value_minor?: number;
+          notes?: string | null;
+          phone_e164?: string | null;
+          phone_type?: string;
+          source_import_id?: string | null;
+          updated_at?: string;
+          visit_count?: number;
+        };
+        Update: {
+          company_id?: string;
+          created_at?: string;
+          email?: string | null;
+          external_id?: string | null;
+          first_name?: string | null;
+          id?: string;
+          last_name?: string | null;
+          last_visit_at?: string | null;
+          legal_basis?: Database["public"]["Enums"]["legal_basis"];
+          legal_basis_recorded_at?: string | null;
+          legal_basis_source?: string | null;
+          lifecycle_status?: Database["public"]["Enums"]["lifecycle_status"];
+          lifetime_value_minor?: number;
+          notes?: string | null;
+          phone_e164?: string | null;
+          phone_type?: string;
+          source_import_id?: string | null;
+          updated_at?: string;
+          visit_count?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "customers_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      invitations: {
+        Row: {
+          accepted_at: string | null;
+          company_id: string;
+          created_at: string;
+          email: string;
+          expires_at: string;
+          id: string;
+          invited_by: string | null;
+          role: Database["public"]["Enums"]["company_role"];
+          token_hash: string;
+        };
+        Insert: {
+          accepted_at?: string | null;
+          company_id: string;
+          created_at?: string;
+          email: string;
+          expires_at: string;
+          id?: string;
+          invited_by?: string | null;
+          role: Database["public"]["Enums"]["company_role"];
+          token_hash: string;
+        };
+        Update: {
+          accepted_at?: string | null;
+          company_id?: string;
+          created_at?: string;
+          email?: string;
+          expires_at?: string;
+          id?: string;
+          invited_by?: string | null;
+          role?: Database["public"]["Enums"]["company_role"];
+          token_hash?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "invitations_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      memberships: {
+        Row: {
+          company_id: string;
+          created_at: string;
+          id: string;
+          role: Database["public"]["Enums"]["company_role"];
+          user_id: string;
+        };
+        Insert: {
+          company_id: string;
+          created_at?: string;
+          id?: string;
+          role: Database["public"]["Enums"]["company_role"];
+          user_id: string;
+        };
+        Update: {
+          company_id?: string;
+          created_at?: string;
+          id?: string;
+          role?: Database["public"]["Enums"]["company_role"];
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "memberships_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      platform_admins: {
+        Row: {
+          created_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      profiles: {
+        Row: {
+          created_at: string;
+          full_name: string | null;
+          locale: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          full_name?: string | null;
+          locale?: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          full_name?: string | null;
+          locale?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      service_category_mappings: {
+        Row: {
+          category: Database["public"]["Enums"]["service_category"];
+          company_id: string;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          raw_value_norm: string;
+        };
+        Insert: {
+          category: Database["public"]["Enums"]["service_category"];
+          company_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          raw_value_norm: string;
+        };
+        Update: {
+          category?: Database["public"]["Enums"]["service_category"];
+          company_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          raw_value_norm?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "service_category_mappings_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      vehicles: {
+        Row: {
+          brand: string | null;
+          company_id: string;
+          created_at: string;
+          customer_id: string;
+          id: string;
+          last_visit_at: string | null;
+          license_plate_display: string | null;
+          license_plate_norm: string | null;
+          lifecycle_status: Database["public"]["Enums"]["lifecycle_status"];
+          model: string | null;
+          model_year: number | null;
+          updated_at: string;
+          vin: string | null;
+        };
+        Insert: {
+          brand?: string | null;
+          company_id: string;
+          created_at?: string;
+          customer_id: string;
+          id?: string;
+          last_visit_at?: string | null;
+          license_plate_display?: string | null;
+          license_plate_norm?: string | null;
+          lifecycle_status?: Database["public"]["Enums"]["lifecycle_status"];
+          model?: string | null;
+          model_year?: number | null;
+          updated_at?: string;
+          vin?: string | null;
+        };
+        Update: {
+          brand?: string | null;
+          company_id?: string;
+          created_at?: string;
+          customer_id?: string;
+          id?: string;
+          last_visit_at?: string | null;
+          license_plate_display?: string | null;
+          license_plate_norm?: string | null;
+          lifecycle_status?: Database["public"]["Enums"]["lifecycle_status"];
+          model?: string | null;
+          model_year?: number | null;
+          updated_at?: string;
+          vin?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_customer_id_company_id_fkey";
+            columns: ["customer_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id", "company_id"];
+          },
+        ];
+      };
+      visits: {
+        Row: {
+          company_id: string;
+          created_at: string;
+          customer_id: string;
+          external_ref: string | null;
+          id: string;
+          job_value_minor: number | null;
+          service_category: Database["public"]["Enums"]["service_category"];
+          service_type_raw: string | null;
+          source_import_id: string | null;
+          vehicle_id: string | null;
+          visited_at: string;
+        };
+        Insert: {
+          company_id: string;
+          created_at?: string;
+          customer_id: string;
+          external_ref?: string | null;
+          id?: string;
+          job_value_minor?: number | null;
+          service_category?: Database["public"]["Enums"]["service_category"];
+          service_type_raw?: string | null;
+          source_import_id?: string | null;
+          vehicle_id?: string | null;
+          visited_at: string;
+        };
+        Update: {
+          company_id?: string;
+          created_at?: string;
+          customer_id?: string;
+          external_ref?: string | null;
+          id?: string;
+          job_value_minor?: number | null;
+          service_category?: Database["public"]["Enums"]["service_category"];
+          service_type_raw?: string | null;
+          source_import_id?: string | null;
+          vehicle_id?: string | null;
+          visited_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "visits_customer_id_company_id_fkey";
+            columns: ["customer_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id", "company_id"];
+          },
+          {
+            foreignKeyName: "visits_vehicle_id_company_id_fkey";
+            columns: ["vehicle_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "vehicles";
+            referencedColumns: ["id", "company_id"];
+          },
+        ];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
+    Enums: {
+      company_role: "shop_owner" | "shop_manager";
+      legal_basis: "consent" | "existing_customer" | "unknown";
+      lifecycle_status: "active" | "at_risk" | "inactive" | "reactivated" | "opted_out";
+      service_category:
+        | "regular_service"
+        | "oil_change"
+        | "tyre_change"
+        | "tyre_storage"
+        | "ac_service"
+        | "brakes"
+        | "diagnostics"
+        | "stk"
+        | "repair_other";
+      service_mode: "managed" | "self_service";
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
+};
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    keyof (DefaultSchema["Tables"] & DefaultSchema["Views"]) | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R;
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
+      }
+      ? R
+      : never
+    : never;
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I;
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I;
+      }
+      ? I
+      : never
+    : never;
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U;
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U;
+      }
+      ? U
+      : never
+    : never;
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never) = never,
+> = DefaultSchemaEnumNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never;
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    keyof DefaultSchema["CompositeTypes"] | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals;
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never;
+
+export const Constants = {
+  public: {
+    Enums: {
+      company_role: ["shop_owner", "shop_manager"],
+      legal_basis: ["consent", "existing_customer", "unknown"],
+      lifecycle_status: ["active", "at_risk", "inactive", "reactivated", "opted_out"],
+      service_category: [
+        "regular_service",
+        "oil_change",
+        "tyre_change",
+        "tyre_storage",
+        "ac_service",
+        "brakes",
+        "diagnostics",
+        "stk",
+        "repair_other",
+      ],
+      service_mode: ["managed", "self_service"],
+    },
+  },
+} as const;

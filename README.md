@@ -39,14 +39,39 @@ Phase 1 (the internal managed-service MVP, spec §29) is being built slice by sl
 in the order of spec §40. The demo stays available as `DATA_SOURCE=demo`
 ([ADR-002](docs/decisions/ADR-002-phase-1-data-sources.md)).
 
-| Slice                                                                                         | Status                                       |
-| --------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| 1. Foundation: Prettier, env validation, coverage, Playwright, Supabase CLI config, CI        | done                                         |
-| 2. Schema v1 + RLS: tenancy, customer data, audit log, policies, composite FKs, pgTAP harness | done (PGlite-verified; Supabase run pending) |
-| 3. Auth                                                                                       | next                                         |
+| Slice                                                                                         | Status                                           |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| 1. Foundation: Prettier, env validation, coverage, Playwright, Supabase CLI config, CI        | done                                             |
+| 2. Schema v1 + RLS: tenancy, customer data, audit log, policies, composite FKs, pgTAP harness | done (91 pgTAP checks on Supabase)               |
+| 3. Auth: login, reset, invitations, TOTP MFA for admins, permissions, protected layouts       | done ([ADR-003](docs/decisions/ADR-003-auth.md)) |
+| 4. Seed                                                                                       | next                                             |
 
-Local Supabase (`pnpm db:start`, `db:reset`, `db:test`) needs Docker Desktop with hardware
-virtualization enabled. Without Docker, `pnpm db:test:local` applies every migration to an in-process
+### Running against local Supabase
+
+Needs Docker Desktop.
+
+```bash
+pnpm db:start
+```
+
+```bash
+pnpm env:local
+```
+
+```bash
+pnpm admin:create operator@example.com "DlouheHeslo2026" "Jméno Operátora"
+```
+
+```bash
+pnpm dev:supabase
+```
+
+Open http://localhost:3001/login. The operator enrols TOTP MFA on first sign-in. Invitation and
+password-reset emails land in the local Mailpit inbox at http://127.0.0.1:54324. Screens that still use
+demo data show "Tato část se připravuje" until their slice moves them to real data.
+
+Tests on the local stack: `pnpm db:test` (pgTAP) and `pnpm test:e2e:supabase` (auth flows).
+Without Docker, `pnpm db:test:local` applies every migration to an in-process
 PGlite (real PostgreSQL in WebAssembly) with a minimal Supabase stub and runs the same pgTAP files through
 a small pgTAP shim; it is part of `pnpm check` and CI.
 Configuration: `supabase/config.toml` (sign-up disabled, TOTP MFA, 12-char passwords).

@@ -497,7 +497,11 @@
       "generate": "Vygenerovat zprávu pomocí AI",
       "generating": "Píšu návrhy…",
       "variants": "Návrhy",
-      "variantLabels": { "0": "Standardní", "1": "Přátelský", "2": "Formální" },
+      "variantLabels": {
+        "0": "Standardní",
+        "1": "Přátelský",
+        "2": "Formální"
+      },
       "useVariant": "Použít",
       "selected": "Vybráno",
       "rewrite": {
@@ -665,7 +669,9 @@
     "pageNotFoundHint": "Odkaz už neplatí, nebo byla ukázková data obnovena.",
     "backHome": "Zpět na přehled",
     "boundaryTitle": "Stránku se nepodařilo načíst",
-    "retry": "Zkusit znovu"
+    "retry": "Zkusit znovu",
+    "forbidden": "K této akci nemáte oprávnění.",
+    "unauthenticated": "Přihlaste se prosím znovu."
   },
   "common": {
     "perMonth": "{value} / měsíc",
@@ -673,5 +679,149 @@
     "showAll": "Zobrazit vše",
     "open": "Otevřít",
     "detail": "Detail"
+  },
+  "auth": {
+    "layoutTagline": "Interní nástroj pro řízení reaktivačních kampaní",
+    "login": {
+      "title": "Přihlášení",
+      "email": "E-mail",
+      "password": "Heslo",
+      "submit": "Přihlásit se",
+      "submitting": "Přihlašuji…",
+      "forgot": "Zapomenuté heslo?",
+      "inviteOnly": "Přístup je jen na pozvánku. Účet vám založí váš správce."
+    },
+    "reset": {
+      "title": "Obnovení hesla",
+      "description": "Pošleme vám odkaz pro nastavení nového hesla.",
+      "submit": "Poslat odkaz",
+      "submitting": "Odesílám…",
+      "sent": "Pokud u nás účet s tímto e-mailem existuje, poslali jsme na něj odkaz pro obnovení hesla.",
+      "back": "Zpět na přihlášení"
+    },
+    "update": {
+      "title": "Nové heslo",
+      "description": "Heslo musí mít alespoň 12 znaků a obsahovat písmena i číslice.",
+      "password": "Nové heslo",
+      "confirm": "Nové heslo znovu",
+      "submit": "Uložit heslo",
+      "submitting": "Ukládám…"
+    },
+    "mfa": {
+      "title": "Dvoufázové ověření",
+      "enrollTitle": "Nastavení dvoufázového ověření",
+      "enrollDescription": "Účet operátora musí být chráněný druhým faktorem. Naskenujte QR kód v aplikaci Google Authenticator, Microsoft Authenticator nebo 1Password a zadejte 6místný kód.",
+      "secret": "Nebo zadejte klíč ručně",
+      "verifyDescription": "Zadejte 6místný kód z aplikace pro ověřování.",
+      "code": "Ověřovací kód",
+      "submit": "Ověřit",
+      "submitting": "Ověřuji…",
+      "start": "Zobrazit QR kód",
+      "starting": "Připravuji…"
+    },
+    "invite": {
+      "title": "Pozvánka do Návratu",
+      "description": "Byli jste pozváni do účtu {company} jako {role}.",
+      "email": "E-mail",
+      "fullName": "Jméno a příjmení",
+      "password": "Heslo",
+      "confirm": "Heslo znovu",
+      "passwordHint": "Alespoň 12 znaků, písmena i číslice.",
+      "submit": "Vytvořit účet a vstoupit",
+      "submitting": "Zakládám účet…",
+      "acceptAsCurrent": "Přijmout pozvánku",
+      "signedInAs": "Jste přihlášeni jako {email}.",
+      "wrongAccount": "Pozvánka patří jinému e-mailu. Odhlaste se a otevřete odkaz znovu.",
+      "invalid": "Tato pozvánka neplatí. Mohla vypršet, nebo už byla použita. Požádejte o novou.",
+      "expired": "Platnost pozvánky vypršela. Požádejte o novou.",
+      "accepted": "Pozvánka už byla použita. Přihlaste se.",
+      "accountExists": "Účet s tímto e-mailem už existuje. Přihlaste se a otevřete odkaz znovu.",
+      "signIn": "Přihlásit se",
+      "signOut": "Odhlásit se"
+    },
+    "forbidden": {
+      "title": "Nemáte oprávnění",
+      "description": "K této části nemáte přístup. Pokud si myslíte, že je to chyba, obraťte se na správce.",
+      "home": "Na úvodní stránku",
+      "signOut": "Odhlásit se"
+    },
+    "unavailable": {
+      "title": "Tato část se připravuje",
+      "description": "Stránka zatím pracuje jen s ukázkovými daty a pro skutečná data ještě není hotová.",
+      "back": "Zpět na přehled"
+    },
+    "userMenu": {
+      "signOut": "Odhlásit se",
+      "operator": "Operátor",
+      "roles": {
+        "shop_owner": "Majitel",
+        "shop_manager": "Vedoucí servisu"
+      }
+    },
+    "errors": {
+      "invalid_credentials": "Nesprávný e-mail nebo heslo.",
+      "invalid_code": "Kód nesouhlasí. Zkuste aktuální kód z aplikace.",
+      "session_expired": "Platnost přihlášení vypršela. Přihlaste se znovu.",
+      "same_password": "Nové heslo musí být jiné než současné.",
+      "name_required": "Vyplňte jméno a příjmení.",
+      "invitation_invalid": "Tato pozvánka neplatí. Mohla vypršet, nebo už byla použita.",
+      "account_exists": "Účet s tímto e-mailem už existuje. Přihlaste se a otevřete odkaz znovu.",
+      "wrong_account": "Pozvánka patří jinému e-mailu.",
+      "generic": "Něco se pokazilo. Zkuste to znovu.",
+      "too_short": "Heslo musí mít alespoň 12 znaků.",
+      "needs_letters_and_digits": "Heslo musí obsahovat písmena i číslice.",
+      "mismatch": "Hesla se neshodují."
+    }
+  },
+  "emails": {
+    "invitation": {
+      "subject": "Pozvánka do Návratu – {company}",
+      "roles": {
+        "shop_owner": "majitel",
+        "shop_manager": "vedoucí servisu"
+      },
+      "greeting": "Dobrý den,",
+      "body": "byli jste pozváni do účtu {company} v aplikaci Návrat jako {role}.",
+      "cta": "Založit účet",
+      "validity": "Odkaz platí 7 dní a jen jednou.",
+      "ignore": "Pokud jste pozvánku nečekali, e-mail ignorujte."
+    }
+  },
+  "realData": {
+    "companies": {
+      "name": "Servis",
+      "status": "Stav",
+      "sending": "Odesílání",
+      "created": "Založen",
+      "empty": "Zatím tu nejsou žádní klienti.",
+      "sendingOn": "Zapnuto",
+      "sendingOff": "Vypnuto",
+      "statuses": {
+        "onboarding": "Zakládání",
+        "active": "Aktivní",
+        "paused": "Pozastaven",
+        "offboarding": "Ukončování",
+        "closed": "Ukončen"
+      }
+    },
+    "clientHome": {
+      "welcome": "Vítejte, {name}.",
+      "empty": "Výsledky kampaní se tu objeví po prvním odeslání."
+    },
+    "invite": {
+      "open": "Pozvat uživatele",
+      "title": "Pozvat uživatele",
+      "description": "Pozvánka do účtu {company}. Odkaz platí 7 dní a jen jednou.",
+      "email": "E-mail",
+      "role": "Role",
+      "roles": {
+        "shop_owner": "Majitel",
+        "shop_manager": "Vedoucí servisu"
+      },
+      "submit": "Poslat pozvánku",
+      "sending": "Odesílám…",
+      "cancel": "Zrušit",
+      "sent": "Pozvánka odeslána."
+    }
   }
 }

@@ -56,6 +56,9 @@ const schema = z
     SMS_PROVIDER_API_SECRET: optional,
     SMS_WEBHOOK_SECRET: optional,
     SMS_TEST_WHITELIST: e164List,
+    // Transactional email (invites, password resets, approvals). "smtp" = local Mailpit in development.
+    EMAIL_PROVIDER: z.enum(["mock", "smtp"]).default("mock"),
+    SMTP_URL: optional,
     EMAIL_PROVIDER_API_KEY: optional,
     EMAIL_FROM: z.string().default("Návrat <no-reply@example.com>"),
 
@@ -117,6 +120,12 @@ const schema = z
     }
     if (env.APP_ENV === "production" && env.SMS_PROVIDER === "mock") {
       fail("SMS_PROVIDER", "Production cannot use the mock SMS provider.");
+    }
+    if (env.EMAIL_PROVIDER === "smtp" && !env.SMTP_URL) {
+      fail("SMTP_URL", "SMTP_URL is required with EMAIL_PROVIDER=smtp.");
+    }
+    if (env.APP_ENV === "production" && env.EMAIL_PROVIDER === "mock") {
+      fail("EMAIL_PROVIDER", "Production cannot use the mock email provider.");
     }
 
     if (env.AI_PROVIDER !== "mock" && (!env.AI_API_KEY || !env.AI_MODEL)) {
