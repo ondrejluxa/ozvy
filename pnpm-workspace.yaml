@@ -4,3 +4,4 @@ allowBuilds:
   "@parcel/watcher": false
   "@swc/core": false
   supabase: true
+  esbuild: false

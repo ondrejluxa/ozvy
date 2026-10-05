@@ -109,6 +109,7 @@ export interface Vehicle {
   last_visit_at: DateOnly | null;
   lifecycle_status: LifecycleStatus;
   created_at: Timestamp;
+  updated_at: Timestamp;
 }
 
 export interface Visit {
@@ -239,5 +240,61 @@ export interface SuppressionEntry {
   /** Phase 1: HMAC-SHA256 with a server-side pepper. Phase 0: plain SHA-256. */
   address_hash: string;
   reason: "opt_out_link" | "keyword" | "manual" | "erasure" | "bounce" | "complaint";
+  created_at: Timestamp;
+}
+
+export interface PlatformAdmin {
+  user_id: string;
+  created_at: Timestamp;
+}
+
+export interface Profile {
+  user_id: string;
+  full_name: string | null;
+  locale: string;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+}
+
+export interface Membership {
+  id: string;
+  user_id: string;
+  company_id: string;
+  role: CompanyRole;
+  created_at: Timestamp;
+}
+
+export interface Invitation {
+  id: string;
+  company_id: string;
+  email: string;
+  role: CompanyRole;
+  token_hash: string;
+  expires_at: Timestamp;
+  accepted_at: Timestamp | null;
+  invited_by: string | null;
+  created_at: Timestamp;
+}
+
+export interface ServiceCategoryMapping {
+  id: string;
+  company_id: string;
+  raw_value_norm: string;
+  category: ServiceCategory;
+  created_by: string | null;
+  created_at: Timestamp;
+}
+
+export interface AuditLog {
+  id: number;
+  company_id: string | null;
+  actor_user_id: string | null;
+  actor_type: "user" | "admin" | "system";
+  action: string;
+  entity_type: string | null;
+  entity_id: string | null;
+  metadata: Record<string, unknown>;
+  ip: string | null;
+  user_agent: string | null;
   created_at: Timestamp;
 }

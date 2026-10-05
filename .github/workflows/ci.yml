@@ -29,6 +29,8 @@ jobs:
       - run: pnpm lint
       - run: pnpm format:check
       - run: pnpm test:coverage
+      # Migrations + database tests on in-process PGlite (fast, no Docker).
+      - run: pnpm db:test:local
       - run: pnpm build
         env:
           DATA_SOURCE: demo

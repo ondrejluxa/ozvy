@@ -33,3 +33,15 @@ without a database.
   require Docker Desktop on the development machine, or CI.
 - The demo seed must stay compatible with the shared row types until the
   demo is re-implemented as a seeded Supabase project (spec §31 `pnpm db:seed`).
+
+## Addendum (slice 2): database tests without Docker
+
+Docker Desktop on the development machine reports "no virtualization
+available", so `supabase start` cannot run until hardware virtualization is
+enabled. `pnpm db:test:local` (scripts/db/pglite-test.ts) applies all
+migrations to PGlite on top of `scripts/db/supabase-stub.sql` (API roles,
+`auth.users`, `auth.uid()`, Supabase's default grants) and runs
+`supabase/tests/database/*.test.sql` through `scripts/db/pgtap-shim.sql`.
+It runs in `pnpm check` and in CI next to the authoritative
+`supabase test db` job. A mutation check (opening one policy, un-forcing RLS
+on one table) turned the suite red as expected.

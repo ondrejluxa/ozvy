@@ -543,6 +543,7 @@ function seedCustomers(db: DemoDatabase, company: Company, spec: CompanySpec, no
         last_visit_at: null,
         lifecycle_status: "inactive",
         created_at: now.toISOString(),
+        updated_at: now.toISOString(),
       };
       db.vehicles.push(vehicle);
       visitHistory(customer, vehicle.id);

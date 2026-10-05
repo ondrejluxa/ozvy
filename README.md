@@ -39,12 +39,16 @@ Phase 1 (the internal managed-service MVP, spec §29) is being built slice by sl
 in the order of spec §40. The demo stays available as `DATA_SOURCE=demo`
 ([ADR-002](docs/decisions/ADR-002-phase-1-data-sources.md)).
 
-| Slice                                                                                  | Status |
-| -------------------------------------------------------------------------------------- | ------ |
-| 1. Foundation: Prettier, env validation, coverage, Playwright, Supabase CLI config, CI | done   |
-| 2. Schema v1 + RLS                                                                     | next   |
+| Slice                                                                                         | Status                                       |
+| --------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| 1. Foundation: Prettier, env validation, coverage, Playwright, Supabase CLI config, CI        | done                                         |
+| 2. Schema v1 + RLS: tenancy, customer data, audit log, policies, composite FKs, pgTAP harness | done (PGlite-verified; Supabase run pending) |
+| 3. Auth                                                                                       | next                                         |
 
-Local Supabase (`pnpm db:start`, `db:reset`, `db:test`) needs Docker Desktop.
+Local Supabase (`pnpm db:start`, `db:reset`, `db:test`) needs Docker Desktop with hardware
+virtualization enabled. Without Docker, `pnpm db:test:local` applies every migration to an in-process
+PGlite (real PostgreSQL in WebAssembly) with a minimal Supabase stub and runs the same pgTAP files through
+a small pgTAP shim; it is part of `pnpm check` and CI.
 Configuration: `supabase/config.toml` (sign-up disabled, TOTP MFA, 12-char passwords).
 All variables: [.env.example](.env.example).
 
