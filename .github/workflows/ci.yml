@@ -1,0 +1,68 @@
+# CI on every pull request and push to main (spec §32): typecheck, lint,
+# format, unit tests with domain coverage, build, local Supabase with
+# migrations from scratch + database tests, and Playwright on the demo flow.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    name: Typecheck, lint, unit, build, E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm format:check
+      - run: pnpm test:coverage
+      - run: pnpm build
+        env:
+          DATA_SOURCE: demo
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+        env:
+          DATA_SOURCE: demo
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  database:
+    name: Migrations from scratch + DB tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.119.0
+      # Starts only the database container and applies every migration from scratch.
+      - run: supabase db start
+      - name: Database tests (RLS, constraints)
+        if: hashFiles('supabase/tests/**/*.sql') != ''
+        run: supabase test db
+      - name: Every public table has RLS enabled and forced
+        run: |
+          unprotected=$(docker exec supabase_db_navrat psql -U postgres -At -c \
+            "select relname from pg_class c join pg_namespace n on n.oid = c.relnamespace
+             where n.nspname = 'public' and c.relkind = 'r'
+               and (not c.relrowsecurity or not c.relforcerowsecurity)")
+          if [ -n "$unprotected" ]; then
+            echo "Tables without enabled + forced RLS:"; echo "$unprotected"; exit 1
+          fi

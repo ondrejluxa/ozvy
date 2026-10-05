@@ -1,0 +1,677 @@
+{
+  "meta": {
+    "product": "Návrat",
+    "description": "Ukázka: vracíme autoservisům zákazníky, kteří se dlouho nevrátili, a ukazujeme, kolik peněz se vrátilo."
+  },
+  "demo": {
+    "bar": "Ukázková data",
+    "barDetail": "Smyšlené servisy, zákazníci i výsledky – nejde o výsledky žádného skutečného autoservisu.",
+    "tag": "Demo",
+    "companyTag": "demo",
+    "chartNote": "Ukázková data – nejde o výsledky skutečného servisu.",
+    "reset": "Resetovat demo",
+    "cancel": "Zrušit",
+    "resetConfirm": "Obnovit ukázková data do výchozího stavu? Změny z prezentace (nové kampaně, zakázky) se smažou."
+  },
+  "nav": {
+    "adminArea": "Administrace",
+    "clientArea": "Klientský účet",
+    "menu": "Menu",
+    "openMenu": "Otevřít menu",
+    "close": "Zavřít",
+    "operator": "Operátor (vy)",
+    "admin": {
+      "overview": "Přehled",
+      "clients": "Klienti",
+      "campaigns": "Kampaně"
+    },
+    "client": {
+      "overview": "Přehled",
+      "customers": "Zákazníci",
+      "campaigns": "Kampaně",
+      "results": "Výsledky"
+    }
+  },
+  "supportView": {
+    "banner": "Prohlížíte účet: {company}",
+    "readOnly": "pouze čtení",
+    "exit": "Ukončit",
+    "open": "Otevřít účet klienta",
+    "readOnlyHint": "V klientském pohledu jen pro čtení"
+  },
+  "status": {
+    "active": "Aktivní",
+    "at_risk": "Ohrožený",
+    "inactive": "Neaktivní",
+    "reactivated": "Vrácený",
+    "opted_out": "Odhlášený"
+  },
+  "campaignStatus": {
+    "draft": "Koncept",
+    "waiting_for_approval": "Čeká na schválení",
+    "scheduled": "Naplánovaná",
+    "sending": "Odesílá se",
+    "active": "Aktivní",
+    "paused": "Pozastavená",
+    "completed": "Dokončená",
+    "cancelled": "Zrušená",
+    "failed": "Selhala"
+  },
+  "messageStatus": {
+    "queued": "Ve frontě",
+    "sending": "Odesílá se",
+    "sent": "Odesláno",
+    "delivered": "Doručeno",
+    "undelivered": "Nedoručeno",
+    "expired": "Vypršelo",
+    "failed": "Selhalo",
+    "cancelled": "Zrušeno"
+  },
+  "stage": {
+    "contacted": "Osloven",
+    "replied": "Odpověděl",
+    "booked": "Objednal se",
+    "completed": "Dokončeno",
+    "lost": "Nevrátil se",
+    "opted_out": "Odhlásil se"
+  },
+  "category": {
+    "regular_service": "Pravidelný servis",
+    "oil_change": "Výměna oleje",
+    "tyre_change": "Přezutí",
+    "tyre_storage": "Uskladnění pneu",
+    "ac_service": "Klimatizace",
+    "brakes": "Brzdy",
+    "diagnostics": "Diagnostika",
+    "stk": "STK",
+    "repair_other": "Ostatní opravy"
+  },
+  "legalBasis": {
+    "consent": "Souhlas",
+    "existing_customer": "Stávající zákazník",
+    "unknown": "Neznámý"
+  },
+  "phoneType": {
+    "mobile": "mobil",
+    "fixed": "pevná linka",
+    "unknown": "neznámý typ"
+  },
+  "exclusions": {
+    "opted_out": "Odhlášení ze zpráv",
+    "no_legal_basis": "Bez právního základu",
+    "no_mobile": "Bez mobilního čísla",
+    "too_old": "Poslední návštěva před více než 4 lety",
+    "recently_contacted": "Osloveni v posledních 30 dnech",
+    "yearly_cap": "Limit 4 zpráv za rok",
+    "same_preset_90d": "Stejný segment v posledních 90 dnech"
+  },
+  "presets": {
+    "no_visit_6m": {
+      "name": "Bez návštěvy 6+ měsíců",
+      "description": "Poslední návštěva před 6–12 měsíci",
+      "opportunity": "{count, plural, one {# zákazník u vás nebyl} few {# zákazníci u vás nebyli} other {# zákazníků u vás nebylo}} 6–12 měsíců"
+    },
+    "no_visit_12m": {
+      "name": "Bez návštěvy 12+ měsíců",
+      "description": "Poslední návštěva před 12–18 měsíci",
+      "opportunity": "{count, plural, one {# zákazník u vás nebyl} few {# zákazníci u vás nebyli} other {# zákazníků u vás nebylo}} 12+ měsíců"
+    },
+    "no_visit_18m": {
+      "name": "Bez návštěvy 18+ měsíců",
+      "description": "Poslední návštěva před 18–48 měsíci",
+      "opportunity": "{count, plural, one {# zákazník u vás nebyl} few {# zákazníci u vás nebyli} other {# zákazníků u vás nebylo}} 18+ měsíců"
+    },
+    "regular_service_10_14": {
+      "name": "Pravidelný servis před 10–14 měsíci",
+      "description": "Servis nebo výměna oleje před 10–14 měsíci, od té doby bez návštěvy",
+      "opportunity": "{count, plural, one {# zákazníkovi se blíží} few {# zákazníkům se blíží} other {# zákazníkům se blíží}} roční servis"
+    },
+    "tyre_last_season": {
+      "name": "Pneu minulou sezónu, letos ne",
+      "description": "Loni v této sezóně přezouvali, letos zatím ne",
+      "opportunity": "{count, plural, one {# zákazník letos ještě nepřezouval} few {# zákazníci letos ještě nepřezouvali} other {# zákazníků letos ještě nepřezouvalo}}"
+    },
+    "ac_18_24": {
+      "name": "Klimatizace před 18–24 měsíci",
+      "description": "Poslední servis klimatizace před 18–24 měsíci, posílá se duben–červen",
+      "opportunity": "{count, plural, one {# zákazník má} few {# zákazníci mají} other {# zákazníků má}} klimatizaci 1,5–2 roky bez servisu"
+    },
+    "valuable_lost": {
+      "name": "Hodnotní zákazníci, kteří zmizeli",
+      "description": "Útrata v horních 20 % servisu, bez návštěvy 9+ měsíců",
+      "opportunity": "{count, plural, one {# hodnotný zákazník nepřišel} few {# hodnotní zákazníci nepřišli} other {# hodnotných zákazníků nepřišlo}} 9+ měsíců"
+    },
+    "regulars_stopped": {
+      "name": "Pravidelní, kteří přestali chodit",
+      "description": "Alespoň 3 návštěvy během 2 let, ale 12+ měsíců bez návštěvy",
+      "opportunity": "{count, plural, one {# pravidelný zákazník přestal} few {# pravidelní zákazníci přestali} other {# pravidelných zákazníků přestalo}} chodit"
+    },
+    "stk_approaching": {
+      "name": "Blíží se STK",
+      "description": "Příprava na STK před 22–24 měsíci",
+      "opportunity": "{count, plural, one {# zákazníkovi se blíží} few {# zákazníkům se blíží} other {# zákazníkům se blíží}} termín STK"
+    }
+  },
+  "presetUnavailable": {
+    "out_of_season": "Mimo sezónu",
+    "no_stk_data": "Servis neeviduje STK"
+  },
+  "severity": {
+    "critical": "Kritické",
+    "high": "Vysoká",
+    "medium": "Střední",
+    "low": "Nízká",
+    "info": "Příležitost"
+  },
+  "alerts": {
+    "title": "Vyžaduje pozornost",
+    "subtitle": "Upozornění ze všech servisů, seřazená podle závažnosti",
+    "allGood": "Vše běží normálně · poslední kontrola {time}",
+    "count": "{count, plural, one {# upozornění} few {# upozornění} other {# upozornění}}",
+    "campaign_failed": {
+      "title": "Kampaň „{campaign}“ selhala nebo má víc než 5 % chyb",
+      "action": "Otevřít kampaň"
+    },
+    "sms_failure_rate": {
+      "title": "Doručitelnost SMS klesla na {rate}",
+      "action": "Zobrazit zprávy"
+    },
+    "awaiting_approval": {
+      "title": "Kampaň „{campaign}“ čeká na schválení klientem {days, plural, one {# den} few {# dny} other {# dní}}",
+      "action": "Připomenout klientovi"
+    },
+    "no_campaign_running": {
+      "title": "Žádná kampaň {days, plural, one {# den} few {# dny} other {# dní}}",
+      "action": "Otevřít příležitosti"
+    },
+    "low_conversion": {
+      "title": "Kampaň „{campaign}“ má po 45 dnech jen {rate} dokončených návratů",
+      "action": "Projít kampaň"
+    },
+    "roi_below_1": {
+      "title": "Návratnost pod 1× dva měsíce po sobě",
+      "action": "Domluvit schůzku"
+    },
+    "large_opportunity": {
+      "title": "Nevyužitá příležitost: {preset} · {eligible} zákazníků · ~ {expected}",
+      "action": "Vytvořit kampaň"
+    }
+  },
+  "admin": {
+    "overview": {
+      "title": "Přehled",
+      "subtitle": "Všichni klienti a kampaně na jednom místě",
+      "activeClients": "Aktivní klienti",
+      "mrr": "MRR",
+      "messages": "Zprávy tento měsíc",
+      "revenue": "Vrácené tržby klientů",
+      "activeCampaigns": "Aktivní kampaně",
+      "failures": "Selhání (7 dní)",
+      "clients": "Klienti",
+      "allClients": "Všichni klienti"
+    },
+    "clients": {
+      "title": "Klienti",
+      "subtitle": "Servisy, pro které kampaně spravujete",
+      "name": "Servis",
+      "plan": "Tarif",
+      "mrr": "MRR",
+      "revenue": "Vrácené tržby tento měsíc",
+      "roi": "ROI",
+      "lastCampaign": "Poslední kampaň",
+      "alerts": "Upozornění",
+      "never": "Zatím žádná",
+      "health": {
+        "green": "V pořádku",
+        "amber": "Vyžaduje pozornost",
+        "red": "Problém"
+      }
+    },
+    "campaigns": {
+      "title": "Kampaně",
+      "subtitle": "Všechny kampaně napříč servisy"
+    }
+  },
+  "company": {
+    "tabs": {
+      "overview": "Přehled",
+      "customers": "Zákazníci",
+      "segments": "Segmenty",
+      "campaigns": "Kampaně"
+    },
+    "meta": {
+      "customers": "{count, plural, one {# zákazník} few {# zákazníci} other {# zákazníků}}",
+      "vehicles": "{count, plural, one {# vozidlo} few {# vozidla} other {# vozidel}}",
+      "plan": "Tarif {plan} · {price} / měsíc",
+      "managed": "Spravovaná služba"
+    },
+    "overview": {
+      "opportunitiesTitle": "Příležitosti",
+      "opportunitiesSubtitle": "Segmenty s největším očekávaným přínosem, které servis v posledních 90 dnech neoslovil",
+      "kpisTitle": "Tento měsíc",
+      "profile": "Profil servisu",
+      "lifecycleTitle": "Zákazníci podle stavu",
+      "recentCampaigns": "Poslední kampaně",
+      "allCampaigns": "Všechny kampaně",
+      "alerts": "Upozornění",
+      "noAlerts": "Žádná otevřená upozornění.",
+      "fields": {
+        "ico": "IČO",
+        "address": "Adresa",
+        "contact": "Kontaktní osoba",
+        "phone": "Telefon",
+        "email": "E-mail",
+        "avgJob": "Průměrná zakázka",
+        "sender": "Odesílatel SMS",
+        "approval": "Schvalování kampaní",
+        "approvalClient": "Schvaluje klient",
+        "approvalOperator": "Schvaluje operátor",
+        "dpa": "Zpracovatelská smlouva",
+        "dpaSigned": "Podepsána {date}"
+      }
+    }
+  },
+  "opportunity": {
+    "recommended": "Doporučeno",
+    "expected": "Očekávané tržby",
+    "expectedValue": "~ {value}",
+    "maxPotential": "Max. potenciál {value}",
+    "basis": "{rate} návratnost × průměrná zakázka {avg}",
+    "createCampaign": "Vytvořit kampaň",
+    "requestCampaign": "Požádat o kampaň",
+    "empty": "Momentálně žádná velká příležitost. Nové se objeví, jakmile zákazníkům uplyne servisní interval."
+  },
+  "kpi": {
+    "revenue": "Vrácené tržby",
+    "reactivated": "Vrácení zákazníci",
+    "bookings": "Objednávky z kampaní",
+    "messages": "Odeslané zprávy",
+    "subscription": "Předplatné",
+    "roi": "Návratnost"
+  },
+  "customers": {
+    "title": "Zákazníci",
+    "total": "{count, plural, one {# zákazník} few {# zákazníci} other {# zákazníků}}",
+    "search": "Hledat jméno, telefon nebo SPZ",
+    "filters": {
+      "allStatuses": "Všechny stavy",
+      "anyTime": "Poslední návštěva: kdykoli",
+      "buckets": {
+        "0-6": "Do 6 měsíců",
+        "6-12": "6–12 měsíců",
+        "12-18": "12–18 měsíců",
+        "18+": "18+ měsíců",
+        "none": "Bez návštěvy"
+      },
+      "anyEligibility": "Způsobilost: vše",
+      "eligible": "Lze oslovit",
+      "ineligible": "Nelze oslovit",
+      "anyCategory": "Všechny služby",
+      "apply": "Filtrovat",
+      "clear": "Zrušit filtry"
+    },
+    "columns": {
+      "name": "Zákazník",
+      "phone": "Telefon",
+      "vehicle": "Vozidlo",
+      "lastVisit": "Poslední návštěva",
+      "status": "Stav",
+      "lastContacted": "Naposledy osloven"
+    },
+    "moreVehicles": "+{count}",
+    "noVehicle": "Bez vozidla",
+    "empty": "Žádný zákazník neodpovídá filtrům. Zkuste je uvolnit.",
+    "pagination": "Strana {page} z {pages}",
+    "prev": "Předchozí",
+    "next": "Další"
+  },
+  "customer": {
+    "back": "Zákazníci",
+    "contact": "Kontakt",
+    "phone": "Telefon",
+    "email": "E-mail",
+    "legalBasis": "Právní základ",
+    "eligibility": "Marketingová způsobilost",
+    "eligible": "Lze oslovit SMS",
+    "notEligible": "Nelze oslovit: {reason}",
+    "notes": "Poznámka",
+    "summary": "Souhrn",
+    "lifetime": "Celková útrata",
+    "visitsCount": "Počet návštěv",
+    "lastVisit": "Poslední návštěva",
+    "vehicles": "Vozidla a návštěvy",
+    "noVehicle": "Bez evidovaného vozidla",
+    "vin": "VIN",
+    "year": "Rok výroby",
+    "noValue": "bez částky",
+    "campaigns": "Kampaně a návraty",
+    "noCampaigns": "Zákazník zatím nebyl osloven žádnou kampaní.",
+    "contactedIn": "Osloven {date} v kampani",
+    "holdoutIn": "V kontrolní skupině kampaně (zprávu nedostal)",
+    "messagePreview": "Odeslaná zpráva"
+  },
+  "conversion": {
+    "booked": "Objednal se",
+    "completed": "Dokončeno",
+    "edit": "Upravit tržbu",
+    "dialogTitle": "Dokončená zakázka",
+    "dialogDescription": "{customer} · kampaň {campaign}",
+    "holdoutNote": "Zákazník je v kontrolní skupině. Návrat se zaznamená, ale do vrácených tržeb se nepočítá.",
+    "amount": "Částka zakázky (Kč)",
+    "save": "Uložit",
+    "saving": "Ukládám…",
+    "cancel": "Zrušit",
+    "saved": "Uloženo · {amount} započteno do vrácených tržeb",
+    "savedHoldout": "Uloženo do kontrolní skupiny",
+    "bookedToast": "{customer} se objednal",
+    "highValue": "Částka nad 200 000 Kč – zkontrolujte ji prosím.",
+    "viewClient": "Zobrazit klientský pohled",
+    "invalidAmount": "Zadejte částku větší než 0 Kč."
+  },
+  "segments": {
+    "title": "Segmenty",
+    "subtitle": "Předvolené segmenty se vyhodnocují nad aktuálními daty servisu",
+    "lifecycle": "Stav zákazníků",
+    "lifecycleRules": "Aktivní ≤ 9 měsíců · Ohrožený 9–12 měsíců · Neaktivní > 12 měsíců · Vrácený = dokončený návrat z kampaně za posledních 12 měsíců",
+    "columns": {
+      "segment": "Segment",
+      "matched": "Odpovídá",
+      "eligible": "Lze oslovit",
+      "excluded": "Vyloučeno",
+      "expected": "Očekávané tržby"
+    },
+    "create": "Vytvořit kampaň",
+    "recentlyUsed": "Osloveno v posledních 90 dnech"
+  },
+  "campaigns": {
+    "title": "Kampaně",
+    "new": "Nová kampaň",
+    "columns": {
+      "name": "Kampaň",
+      "shop": "Servis",
+      "status": "Stav",
+      "date": "Odeslání",
+      "sent": "Odesláno",
+      "delivered": "Doručeno",
+      "bookings": "Objednávky",
+      "completed": "Dokončeno",
+      "revenue": "Tržby"
+    },
+    "tabs": {
+      "all": "Vše",
+      "active": "Aktivní",
+      "prepared": "Připravené",
+      "finished": "Dokončené"
+    },
+    "empty": "Zatím žádná kampaň. Začněte příležitostí v přehledu servisu.",
+    "emptyTab": "V této skupině není žádná kampaň."
+  },
+  "campaign": {
+    "back": "Kampaně",
+    "sentOn": "Odesláno {date}",
+    "scheduledFor": "Naplánováno na {date}",
+    "window": "Návraty se započítávají do {date}",
+    "funnel": "Výsledky kampaně",
+    "funnelSteps": {
+      "sent": "Odesláno",
+      "delivered": "Doručeno",
+      "booked": "Objednáno",
+      "completed": "Dokončeno"
+    },
+    "revenue": "Vrácené tržby",
+    "expected": "Očekávané při odeslání: ~ {value}",
+    "cost": "Cena SMS {value} · {count} segmentů",
+    "holdoutTitle": "Srovnání s kontrolní skupinou",
+    "holdoutExplain": "{count, plural, one {# zákazník náhodně vybraný} few {# zákazníci náhodně vybraní} other {# zákazníků náhodně vybraných}} ze segmentu zprávu nedostal(i). Ukazují, kolik by se jich vrátilo i bez kampaně.",
+    "holdoutInsufficient": "Nedostatek dat pro porovnání – kontrolní skupina má {count} zákazníků, potřeba je alespoň 30.",
+    "treated": "Oslovení",
+    "control": "Kontrolní skupina",
+    "incremental": "Přírůstkové tržby",
+    "returned": "vrátilo se {rate}",
+    "message": "Odeslaná zpráva",
+    "template": "Šablona",
+    "recipients": "Příjemci",
+    "recipientsFilter": {
+      "all": "Vše",
+      "booked": "Objednaní",
+      "completed": "Dokončení",
+      "holdout": "Kontrolní skupina",
+      "failed": "Nedoručeno"
+    },
+    "search": "Hledat jméno nebo SPZ",
+    "columns": {
+      "customer": "Zákazník",
+      "vehicle": "Vozidlo",
+      "message": "SMS",
+      "stage": "Stav",
+      "revenue": "Tržba"
+    },
+    "holdoutBadge": "Kontrolní skupina",
+    "notSent": "Neodesláno",
+    "noRecipients": "Žádný příjemce neodpovídá filtru.",
+    "waiting": "Kampaň čeká na schválení klientem. Po schválení se odešle {date}.",
+    "readyToSend": "Kampaň je připravená k odeslání."
+  },
+  "send": {
+    "title": "Simulace odeslání",
+    "description": "Zprávy projdou celým odesílacím procesem přes testovacího poskytovatele SMS. Nic se skutečně neodešle.",
+    "start": "Simulovat odeslání",
+    "running": "Odesílám…",
+    "progress": "{sent} z {total} odesláno",
+    "delivered": "Doručeno {count}",
+    "failed": "Nedoručeno {count}",
+    "done": "Odesláno · {delivered} zpráv doručeno",
+    "mockNote": "Testovací poskytovatel SMS · skutečné zprávy se neodesílají",
+    "nextStep": "Když zákazník zavolá, označte ho v tabulce příjemců jako „Objednal se“ a po dokončení zadejte částku."
+  },
+  "builder": {
+    "title": "Nová kampaň",
+    "steps": {
+      "segment": "Segment",
+      "message": "Zpráva",
+      "schedule": "Načasování",
+      "review": "Kontrola"
+    },
+    "back": "Zpět",
+    "next": "Pokračovat",
+    "segment": {
+      "title": "Komu kampaň pošleme",
+      "choose": "Segment",
+      "other": "Jiný segment",
+      "eligible": "Způsobilí zákazníci",
+      "excluded": "Vyloučeno",
+      "holdout": "Kontrolní skupina",
+      "holdoutValue": "{pct} · {count} zákazníků",
+      "holdoutHint": "Náhodně vybraní zákazníci, kteří zprávu nedostanou. Ukážou, kolik by se jich vrátilo i bez kampaně.",
+      "send": "Dostane SMS",
+      "expected": "Očekávané tržby",
+      "maxPotential": "Maximální potenciál {value}, kdyby se vrátil úplně každý.",
+      "basis": "{rate} návratnost × průměrná zakázka {avg}",
+      "rulesNote": "Odhlášení, zákazníci bez právního základu, bez mobilu a nedávno oslovení se vylučují vždy.",
+      "unavailable": "nedostupné",
+      "recommended": "doporučeno",
+      "noRecipients": "Segment teď nemá žádné způsobilé zákazníky."
+    },
+    "message": {
+      "title": "Text zprávy",
+      "generate": "Vygenerovat zprávu pomocí AI",
+      "generating": "Píšu návrhy…",
+      "variants": "Návrhy",
+      "variantLabels": { "0": "Standardní", "1": "Přátelský", "2": "Formální" },
+      "useVariant": "Použít",
+      "selected": "Vybráno",
+      "rewrite": {
+        "shorter": "Kratší",
+        "friendlier": "Přátelštější",
+        "professional": "Profesionálnější",
+        "regenerate": "Znovu"
+      },
+      "editor": "Šablona zprávy",
+      "placeholders": "Vložit pole",
+      "placeholderNames": {
+        "osloveni": "Oslovení",
+        "vozidlo": "Vozidlo",
+        "posledni_navsteva": "Poslední návštěva",
+        "servis": "Servis",
+        "telefon": "Telefon",
+        "odhlaseni": "Odhlášení"
+      },
+      "strip": "Odstranit diakritiku",
+      "segments": "{count, plural, one {# SMS segment} few {# SMS segmenty} other {# SMS segmentů}}",
+      "chars": "{used} znaků · do dalšího segmentu zbývá {left}",
+      "encodingUcs": "S diakritikou: 70 znaků na SMS",
+      "encodingGsm": "Bez diakritiky: 160 znaků na SMS",
+      "stripHint": "Bez diakritiky ušetříte {saving} na SMS za celou kampaň.",
+      "preview": "Náhled u zákazníků",
+      "previewOf": "{index} z {total}",
+      "fallback": "U tohoto zákazníka chybí údaj, použila se náhradní formulace.",
+      "emptyHint": "AI napíše jednu šablonu s poli, která se doplní pro každého zákazníka zvlášť. AI nikdy nedostává jména, telefony ani SPZ zákazníků.",
+      "optOutOk": "Odkaz na odhlášení je ve zprávě",
+      "error": "Generování se nepovedlo, zkuste to znovu nebo napište zprávu ručně.",
+      "issues": {
+        "unknown_placeholder": "Neznámé pole {value}",
+        "missing_required": "Chybí povinné pole {value}",
+        "missing_greeting": "Zpráva by měla začínat oslovením",
+        "denylist": "Nevhodné slovo „{value}“",
+        "url": "Jiné odkazy než odhlášení nejsou povolené",
+        "emoji": "Emoji nejsou povolené",
+        "exclamations": "Nejvýše jeden vykřičník",
+        "price_not_in_offer": "Cena „{value}“ není v nabídce",
+        "too_long": "Zpráva je příliš dlouhá ({value} znaků)"
+      }
+    },
+    "schedule": {
+      "title": "Načasování",
+      "name": "Název kampaně",
+      "date": "Datum a čas odeslání",
+      "window": "Odesíláme po–pá 9:00–18:00 a v so 9:00–12:00. Nikdy v neděli a o státních svátcích.",
+      "outside": "Tento čas je mimo povolené okno.",
+      "demoNote": "V ukázce se kampaň po potvrzení odešle hned (simulace přes testovacího poskytovatele)."
+    },
+    "review": {
+      "title": "Kontrola před odesláním",
+      "segment": "Segment",
+      "recipients": "Dostane SMS",
+      "holdout": "Kontrolní skupina",
+      "segments": "SMS segmentů celkem",
+      "cost": "Odhad ceny SMS",
+      "expected": "Očekávané tržby",
+      "optOut": "Odhlášení v každé zprávě",
+      "yes": "Ano",
+      "sendAt": "Odeslání",
+      "message": "Zpráva",
+      "submit": "Vytvořit a simulovat odeslání",
+      "submitting": "Vytvářím kampaň…",
+      "needTemplate": "Nejdříve vytvořte text zprávy."
+    }
+  },
+  "client": {
+    "heroLabel": "Vrácené tržby tento měsíc",
+    "delta": "{value} oproti minulému měsíci",
+    "deltaNone": "První měsíc s výsledky",
+    "totalSince": "Celkem od začátku spolupráce: {value}",
+    "chartTitle": "Vrácené tržby po měsících",
+    "chartRevenue": "Vrácené tržby",
+    "chartSubscription": "Předplatné",
+    "currentCampaigns": "Aktuální kampaně",
+    "noCampaigns": "Právě neběží žádná kampaň. Další pro vás připravujeme.",
+    "campaignProgress": "{sent} odesláno · {booked, plural, one {# objednávka} few {# objednávky} other {# objednávek}} · {revenue}",
+    "awaitingSend": "Čeká na odeslání",
+    "recent": "Nedávno vrácení zákazníci",
+    "noRecent": "Zatím žádný vrácený zákazník. První výsledky se objevují několik dní po odeslání.",
+    "opportunities": "Příležitosti",
+    "managedNote": "Kampaně pro vás připravuje a odesílá náš tým."
+  },
+  "results": {
+    "title": "Výsledky",
+    "subtitle": "Všechna čísla se počítají z dokončených zakázek zákazníků oslovených kampaní.",
+    "total": "Celkem od začátku spolupráce",
+    "smsCost": "Náklady na SMS celkem",
+    "byMonth": "Po měsících",
+    "byCampaign": "Podle kampaní",
+    "bySegment": "Podle segmentů",
+    "month": "Měsíc",
+    "revenue": "Vrácené tržby",
+    "completed": "Vrácení zákazníci",
+    "bookings": "Objednávky",
+    "messages": "Zprávy",
+    "roi": "ROI",
+    "campaigns": "Kampaně",
+    "sent": "Odesláno",
+    "holdoutTitle": "Kontrolní skupina (všechny kampaně)",
+    "holdoutExplain": "Porovnání vrácených zákazníků mezi oslovenými a náhodnou kontrolní skupinou, která zprávu nedostala.",
+    "treatedRate": "Oslovení: vrátilo se",
+    "holdoutRate": "Kontrolní skupina: vrátilo se",
+    "incremental": "Přírůstkové tržby díky kampaním",
+    "insufficient": "Nedostatek dat pro porovnání (kontrolní skupina má {count} zákazníků)."
+  },
+  "guide": {
+    "title": "Průvodce ukázkou",
+    "step": "Krok {current} z {total}",
+    "collapse": "Skrýt průvodce",
+    "expand": "Průvodce ukázkou",
+    "outside": "Mimo hlavní scénář ukázky.",
+    "start": "Začít ukázku",
+    "next": "Další krok",
+    "steps": {
+      "admin": {
+        "title": "Přehled operátora",
+        "hint": "Všichni klienti, MRR a upozornění na jednom místě. U Autoservisu Dvořák systém hlásí nevyužitou příležitost.",
+        "action": "Otevřít Autoservis Dvořák"
+      },
+      "company": {
+        "title": "Autoservis Dvořák",
+        "hint": "Nahoře jsou příležitosti s očekávanými tržbami. Klikněte na doporučenou a vytvořte kampaň.",
+        "action": "Vytvořit kampaň z příležitosti"
+      },
+      "segment": {
+        "title": "Segment",
+        "hint": "Segment je předvybraný. Ukažte, kolik zákazníků lze oslovit, kdo je vyloučen a proč, a očekávané tržby."
+      },
+      "message": {
+        "title": "Vygenerovat SMS",
+        "hint": "Klikněte na „Vygenerovat zprávu pomocí AI“. Pak zapněte „Odstranit diakritiku“ a sledujte počet SMS."
+      },
+      "review": {
+        "title": "Náhled a kontrola",
+        "hint": "Projděte náhled u konkrétních zákazníků, pak souhrn: počet SMS, cena a očekávané tržby."
+      },
+      "send": {
+        "title": "Simulace odeslání",
+        "hint": "Zprávy projdou přes testovacího poskytovatele. Nic se skutečně neodešle."
+      },
+      "results": {
+        "title": "Výsledky kampaně",
+        "hint": "Zákazník zavolal: označte „Objednal se“, pak „Dokončeno“ a zadejte částku zakázky.",
+        "action": "Zobrazit klientský pohled"
+      },
+      "client": {
+        "title": "Pohled majitele servisu",
+        "hint": "Tohle uvidí majitel: vrácené tržby, návratnost a kampaně. Nová zakázka se už započítala.",
+        "action": "Zpět do administrace"
+      }
+    }
+  },
+  "errors": {
+    "validation": "Zkontrolujte zadané údaje.",
+    "internal": "Něco se pokazilo. Zkuste to znovu.",
+    "not_found": "Záznam nebyl nalezen.",
+    "sending_disabled": "Servis má vypnuté odesílání.",
+    "template_invalid": "Šablona neobsahuje povinná pole.",
+    "no_recipients": "Segment nemá žádné způsobilé příjemce.",
+    "already_completed": "Zakázka už je dokončená.",
+    "provider_not_allowed": "Mimo produkci lze použít jen testovacího poskytovatele SMS.",
+    "pageNotFound": "Stránka nebyla nalezena",
+    "pageNotFoundHint": "Odkaz už neplatí, nebo byla ukázková data obnovena.",
+    "backHome": "Zpět na přehled",
+    "boundaryTitle": "Stránku se nepodařilo načíst",
+    "retry": "Zkusit znovu"
+  },
+  "common": {
+    "perMonth": "{value} / měsíc",
+    "none": "—",
+    "showAll": "Zobrazit vše",
+    "open": "Otevřít",
+    "detail": "Detail"
+  }
+}
