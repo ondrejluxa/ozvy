@@ -316,14 +316,16 @@
       "vehicle": "Vozidlo",
       "lastVisit": "Poslední návštěva",
       "status": "Stav",
-      "lastContacted": "Naposledy osloven"
+      "lastContacted": "Naposledy osloven",
+      "visits": "Návštěvy"
     },
     "moreVehicles": "+{count}",
     "noVehicle": "Bez vozidla",
     "empty": "Žádný zákazník neodpovídá filtrům. Zkuste je uvolnit.",
     "pagination": "Strana {page} z {pages}",
     "prev": "Předchozí",
-    "next": "Další"
+    "next": "Další",
+    "emptyCompany": "Servis zatím nemá žádné zákazníky. Přibudou importem."
   },
   "customer": {
     "back": "Zákazníci",
@@ -790,6 +792,7 @@
   "realData": {
     "companies": {
       "name": "Servis",
+      "customers": "Zákazníci",
       "status": "Stav",
       "sending": "Odesílání",
       "created": "Založen",

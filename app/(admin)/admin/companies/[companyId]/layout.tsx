@@ -1,13 +1,30 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { OpenClientViewButton } from "@/components/admin/open-client-view-button";
+import { RealCompanyHeader } from "@/components/admin/real-company";
+import { requirePageContext } from "@/lib/auth/context";
 import { CompanyName } from "@/components/demo/demo-labels";
 import { TabsNav } from "@/components/shell/tabs-nav";
 import { getCompanyBasics } from "@/lib/db/queries";
+import { getCompanyDetail } from "@/lib/db/supabase/companies";
 import { formatCZK } from "@/lib/domain/money";
+import { env } from "@/lib/env";
 
 export default async function CompanyLayout({ children, params }: LayoutProps<"/admin/companies/[companyId]">) {
   const { companyId } = await params;
+  if (env.DATA_SOURCE === "supabase") {
+    // Layouts and pages render concurrently: each one checks access itself.
+    await requirePageContext({ permission: "admin.access" }, `/admin/companies/${companyId}`);
+    const company = await getCompanyDetail(companyId);
+    if (!company) notFound();
+    return (
+      <>
+        <RealCompanyHeader company={company} />
+        <div className="pt-6">{children}</div>
+      </>
+    );
+  }
+
   const basics = getCompanyBasics(companyId);
   if (!basics) notFound();
   const t = await getTranslations("company");

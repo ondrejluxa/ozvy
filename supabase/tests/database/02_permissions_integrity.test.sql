@@ -39,8 +39,8 @@ insert into public.memberships (user_id, company_id, role) values
 insert into public.customers (id, company_id, first_name, phone_e164) values
   ('aaaaaaaa-0000-0000-0000-00000000c001', 'aaaaaaaa-0000-0000-0000-000000000000', 'Jana', '+420777000001'),
   ('bbbbbbbb-0000-0000-0000-00000000c001', 'bbbbbbbb-0000-0000-0000-000000000000', 'Petr', '+420777000002');
-insert into public.audit_logs (company_id, actor_type, action) values
-  ('aaaaaaaa-0000-0000-0000-000000000000', 'system', 'company.created');
+insert into public.audit_logs (company_id, actor_type, action, entity_type, entity_id) values
+  ('aaaaaaaa-0000-0000-0000-000000000000', 'system', 'company.created', 'company', 'aaaaaaaa-0000-0000-0000-000000000000');
 
 -- ---------- triggers ----------
 select is(
@@ -105,7 +105,12 @@ select tests.logout();
 
 -- ---------- platform admin ----------
 select tests.login('00000000-0000-0000-0000-0000000000ff');
-select is((select count(*)::int from public.customers), 2, 'platform admin reads all companies');
+-- Scoped to the fixtures: a seeded database (pnpm db:seed) holds more companies.
+select is(
+  (select count(*)::int from public.customers
+    where company_id in ('aaaaaaaa-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-000000000000')),
+  2, 'platform admin reads all companies'
+);
 select lives_ok(
   $$update public.companies set sending_enabled = true where id = 'aaaaaaaa-0000-0000-0000-000000000000'$$,
   'platform admin can switch sending on'
@@ -136,7 +141,8 @@ select lives_ok(
   'deleting a company (offboarding) keeps its audit rows'
 );
 select is(
-  (select count(*)::int from public.audit_logs where action = 'company.created' and company_id is null), 1,
+  (select count(*)::int from public.audit_logs
+    where entity_id = 'aaaaaaaa-0000-0000-0000-000000000000' and company_id is null), 1,
   'the audit row survives with the company link cleared'
 );
 

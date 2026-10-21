@@ -3,9 +3,15 @@
   "configurations": [
     {
       "name": "navrat-dev",
-      "runtimeExecutable": "C:\\Program Files\\nodejs\\node.exe",
+      "runtimeExecutable": "C:/Program Files/nodejs/node.exe",
       "runtimeArgs": ["node_modules/next/dist/bin/next", "dev", "-p", "3000"],
       "port": 3000
+    },
+    {
+      "name": "navrat-supabase",
+      "runtimeExecutable": "C:/Program Files/nodejs/node.exe",
+      "runtimeArgs": ["scripts/dev/next-with-env.mjs", ".env.supabase.local", "dev", "-p", "3001"],
+      "port": 3001
     }
   ]
 }

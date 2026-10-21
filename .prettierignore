@@ -8,3 +8,4 @@ next-env.d.ts
 docs/spec.md
 supabase/.temp
 supabase/.branches
+supabase/seed/fixtures

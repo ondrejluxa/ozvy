@@ -1,0 +1,206 @@
+﻿id,jmeno,prijmeni,telefon,email,spz,znacka,model,datum,prace
+N01016,Kristýna,Čermáková,730 562 709,,2J8 8317,Škoda,Rapid,16.10.2021,Servis 60 tkm
+N01052,Tereza,Soukupová,+420 567 934 376,tereza.soukupova@example.cz,,,,21.11.2021,Brzdové kotouče + destičky
+N01051,Jakub,Kovář,+420 723 512 211,jakub.kovar@example.com,5J5 6688,Škoda,Yeti,7.12.2021,Brzdy přední
+N01032,Marek,Fiala,796 424 472,marek.fiala@example.com,1J4 5969,Ford,Fiesta,19.12.2021,Přezutí
+N01001,Barbora,Kopecká,+420 737 746 330,,2J7 8895,Škoda,Kamiq,4.2.2022,Plnění klimatizace
+N01000,Milan,Hrubý,12345,,,,,13.2.2022,Servis 30 tkm
+N01032,Marek,Fiala,796 424 472,marek.fiala@example.com,8J2 5558,Renault,Scénic,18.3.2022,Výměna brzdových destiček
+N01059,Zdeněk,Soukup,737 937 031,zdenek.soukup@example.cz,9J8 8141,Škoda,Kamiq,9.4.2022,Přezutí + vyvážení
+N01023,Václav,Novotný,+420 792 808 322,,,,,26.4.2022,Pneuservis
+N01005,Ivana,Kopecká,720 152 413,ivana.kopecka@example.cz,9J7 3962,Dacia,Logan,17.6.2022,Výměna oleje + filtr
+N01047,Milan,Skála,567 944 762,milan.skala@example.com,8J0 2938,Citroën,C4,17.6.2022,Servisní prohlídka
+N01042,Dana,Zemanová,,dana.zemanova@example.cz,,,,24.6.2022,STK + emise
+N01051,Jakub,Kovář,723512211,jakub.kovar@example.com,5J5 6688,Škoda,Kodiaq,24.6.2022,"Olej, filtry"
+N01058,Roman,Němec,+420 797 267 214,roman.nemec@example.cz,8J4 9327,Mercedes-Benz,E 220,23.7.2022,Přezutí kol
+N01055,David,Beneš,777 12 34,david.benes@example.com,4JU 1431,Hyundai,i20,4.8.2022,Oprava elektroinstalace
+N01001,Barbora,Kopecká,737 746 330,,2J7 8895,Škoda,Roomster,28.8.2022,Servis 30 tkm
+N01046,Stanislav,Hrubý,+420 774 575 204,,,,,29.9.2022,Olej + filtr
+N01056,František,Hájek,703 709 399,frantisek.hajek@example.cz,3J8 1817,Škoda,Scala,9.10.2022,"Olej, filtry"
+N01001,Barbora,Kopecká,737 746 330,,3JV 9332,Volkswagen,Touran,19.10.2022,Výměna oleje + filtr
+N01006,Lucie,Kučerová,724035897,,7J5 9843,Mercedes-Benz,GLC,31.2.2024,Přezutí + vyvážení
+N01038,David,Mach,00420739472190,david.mach@example.com,,,,26.10.2022,Uskladnění pneu
+N01016,Kristýna,Čermáková,00420730562709,,2J8 8317,Škoda,Fabia,31.10.2022,Přezutí
+N01032,Marek,Fiala,796 424 472,marek.fiala@example.com,8J2 5558,Renault,Mégane,12.11.2022,Diagnostika - kontrolka motoru
+N01018,Klára,Vaňková,+421 905 123 456,klara.vankova@example.com,,,,24.11.2022,Přezutí
+N01022,Lucie,Doležalová,773 692 665,lucie.dolezalova@example.cz,9JD 4839,Mercedes-Benz,E 220,25.11.2022,Brzdy zadní
+N01048,Anna,Poláková,+420 605 592 716,,4J4 7645,Škoda,Yeti,27.11.2022,SERVIS + olej
+N01032,Marek,Fiala,796424472,marek.fiala@example.com,1J4 5969,Ford,Focus,25.12.2022,Výměna baterie
+N01052,Tereza,Soukupová,+420 567 934 376,tereza.soukupova@example.cz,,,,8.1.2023,Uskladnění pneu
+N01009,Lucie,Kučerová,+420 734 730 267,lucie.kucerova@example.com,,,,30.1.2023,Roční servis
+N01000,Milan,Hrubý,+420 721 860 249,,,,,6.2.2023,SERVIS + olej
+N01059,Zdeněk,Soukup,+420 737 937 031,zdenek.soukup@example.cz,9J8 8141,Škoda,Kamiq,17.2.2023,Klima - dezinfekce
+N01023,Václav,Novotný,792808322,,,,,26.2.2023,Výměna oleje + filtr
+N01010,Petra,Blažková,neuvedeno,,7J8 5493,Škoda,Roomster,5.4.2023,Příprava na STK
+N01001,Barbora,Kopecká,737 746 330,,2J7 8895,Škoda,Karoq,8.4.2023,Servis 60 tkm
+N01005,Ivana,Kopecká,+420 720 152 413,ivana.kopecka@example.cz,9J7 3962,Dacia,Sandero,20.4.2023,Plnění klimatizace
+N01016,Kristýna,Čermáková,+420 730 562 709,,2J8 8317,Škoda,Fabia,26.4.2023,Příprava na STK
+N01002,Tomáš,Dostál,721 660 191,,8J7 5959,Škoda,Yeti,1.5.2023,Olej + filtr
+N01055,David,Beneš,732 083 717,david.benes@example.com,4JU 1431,Hyundai,Tucson,7.5.2023,Roční servis
+N01058,Roman,Němec,797 267 214,roman.nemec@example.cz,8J4 9327,Mercedes-Benz,E 220,18.5.2023,Přezutí
+N01046,Stanislav,Hrubý,774575204,,,,,21.5.2023,Servis 60 tkm
+N01020,Marie,Nováková,723 201 022,,,,,27.5.2023,Roční servis
+N01056,František,Hájek,777 123 456 789,frantisek.hajek@example.cz,3J8 1817,Škoda,Superb,29.6.2023,Roční servis
+N01051,Jakub,Kovář,723 512 211,jakub.kovar@example.com,5J5 6688,Škoda,Rapid,2.7.2023,Počítačová diagnostika
+N01009,Lucie,Kučerová,734730267,lucie.kucerova@example.com,,,,10.7.2023,Výměna oleje + filtr
+N01055,David,Beneš,732 083 717,david.benes@example.com,8JH 3203,Citroën,C4,11.7.2023,Brzdy zadní
+N01047,Milan,Skála,567 944 762,milan.skala@example.com,8J0 2938,Citroën,C3,25.7.2023,Přezutí + vyvážení
+N01032,Marek,Fiala,+420 796 424 472,marek.fiala@example.com,1J4 5969,Ford,Mondeo,30.7.2023,Přezutí + vyvážení
+N01042,Dana,Zemanová,,dana.zemanova@example.cz,,,,15.8.2023,Přezutí + uskladnění
+N01038,David,Mach,+420 739 472 190,david.mach@example.com,,,,16.8.2023,Počítačová diagnostika
+N01032,Marek,Fiala,00420796424472,marek.fiala@example.com,8J2 5558,Renault,Scénic,18.8.2023,Přezutí kol
+N01059,Zdeněk,Soukup,+420 123 456 789,zdenek.soukup@example.cz,9J8 8141,Škoda,Karoq,18.8.2023,Přezutí + uskladnění
+N01024,Ladislav,Němec,774541475,ladislav.nemec@example.cz,,,,21.8.2023,Oprava elektroinstalace
+N01008,Miroslav,Jelínek,771925489,,9JR 8305,Volkswagen,Touran,26.8.2023,Pneuservis
+N01053,Simona,Burešová,+420 607 745 017,simona.buresova@example.cz,7J3 0612,Škoda,Fabia,5.9.2023,Servisní prohlídka
+N01049,Milan,Šimek,+420 737 028 963,milan.simek@example.com,9J6 3201,Mercedes-Benz,C 220,11.9.2023,Uskladnění pneu
+N01010,Petra,Blažková,605 326 824,,7J8 5493,Škoda,Rapid,16.9.2023,Servis 60 tkm
+N01052,Tereza,Soukupová,567934376,tereza.soukupova@example.cz,,,,20.9.2023,Pneuservis
+N01022,Lucie,Doležalová,773 692 665,lucie.dolezalova@example.cz,9JD 4839,Mercedes-Benz,C 220,22.9.2023,Diagnostika
+N01054,Jiří,Hruška,567 764 015,jiri.hruska@example.cz,4J5 3477,Škoda,Scala,6.10.2023,Pravidelná prohlídka
+N01006,Lucie,Kučerová,724 035 897,,7J5 9843,Mercedes-Benz,Vito,16.10.2023,Olej + filtr
+N01001,Barbora,Kopecká,+420 737 746 330,,3JV 9332,Volkswagen,Golf,13.11.2023,Pneuservis
+N01021,Radek,Marek,+420 739 211 355,,5J7 4371,Škoda,Roomster,17.11.2023,Přezutí + vyvážení
+N01013,Anna,Kopecká,775 928 760,,3J7 1654,Škoda,Octavia,21.11.2023,Pravidelná prohlídka
+N01033,Ondřej,Procházka,732 039 352,,,,,21.11.2023,Výměna oleje
+N01037,Jaroslava,Holubová,+420 567 196 107,,2JT 3958,Mercedes-Benz,GLC,30.11.2023,Přezutí kol
+N01028,Tomáš,Černý,608 469 720,tomas.cerny@example.cz,,,,1.12.2023,Plnění klimatizace
+N01058,Roman,Němec,797 267 214,roman.nemec@example.cz,8J4 9327,Mercedes-Benz,GLC,4.12.2023,Roční servis
+N01048,Anna,Poláková,605 592 716,,4J4 7645,Škoda,Rapid,11.12.2023,Diagnostika
+N01000,Milan,Hrubý,721 860 249,,,,,22.12.2023,Klima - dezinfekce
+N01035,František,Konečný,702993904,frantisek.konecny@example.com,2J4 9802,Volkswagen,Golf,31.12.2023,Diagnostika - kontrolka motoru
+N01018,Klára,Vaňková,567 235 483,klara.vankova@example.com,,,,18.1.2024,SERVIS + olej
+N01055,David,Beneš,00420732083717,david.benes@example.com,4JU 1431,Hyundai,Tucson,8.2.2024,Klima - dezinfekce
+N01042,Dana,Zemanová,,dana.zemanova@example.cz,,,,14.2.2024,Výměna oleje
+N01023,Václav,Novotný,792 808 322,,,,,23.2.2024,Výměna brzdových destiček
+N01005,Ivana,Kopecká,720 152 413,ivana.kopecka@example.cz,9J7 3962,Dacia,Jogger,27.2.2024,Přezutí
+N01022,Lucie,Doležalová,00420773692665,lucie.dolezalova@example.cz,6JJ 0139,Opel,Zafira,12.3.2024,Servis 60 tkm
+N01046,Stanislav,Hrubý,774 575 204,,,,,29.3.2024,Tlumiče
+N01002,Tomáš,Dostál,+420 721 660 191,,8J7 5959,Škoda,Scala,30.3.2024,Výměna oleje
+N01055,David,Beneš,732 083 717,david.benes@example.com,8JH 3203,Citroën,C4,10.4.2024,SERVIS + olej
+N01001,Barbora,Kopecká,+420 737 746 330,,2J7 8895,Škoda,Kodiaq,29.4.2024,Přezutí kol
+N01009,Lucie,Kučerová,734 730 267,lucie.kucerova@example.com,,,,30.4.2024,"Olej, filtry"
+N01040,Libor,Kopecký,602 990 012,,1J7 8755,BMW,118i,30.4.2024,Počítačová diagnostika
+N01020,Marie,Nováková,723201022,,,,,8.5.2024,Olej + filtr
+N01031,Jiří,Kopecký,702 324 779,,,,,10.5.2024,Servis 30 tkm
+N01052,Tereza,Soukupová,567934376,tereza.soukupova@example.cz,,,,25.5.2024,Klima - dezinfekce
+N01016,Kristýna,Čermáková,730562709,,2J8 8317,Škoda,Kodiaq,27.5.2024,Roční servis
+N01047,Milan,Skála,567 944 762,milan.skala@example.com,8J0 2938,Citroën,Berlingo,4.6.2024,Servisní prohlídka
+N01022,Lucie,Doležalová,773 692 665,lucie.dolezalova@example.cz,9JD 4839,Mercedes-Benz,E 220,6.6.2024,Brzdy zadní
+N01053,Simona,Burešová,+420 607 745 017,simona.buresova@example.cz,7J3 0612,Škoda,Fabia,7.6.2024,Pravidelná prohlídka
+N01021,Radek,Marek,739 211 355,,5J7 4371,Škoda,Superb,9.6.2024,Pneuservis
+N01051,Jakub,Kovář,+420 723 512 211,jakub.kovar@example.com,5J5 6688,Škoda,Kodiaq,14.6.2024,Počítačová diagnostika
+N01024,Ladislav,Němec,774 541 475,ladislav.nemec@example.cz,,,,18.6.2024,SERVIS + olej
+N01032,Marek,Fiala,796424472,marek.fiala@example.com,1J4 5969,Ford,Transit,3.7.2024,Brzdy přední
+N01013,Anna,Kopecká,775 928 760,,3J7 1654,Škoda,Octavia,6.7.2024,Uskladnění kol
+N01026,Veronika,Černá,00420567675366,,3J9 5423,Citroën,C4,18.7.2024,Přezutí
+N01038,David,Mach,739 472 190,david.mach@example.com,,,,22.7.2024,Roční servis
+N01036,David,Bartoš,+420 608 101 036,,4JX 4700,Seat,Ibiza,26.7.2024,Přezutí kol
+N01010,Petra,Blažková,605 326 824,,7J8 5493,Škoda,Octavia,4.8.2024,Uskladnění pneu
+N01056,František,Hájek,703 709 399,frantisek.hajek@example.cz,3J8 1817,Škoda,Roomster,13.8.2024,Výměna oleje + filtr
+N01048,Anna,Poláková,605592716,,4J4 7645,Škoda,Fabia,30.8.2024,STK + emise
+N01033,Ondřej,Procházka,00420732039352,,,,,7.9.2024,Uskladnění kol
+N01022,Lucie,Doležalová,+420 773 692 665,lucie.dolezalova@example.cz,6JJ 0139,Opel,Zafira,13.9.2024,Přezutí + vyvážení
+N01008,Miroslav,Jelínek,+420 771 925 489,,9JR 8305,Volkswagen,Golf,14.9.2024,Přezutí + vyvážení
+N01011,Barbora,Veselá,778990463,barbora.vesela@example.cz,5JS 5327,Hyundai,ix35,15.9.2024,Diagnostika - kontrolka motoru
+N01028,Tomáš,Černý,00420608469720,tomas.cerny@example.cz,,,,15.9.2024,Přezutí + vyvážení
+N01032,Marek,Fiala,+420 796 424 472,marek.fiala@example.com,8J2 5558,Renault,Kangoo,19.9.2024,Roční servis
+N01023,Václav,Novotný,+420 792 808 322,,,,,21.9.2024,Pneuservis
+N01001,Barbora,Kopecká,00420737746330,,3JV 9332,Volkswagen,Tiguan,27.9.2024,Pravidelná prohlídka
+N01059,Zdeněk,Soukup,+420 737 937 031,zdenek.soukup@example.cz,9J8 8141,Škoda,Rapid,5.10.2024,Uskladnění kol
+N01043,František,Polák,+420 725 237 218,frantisek.polak@example.com,1J8 8414,Škoda,Fabia,8.10.2024,Servis 60 tkm
+N01037,Jaroslava,Holubová,+420 567 196 107,,2JT 3958,Mercedes-Benz,E 220,17.10.2024,Výměna brzdových destiček
+N01006,Lucie,Kučerová,+420 724 035 897,,7J5 9843,Mercedes-Benz,A 180,21.10.2024,Roční servis
+N01054,Jiří,Hruška,567 764 015,jiri.hruska@example.cz,4J5 3477,Škoda,Superb,23.10.2024,Přezutí kol
+N01055,David,Beneš,+420 732 083 717,david.benes@example.com,4JU 1431,Hyundai,i20,29.10.2024,Technická kontrola
+N01049,Milan,Šimek,737 028 963,milan.simek@example.com,9J6 3201,Mercedes-Benz,GLC,1.11.2024,Roční servis
+N01057,Jaroslav,Urban,+420 791 805 626,,1J2 4297,Seat,Ateca,1.11.2024,Brzdové kotouče + destičky
+N01052,Tereza,Soukupová,567934376,tereza.soukupova@example.cz,,,,4.11.2024,Výměna oleje + filtr
+N01057,Jaroslav,Urban,+420 791 805 626,,2JJ 5823,Škoda,Kodiaq,14.11.2024,Uskladnění kol
+N01042,Dana,Zemanová,,dana.zemanova@example.cz,,,,20.11.2024,Přezutí
+N01031,Jiří,Kopecký,+420 702 324 779,,,,,21.11.2024,"Olej, filtry"
+N01012,Vojtěch,Zeman,+420 603 851 393,vojtech.zeman@example.cz,1J4 8573,Toyota,C-HR,28.11.2024,Výměna oleje
+N01058,Roman,Němec,797267214,roman.nemec@example.cz,8J4 9327,Mercedes-Benz,GLC,2.12.2024,Výfuk
+N01000,Milan,Hrubý,+420 721 860 249,,,,,5.12.2024,Přezutí + vyvážení
+N01024,Ladislav,Němec,+420 774 541 475,ladislav.nemec@example.cz,,,,6.12.2024,Oprava elektroinstalace
+N01029,Daniel,Sedláček,736 342 528,,1JN 1958,Škoda,Octavia,8.12.2024,Výměna oleje + filtr
+N01002,Tomáš,Dostál,721660191,,8J7 5959,Škoda,Karoq,3.1.2025,Roční servis
+N01020,Marie,Nováková,723201022,,,,,8.1.2025,Pravidelná prohlídka
+N01055,David,Beneš,+420 732 083 717,david.benes@example.com,8JH 3203,Citroën,C4,23.1.2025,SERVIS + olej
+N01003,Marie,Zemanová,00420723550821,marie.zemanova@example.com,,,,11.2.2025,Pneuservis
+N01018,Klára,Vaňková,+420 567 235 483,klara.vankova@example.com,,,,13.2.2025,Pneuservis
+N01026,Veronika,Černá,567 675 366,,3J9 5423,Citroën,C4,13.2.2025,Výměna oleje
+N01035,František,Konečný,702993904,frantisek.konecny@example.com,2J4 9802,Volkswagen,Golf,16.2.2025,Příprava na STK
+N01021,Radek,Marek,+420 739 211 355,,5J7 4371,Škoda,Octavia,25.2.2025,Tlumiče
+N01040,Libor,Kopecký,602990012,,1J7 8755,BMW,320d,10.3.2025,Diagnostika
+N01011,Barbora,Veselá,778990463,barbora.vesela@example.cz,5JS 5327,Hyundai,Kona,11.3.2025,Výměna oleje + filtr
+N01005,Ivana,Kopecká,720 152 413,ivana.kopecka@example.cz,9J7 3962,Dacia,Logan,16.3.2025,Přezutí + vyvážení
+N01009,Lucie,Kučerová,+420 734 730 267,lucie.kucerova@example.com,,,,23.3.2025,Přezutí
+N01037,Jaroslava,Holubová,00420567196107,,2JT 3958,Mercedes-Benz,C 220,25.3.2025,Tlumiče
+N01028,Tomáš,Černý,+420 608 469 720,tomas.cerny@example.cz,,,,6.4.2025,Servis 60 tkm
+N01047,Milan,Skála,567944762,milan.skala@example.com,8J0 2938,Citroën,C4,16.4.2025,Výměna oleje
+N01046,Stanislav,Hrubý,+420 774 575 204,,,,,24.4.2025,Pneuservis
+N01030,Vojtěch,Říha,705 672 536,,8JU 8936,Renault,Scénic,2.5.2025,Přezutí
+N01010,Petra,Blažková,+420 605 326 824,,7J8 5493,Škoda,Superb,7.5.2025,Rozvody
+N01001,Barbora,Kopecká,737 746 330,,3JV 9332,Volkswagen,Golf,12.5.2025,Tlumiče
+N01022,Lucie,Doležalová,773 692 665,lucie.dolezalova@example.cz,9JD 4839,Mercedes-Benz,E 220,29.5.2025,Servis 30 tkm
+N01029,Daniel,Sedláček,+420 736 342 528,,9JF 9898,Škoda,Octavia,11.6.2025,Přezutí + vyvážení
+N01039,František,Beneš,777 947 469,frantisek.benes@example.com,1J3 3362,Mercedes-Benz,E 220,19.6.2025,Servis klimatizace
+N01033,Ondřej,Procházka,+420 732 039 352,,,,,24.6.2025,Přezutí kol
+N01014,Libor,Fiala,779 943 880,libor.fiala@example.cz,1JH 4733,Toyota,Yaris,29.6.2025,Roční servis
+N01041,Libor,Toman,+420 736 590 144,libor.toman@example.cz,8J1 9923,Volkswagen,Tiguan,30.6.2025,Technická kontrola
+N01054,Jiří,Hruška,+420 567 764 015,jiri.hruska@example.cz,4J5 3477,Škoda,Karoq,1.7.2025,Servis 60 tkm
+N01057,Jaroslav,Urban,+420 791 805 626,,2JJ 5823,Škoda,Kamiq,17.7.2025,"Olej, filtry"
+N01053,Simona,Burešová,+420 607 745 017,simona.buresova@example.cz,7J3 0612,Škoda,Yeti,26.7.2025,Olej + filtr
+N01055,David,Beneš,732 083 717,david.benes@example.com,4JU 1431,Hyundai,i30,27.7.2025,Výměna oleje + filtr
+N01027,Ondřej,Skála,739 889 625,,9JS 3575,Seat,Ibiza,7.8.2025,Klima - dezinfekce
+N01012,Vojtěch,Zeman,603 851 393,vojtech.zeman@example.cz,1J4 8573,Toyota,RAV4,15.8.2025,Diagnostika
+N01008,Miroslav,Jelínek,771 925 489,,9JR 8305,Volkswagen,Polo,19.8.2025,Výměna čerpadla
+N01035,František,Konečný,702993904,frantisek.konecny@example.com,2J4 9802,Volkswagen,Tiguan,27.8.2025,Servisní prohlídka
+N01049,Milan,Šimek,737028963,milan.simek@example.com,7J6 7307,Peugeot,208,27.8.2025,Pravidelná prohlídka
+N01023,Václav,Novotný,792808322,,,,,2.9.2025,Pneuservis
+N01025,Stanislav,Skála,779848575,,,,,2.9.2025,Servis 60 tkm
+N01037,Jaroslava,Holubová,+420 567 196 107,,2JT 3958,Mercedes-Benz,A 180,5.9.2025,Výměna oleje
+N01007,Dana,Kolářová,00420791097406,,1J1 7971,Toyota,C-HR,3.10.2025,Přezutí + uskladnění
+N01022,Lucie,Doležalová,773692665,lucie.dolezalova@example.cz,6JJ 0139,Opel,Insignia,4.10.2025,Přezutí + vyvážení
+N01044,Martina,Kratochvílová,604550641,,2J5 3270,BMW,520d,8.10.2025,Přezutí + vyvážení
+N01029,Daniel,Sedláček,+420 736 342 528,,1JN 1958,Škoda,Roomster,9.10.2025,Pravidelná prohlídka
+N01045,Stanislav,Tichý,00420703738003,,5J9 9427,Toyota,Corolla,11.10.2025,Přezutí kol
+N01015,Eva,Doležalová,+420 703 998 342,eva.dolezalova@example.cz,8J2 8204,Mercedes-Benz,GLC,12.10.2025,Plnění klimatizace
+N01004,Jakub,Novák,723 046 026,,,,,9.11.2025,Servis 30 tkm
+N01005,Ivana,Kopecká,+420 720 152 413,ivana.kopecka@example.cz,9J7 3962,Dacia,Duster,13.11.2025,Přezutí + vyvážení
+N01024,Ladislav,Němec,774541475,ladislav.nemec@example.cz,,,,14.11.2025,SERVIS + olej
+N01040,Libor,Kopecký,602990012,,1J7 8755,BMW,520d,29.11.2025,Olej + filtr
+N01020,Marie,Nováková,723 201 022,,,,,11.12.2025,Roční servis
+N01028,Tomáš,Černý,608 469 720,tomas.cerny@example.cz,,,,16.12.2025,Servisní prohlídka
+N01034,Klára,Černá,+420 704 689 654,,1J2 5304,Škoda,Kodiaq,24.12.2025,Výměna oleje + filtr
+N01027,Ondřej,Skála,739889625,,9JS 3575,Seat,Leon,4.1.2026,Diagnostika
+N01001,Barbora,Kopecká,737746330,,3JV 9332,Volkswagen,Passat,19.1.2026,Brzdy přední
+N01019,Lenka,Pokorná,00420567281145,lenka.pokorna@example.cz,,,,25.1.2026,Olej + filtr
+N01050,Antonín,Procházka,705 550 848,antonin.prochazka@example.cz,1JK 0870,Škoda,Octavia,14.2.2026,Servis 60 tkm
+N01053,Simona,Burešová,607 745 017,simona.buresova@example.cz,7J3 0612,Škoda,Rapid,15.2.2026,Výměna oleje
+N01055,David,Beneš,732 083 717,david.benes@example.com,8JH 3203,Citroën,Berlingo,15.2.2026,Geometrie
+N01011,Barbora,Veselá,778990463,barbora.vesela@example.cz,6J1 1860,Škoda,Superb,16.2.2026,Přezutí + vyvážení
+N01025,Stanislav,Skála,+420 779 848 575,,,,,17.2.2026,Servis 60 tkm
+N01017,Romana,Musilová,,,5J3 7265,Hyundai,Kona,25.2.2026,Přezutí kol
+N01015,Eva,Doležalová,+420 703 998 342,eva.dolezalova@example.cz,5J7 5331,Škoda,Scala,12.3.2026,Pravidelná prohlídka
+N01049,Milan,Šimek,737 028 963,milan.simek@example.com,7J6 7307,Peugeot,2008,29.3.2026,"Olej, filtry"
+N01010,Petra,Blažková,+420 605 326 824,,7J8 5493,Škoda,Karoq,31.3.2026,Plnění klimatizace
+N01011,Barbora,Veselá,778 990 463,barbora.vesela@example.cz,5JS 5327,Hyundai,ix35,7.4.2026,Servis 60 tkm
+N01047,Milan,Skála,567944762,milan.skala@example.com,8J0 2938,Citroën,C4,9.4.2026,Pravidelná prohlídka
+N01017,Romana,Musilová,,,3JJ 0470,Škoda,Karoq,24.4.2026,Pneuservis
+N01037,Jaroslava,Holubová,00420567196107,,2JT 3958,Mercedes-Benz,A 180,3.7.2026,Pneuservis
+N01034,Klára,Černá,+420 704 689 654,,1J2 5304,Škoda,Karoq,14.7.2026,Výměna oleje + filtr
+N01053,Simona,Burešová,607745017,simona.buresova@example.cz,7J3 0612,Škoda,Roomster,17.7.2026,Pravidelná prohlídka
+N01004,Jakub,Novák,+420 723 046 026,,,,,20.7.2026,Pneuservis
+N01057,Jaroslav,Urban,791 805 626,,2JJ 5823,Škoda,Roomster,21.7.2026,Olej + filtr
+N01050,Antonín,Procházka,705550848,antonin.prochazka@example.cz,1JK 0870,Škoda,Roomster,7.8.2026,Výměna oleje + filtr
+N01022,Lucie,Doležalová,773 692 665,lucie.dolezalova@example.cz,6JJ 0139,Opel,Zafira,24.8.2026,Výměna oleje
+N01012,Vojtěch,Zeman,+420 603 851 393,vojtech.zeman@example.cz,1J4 8573,Toyota,C-HR,2.9.2026,Roční servis
+N01007,Dana,Kolářová,+420 791 097 406,,1J1 7971,Toyota,C-HR,7.9.2026,SERVIS + olej
+N01052,Tereza,Soukupová,+420 567 934 376,tereza.soukupova@example.cz,,,,21.11.2021,Brzdové kotouče + destičky
+N01005,Ivana,Kopecká,720 152 413,ivana.kopecka@example.cz,9J7 3962,Dacia,Logan,17.6.2022,Výměna oleje + filtr
+N01047,Milan,Skála,567 944 762,milan.skala@example.com,8J0 2938,Citroën,C4,17.6.2022,Servisní prohlídka
+N01000,Milan,Hrubý,+420 721 860 249,,,,,6.2.2023,SERVIS + olej
+N01059,Zdeněk,Soukup,+420 737 937 031,zdenek.soukup@example.cz,9J8 8141,Škoda,Kamiq,17.2.2023,Klima - dezinfekce
+N01032,Marek,Fiala,+420 796 424 472,marek.fiala@example.com,1J4 5969,Ford,Mondeo,30.7.2023,Přezutí + vyvážení

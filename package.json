@@ -21,6 +21,8 @@
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
+    "db:seed": "tsx --env-file=.env.supabase.local supabase/seed/seed.ts",
+    "db:fixtures": "tsx scripts/db/generate-fixtures.ts",
     "db:test": "supabase test db",
     "db:test:local": "tsx scripts/db/pglite-test.ts",
     "db:types": "supabase gen types typescript --local --schema public > lib/db/types.gen.ts && prettier --write lib/db/types.gen.ts"
@@ -58,12 +60,14 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
     "eslint-config-prettier": "^10.1.8",
+    "iconv-lite": "^0.7.3",
     "prettier": "^3.9.9",
     "supabase": "^2.119.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.3",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "packageManager": "pnpm@12.9.1"
 }

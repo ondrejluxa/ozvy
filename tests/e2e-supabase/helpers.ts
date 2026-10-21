@@ -17,7 +17,7 @@ function localEnv(): Record<string, string> {
   );
 }
 
-const env = localEnv();
+export const env = localEnv();
 if (!/^http:\/\/(127\.0\.0\.1|localhost)/.test(env.NEXT_PUBLIC_SUPABASE_URL ?? "")) {
   throw new Error("E2E helpers only run against a local Supabase stack.");
 }

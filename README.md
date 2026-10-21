@@ -44,7 +44,8 @@ in the order of spec §40. The demo stays available as `DATA_SOURCE=demo`
 | 1. Foundation: Prettier, env validation, coverage, Playwright, Supabase CLI config, CI        | done                                             |
 | 2. Schema v1 + RLS: tenancy, customer data, audit log, policies, composite FKs, pgTAP harness | done (91 pgTAP checks on Supabase)               |
 | 3. Auth: login, reset, invitations, TOTP MFA for admins, permissions, protected layouts       | done ([ADR-003](docs/decisions/ADR-003-auth.md)) |
-| 4. Seed                                                                                       | next                                             |
+| 4. Seed: deterministic world for 3 shops (spec §31), seeded accounts, import fixtures         | done ([ADR-004](docs/decisions/ADR-004-seed.md)) |
+| 5. Admin companies                                                                            | next                                             |
 
 ### Running against local Supabase
 
@@ -59,18 +60,26 @@ pnpm env:local
 ```
 
 ```bash
-pnpm admin:create operator@example.com "DlouheHeslo2026" "Jméno Operátora"
+pnpm db:seed
 ```
 
 ```bash
 pnpm dev:supabase
 ```
 
-Open http://localhost:3001/login. The operator enrols TOTP MFA on first sign-in. Invitation and
+Open http://localhost:3001/login. `pnpm db:seed` loads the three shops of spec §31 (Autoservis Dvořák,
+Pneu & Servis Horák, Garáž U Nádraží: 5 600 customers, 6 620 vehicles, ~24 000 visits) and resets the
+seeded accounts: `operator@navrat.example.cz` (platform admin) and `majitel@…` / `vedouci@…` on
+`dvorak`, `horak` and `nadrazi.example.cz`. Their password is `SEED_USER_PASSWORD` in
+`.env.supabase.local` (generated locally, never committed). Re-running the seed restores everything,
+including removing the operator's MFA factor. Your own operator account: `pnpm admin:create <email> <password>`.
+The operator enrols TOTP MFA on first sign-in. Invitation and
 password-reset emails land in the local Mailpit inbox at http://127.0.0.1:54324. Screens that still use
 demo data show "Tato část se připravuje" until their slice moves them to real data.
 
-Tests on the local stack: `pnpm db:test` (pgTAP) and `pnpm test:e2e:supabase` (auth flows).
+Tests on the local stack: `pnpm db:test` (pgTAP) and `pnpm test:e2e:supabase` (auth flows and the
+seeded world; run `pnpm db:seed` first). Messy import fixtures (Windows-1250 CSV, two-sheet XLSX,
+duplicates, broken files) live in `supabase/seed/fixtures` with a manifest; `pnpm db:fixtures` regenerates them.
 Without Docker, `pnpm db:test:local` applies every migration to an in-process
 PGlite (real PostgreSQL in WebAssembly) with a minimal Supabase stub and runs the same pgTAP files through
 a small pgTAP shim; it is part of `pnpm check` and CI.

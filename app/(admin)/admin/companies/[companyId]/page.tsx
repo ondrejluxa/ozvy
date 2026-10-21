@@ -3,24 +3,35 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { AttentionRequired } from "@/components/admin/attention-required";
+import { RealCompanyProfile } from "@/components/admin/real-company";
 import { KpiCard } from "@/components/common/kpi-card";
 import { LifecycleBreakdown } from "@/components/common/lifecycle-breakdown";
 import { OpportunityCard } from "@/components/common/opportunity-card";
 import { CampaignStatusBadge } from "@/components/common/badges";
 import { SectionTitle } from "@/components/shell/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { requirePageContext } from "@/lib/auth/context";
 import { getCompanyBasics, getCompanyOverview } from "@/lib/db/queries";
+import { getCompanyDetail } from "@/lib/db/supabase/companies";
 import { formatDate } from "@/lib/domain/dates";
 import { formatCZK, formatInt, formatROI } from "@/lib/domain/money";
 import { formatPhone } from "@/lib/domain/phone";
+import { env } from "@/lib/env";
 
 export async function generateMetadata(props: PageProps<"/admin/companies/[companyId]">): Promise<Metadata> {
   const { companyId } = await props.params;
+  if (env.DATA_SOURCE === "supabase") return { title: (await getCompanyDetail(companyId))?.name };
   return { title: getCompanyBasics(companyId)?.company.name };
 }
 
 export default async function CompanyOverviewPage(props: PageProps<"/admin/companies/[companyId]">) {
   const { companyId } = await props.params;
+  if (env.DATA_SOURCE === "supabase") {
+    await requirePageContext({ permission: "admin.access" }, `/admin/companies/${companyId}`);
+    const company = await getCompanyDetail(companyId);
+    if (!company) notFound();
+    return <RealCompanyProfile company={company} />;
+  }
   const data = getCompanyOverview(companyId);
   if (!data) notFound();
   const t = await getTranslations("company.overview");

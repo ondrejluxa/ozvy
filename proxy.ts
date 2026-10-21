@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { parseEnv } from "./lib/env/schema";
+import { isRealDataReady } from "./lib/real-data-routes";
 
 /**
  * Proxy (Next 16's middleware): refreshes the Supabase session cookie on every
@@ -43,8 +44,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(login);
   }
   // Screens still built on the in-memory demo store are not available on
-  // real data yet; later slices move them over and add them here.
-  if (isProtected && !REAL_DATA_READY.includes(path)) {
+  // real data yet; later slices move them over (lib/real-data-routes.ts).
+  if (isProtected && !isRealDataReady(path)) {
     const unavailable = request.nextUrl.clone();
     unavailable.pathname = "/unavailable";
     unavailable.search = "";
@@ -52,8 +53,6 @@ export async function proxy(request: NextRequest) {
   }
   return response;
 }
-
-const REAL_DATA_READY = ["/admin", "/admin/companies", "/app"];
 
 export const config = {
   // Everything except static assets and image optimisation.

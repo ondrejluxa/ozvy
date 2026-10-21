@@ -22,6 +22,8 @@ slice by slice in the order of spec §40, stopping after each slice for review. 
 - All UI strings go in `messages/cs.json`; code, identifiers and comments in English.
 - Every message template must contain `{{odhlaseni}}`; holdout customers never
   receive messages and never count as recovered revenue.
+- One fake world for demo and Supabase: `lib/db/demo/seed.ts`, loaded into the local stack by
+  `pnpm db:seed` (`supabase/seed/rows.ts`, ADR-004). Import fixtures: `pnpm db:fixtures`.
 - `tests/unit/seed.test.ts` guards the presentation numbers. Run `pnpm check` after changes.
 
 ## Scope

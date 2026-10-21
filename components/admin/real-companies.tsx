@@ -1,11 +1,13 @@
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { InviteUserDialog } from "@/components/admin/invite-user-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
 import { listVisibleCompanies } from "@/lib/db/supabase/companies";
 import { formatDate } from "@/lib/domain/dates";
+import { formatInt } from "@/lib/domain/money";
 
-/** Real companies list (DATA_SOURCE=supabase). Detail pages and creation follow in later slices. */
+/** Real companies list (DATA_SOURCE=supabase). Creating and editing companies follows in slice 5. */
 export async function RealCompaniesTable() {
   const t = await getTranslations("realData.companies");
   const companies = await listVisibleCompanies();
@@ -22,6 +24,7 @@ export async function RealCompaniesTable() {
         <THead>
           <TR>
             <TH>{t("name")}</TH>
+            <TH className="text-right">{t("customers")}</TH>
             <TH>{t("status")}</TH>
             <TH>{t("sending")}</TH>
             <TH>{t("created")}</TH>
@@ -32,9 +35,12 @@ export async function RealCompaniesTable() {
           {companies.map((c) => (
             <TR key={c.id}>
               <TD>
-                <span className="font-medium text-ink">{c.name}</span>
+                <Link href={`/admin/companies/${c.id}`} className="font-medium text-ink hover:underline">
+                  {c.name}
+                </Link>
                 {c.city && <span className="block text-[12px] text-muted">{c.city}</span>}
               </TD>
+              <TD className="tnum text-right text-ink-2">{formatInt(c.customers)}</TD>
               <TD>
                 <Badge tone={c.status === "active" ? "accent" : "neutral"}>{t(`statuses.${c.status}`)}</Badge>
               </TD>

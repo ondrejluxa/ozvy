@@ -1,0 +1,172 @@
+{
+  "generatedBy": "pnpm db:fixtures (supabase/seed/fixture-files.ts)",
+  "rowNumbers": "1-based data rows, header excluded",
+  "files": [
+    {
+      "file": "dvorak-export-cp1250.csv",
+      "encoding": "windows-1250",
+      "delimiter": ";",
+      "lineEnding": "CRLF",
+      "dateFormat": "dd.mm.yyyy",
+      "header": [
+        "Číslo zákazníka",
+        "Jméno",
+        "Příjmení",
+        "Telefon",
+        "E-mail",
+        "SPZ",
+        "VIN",
+        "Značka",
+        "Model",
+        "Datum zakázky",
+        "Popis práce",
+        "Cena",
+        "Poznámka"
+      ],
+      "dataRows": 431,
+      "customers": 120,
+      "vehicles": 137,
+      "fixedLinePhones": 6,
+      "missingPhones": 2,
+      "nbspPrices": 91,
+      "decimalPrices": 61,
+      "emptyPrices": 13,
+      "quotedNotes": 20,
+      "totalPriceCzk": 1791000
+    },
+    {
+      "file": "horak-export.xlsx",
+      "sheets": [
+        "Zakázky",
+        "Ceník"
+      ],
+      "dataSheet": "Zakázky",
+      "header": [
+        "Zákazník č.",
+        "Příjmení a jméno",
+        "Mobil",
+        "Email",
+        "RZ",
+        "Vozidlo",
+        "Datum",
+        "Služba",
+        "Cena s DPH"
+      ],
+      "dataRows": 316,
+      "blankRowBeforeSummary": true,
+      "summaryRow": {
+        "label": "Celkem",
+        "sheetRow": 319,
+        "totalPriceCzk": 1043750
+      },
+      "customers": 90,
+      "fixedLinePhones": 21,
+      "numericPhoneCells": 123,
+      "nameColumn": "surname first"
+    },
+    {
+      "file": "nadrazi-duplicates-utf8.csv",
+      "encoding": "utf-8",
+      "bom": true,
+      "delimiter": ",",
+      "lineEnding": "LF",
+      "dateFormat": "d.m.yyyy",
+      "header": [
+        "id",
+        "jmeno",
+        "prijmeni",
+        "telefon",
+        "email",
+        "spz",
+        "znacka",
+        "model",
+        "datum",
+        "prace"
+      ],
+      "dataRows": 205,
+      "customers": 60,
+      "rowsWithoutVehicle": 57,
+      "jobValues": false,
+      "exactDuplicateRows": [
+        {
+          "row": 200,
+          "duplicateOfRow": 2
+        },
+        {
+          "row": 201,
+          "duplicateOfRow": 10
+        },
+        {
+          "row": 202,
+          "duplicateOfRow": 11
+        },
+        {
+          "row": 203,
+          "duplicateOfRow": 30
+        },
+        {
+          "row": 204,
+          "duplicateOfRow": 31
+        },
+        {
+          "row": 205,
+          "duplicateOfRow": 47
+        }
+      ],
+      "malformedPhones": [
+        {
+          "row": 6,
+          "value": "12345",
+          "reason": "too_short"
+        },
+        {
+          "row": 15,
+          "value": "777 12 34",
+          "reason": "too_short"
+        },
+        {
+          "row": 24,
+          "value": "+421 905 123 456",
+          "reason": "foreign"
+        },
+        {
+          "row": 33,
+          "value": "neuvedeno",
+          "reason": "not_a_number"
+        },
+        {
+          "row": 42,
+          "value": "777 123 456 789",
+          "reason": "too_long"
+        },
+        {
+          "row": 51,
+          "value": "+420 123 456 789",
+          "reason": "invalid_prefix"
+        }
+      ],
+      "invalidDates": [
+        {
+          "row": 20,
+          "value": "31.2.2024"
+        }
+      ]
+    },
+    {
+      "file": "broken.csv",
+      "encoding": "windows-1250",
+      "delimiter": ";",
+      "problems": [
+        "ragged_row:2",
+        "unclosed_quote:3",
+        "truncated_last_row:5"
+      ]
+    },
+    {
+      "file": "truncated.xlsx",
+      "problems": [
+        "invalid_zip"
+      ]
+    }
+  ]
+}
