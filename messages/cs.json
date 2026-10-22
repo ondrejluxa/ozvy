@@ -351,7 +351,34 @@
     "noCampaigns": "Zákazník zatím nebyl osloven žádnou kampaní.",
     "contactedIn": "Osloven {date} v kampani",
     "holdoutIn": "V kontrolní skupině kampaně (zprávu nedostal)",
-    "messagePreview": "Odeslaná zpráva"
+    "messagePreview": "Odeslaná zpráva",
+    "noHistory": "Zatím bez vozidel a návštěv.",
+    "noVisits": "Bez evidované návštěvy.",
+    "legalBasisRecorded": "zaznamenáno {date}",
+    "edit": {
+      "open": "Upravit kontakt",
+      "title": "Upravit kontakt",
+      "description": "Opravte jméno, telefon, e-mail nebo poznámku. Změna se zapíše do historie.",
+      "cancel": "Zrušit",
+      "save": "Uložit",
+      "saved": "Kontakt uložen.",
+      "legalNote": "Právní základ a historii návštěv lze změnit jen importem.",
+      "fields": {
+        "first_name": "Jméno",
+        "last_name": "Příjmení",
+        "phone": "Telefon",
+        "email": "E-mail",
+        "notes": "Poznámka"
+      },
+      "errors": {
+        "too_long": "Text je příliš dlouhý.",
+        "invalid_phone": "Zadejte české telefonní číslo.",
+        "invalid_email": "Zadejte platný e-mail.",
+        "name_required": "Vyplňte jméno nebo příjmení.",
+        "save_failed": "Uložení se nepodařilo. Zkuste to znovu.",
+        "not_found": "Zákazník nebyl nalezen."
+      }
+    }
   },
   "conversion": {
     "booked": "Objednal se",

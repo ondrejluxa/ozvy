@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { CustomerList } from "@/components/customers/customer-list";
-import { RealCustomerList, pageParam } from "@/components/customers/real-customer-list";
+import { RealCustomerList } from "@/components/customers/real-customer-list";
 import { PageHeader } from "@/components/shell/page-header";
 import { requireClientCompany } from "@/lib/auth/client-company";
 import { getSupportView } from "@/lib/auth/context";
@@ -23,11 +23,7 @@ export default async function ClientCustomersPage(props: PageProps<"/app/custome
     return (
       <>
         <PageHeader title={t("title")} />
-        <RealCustomerList
-          companyId={membership.companyId}
-          basePath="/app/customers"
-          page={pageParam(searchParams.page)}
-        />
+        <RealCustomerList companyId={membership.companyId} basePath="/app/customers" searchParams={searchParams} />
       </>
     );
   }

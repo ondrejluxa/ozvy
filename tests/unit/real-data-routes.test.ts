@@ -16,6 +16,8 @@ describe("isRealDataReady", () => {
       `/admin/companies/${ID.toUpperCase()}/`,
       "/app",
       "/app/customers",
+      `/app/customers/${ID}`,
+      `/admin/companies/${ID}/customers/${ID}`,
     ]) {
       expect(isRealDataReady(path), path).toBe(true);
     }
@@ -26,13 +28,14 @@ describe("isRealDataReady", () => {
       "/admin/campaigns",
       `/admin/companies/${ID}/segments`,
       `/admin/companies/${ID}/campaigns/new`,
-      `/admin/companies/${ID}/customers/${ID}`,
+
       "/admin/companies/not-a-uuid",
       "/admin/companies/new/settings",
       "/app/campaigns",
       "/app/results",
-      `/app/customers/${ID}`,
+
       "/app/customersx",
+      `/app/customers/${ID}/edit`,
     ]) {
       expect(isRealDataReady(path), path).toBe(false);
     }

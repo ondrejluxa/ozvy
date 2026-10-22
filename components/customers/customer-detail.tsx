@@ -13,7 +13,11 @@ import { formatCZK, formatInt } from "@/lib/domain/money";
 
 type Detail = NonNullable<ReturnType<typeof getCustomerDetail>>;
 
-async function VisitTimeline({ visits }: { visits: Visit[] }) {
+export async function VisitTimeline({
+  visits,
+}: {
+  visits: Pick<Visit, "id" | "visited_at" | "service_type_raw" | "service_category" | "job_value_minor">[];
+}) {
   const tCategory = await getTranslations("category");
   const t = await getTranslations("customer");
   return (

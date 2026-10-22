@@ -164,6 +164,7 @@ export type Database = {
           notes: string | null;
           phone_e164: string | null;
           phone_type: string;
+          search_name: string | null;
           source_import_id: string | null;
           updated_at: string;
           visit_count: number;
@@ -185,6 +186,7 @@ export type Database = {
           notes?: string | null;
           phone_e164?: string | null;
           phone_type?: string;
+          search_name?: never;
           source_import_id?: string | null;
           updated_at?: string;
           visit_count?: number;
@@ -206,6 +208,7 @@ export type Database = {
           notes?: string | null;
           phone_e164?: string | null;
           phone_type?: string;
+          search_name?: never;
           source_import_id?: string | null;
           updated_at?: string;
           visit_count?: number;
@@ -488,7 +491,36 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      list_customers: {
+        Args: {
+          p_category?: Database["public"]["Enums"]["service_category"];
+          p_company_id: string;
+          p_digits?: string;
+          p_eligibility?: string;
+          p_last_visit?: string;
+          p_limit?: number;
+          p_lookback_months?: number;
+          p_name?: string;
+          p_offset?: number;
+          p_plate?: string;
+          p_status?: Database["public"]["Enums"]["lifecycle_status"];
+          p_today: string;
+        };
+        Returns: {
+          first_name: string;
+          id: string;
+          last_name: string;
+          last_visit_at: string;
+          lifecycle_status: Database["public"]["Enums"]["lifecycle_status"];
+          phone_e164: string;
+          phone_type: string;
+          plate: string;
+          total_count: number;
+          vehicle: string;
+          vehicle_count: number;
+          visit_count: number;
+        }[];
+      };
     };
     Enums: {
       company_role: "shop_owner" | "shop_manager";

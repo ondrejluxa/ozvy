@@ -41,7 +41,7 @@ export function parseCustomerFilters(sp: Params): CustomerFilters {
   };
 }
 
-function query(filters: CustomerFilters, page: number): string {
+export function query(filters: CustomerFilters, page: number): string {
   const p = new URLSearchParams();
   for (const [k, v] of Object.entries({ ...filters, page: page > 1 ? String(page) : undefined })) {
     if (v !== undefined && v !== "" && k !== "page") p.set(k, String(v));
@@ -62,91 +62,13 @@ export async function CustomerList({
   searchParams: Params;
 }) {
   const t = await getTranslations("customers");
-  const tStatus = await getTranslations("status");
-  const tCategory = await getTranslations("category");
   const filters = parseCustomerFilters(searchParams);
   const data = listCustomers(companyId, filters);
   if (!data) return null;
-  const active = Boolean(filters.q || filters.status || filters.lastVisit || filters.eligibility || filters.category);
 
   return (
     <div className="space-y-4">
-      <form method="get" action={basePath} className="flex flex-col gap-2 lg:flex-row lg:items-center">
-        <div className="relative flex-1">
-          <Search
-            className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint"
-            aria-hidden
-          />
-          <Input
-            name="q"
-            defaultValue={filters.q}
-            placeholder={t("search")}
-            aria-label={t("search")}
-            className="pl-9"
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:flex">
-          <Select
-            name="status"
-            defaultValue={filters.status ?? ""}
-            aria-label={t("columns.status")}
-            className="lg:w-40"
-          >
-            <option value="">{t("filters.allStatuses")}</option>
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {tStatus(s)}
-              </option>
-            ))}
-          </Select>
-          <Select
-            name="lastVisit"
-            defaultValue={filters.lastVisit ?? ""}
-            aria-label={t("columns.lastVisit")}
-            className="lg:w-52"
-          >
-            <option value="">{t("filters.anyTime")}</option>
-            {BUCKETS.map((b) => (
-              <option key={b} value={b}>
-                {t(`filters.buckets.${b}`)}
-              </option>
-            ))}
-          </Select>
-          <Select
-            name="category"
-            defaultValue={filters.category ?? ""}
-            aria-label={t("filters.anyCategory")}
-            className="lg:w-44"
-          >
-            <option value="">{t("filters.anyCategory")}</option>
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {tCategory(c)}
-              </option>
-            ))}
-          </Select>
-          <Select
-            name="eligibility"
-            defaultValue={filters.eligibility ?? ""}
-            aria-label={t("filters.anyEligibility")}
-            className="lg:w-44"
-          >
-            <option value="">{t("filters.anyEligibility")}</option>
-            <option value="eligible">{t("filters.eligible")}</option>
-            <option value="ineligible">{t("filters.ineligible")}</option>
-          </Select>
-        </div>
-        <div className="flex gap-2">
-          <Button type="submit" variant="default">
-            {t("filters.apply")}
-          </Button>
-          {active && (
-            <Button asChild variant="ghost">
-              <Link href={basePath}>{t("filters.clear")}</Link>
-            </Button>
-          )}
-        </div>
-      </form>
+      <CustomerFilterForm basePath={basePath} filters={filters} />
 
       <div className="overflow-hidden rounded-lg border border-line bg-surface">
         <div className="border-b border-line px-5 py-2.5 text-[13px] text-muted">
@@ -223,5 +145,80 @@ export async function CustomerList({
         )}
       </div>
     </div>
+  );
+}
+
+/** Search box and filters as a plain GET form (no client JS); shared by the demo and real-data lists. */
+export async function CustomerFilterForm({ basePath, filters }: { basePath: string; filters: CustomerFilters }) {
+  const t = await getTranslations("customers");
+  const tStatus = await getTranslations("status");
+  const tCategory = await getTranslations("category");
+  const active = Boolean(filters.q || filters.status || filters.lastVisit || filters.eligibility || filters.category);
+  return (
+    <form method="get" action={basePath} className="flex flex-col gap-2 lg:flex-row lg:items-center">
+      <div className="relative flex-1">
+        <Search
+          className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint"
+          aria-hidden
+        />
+        <Input name="q" defaultValue={filters.q} placeholder={t("search")} aria-label={t("search")} className="pl-9" />
+      </div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:flex">
+        <Select name="status" defaultValue={filters.status ?? ""} aria-label={t("columns.status")} className="lg:w-40">
+          <option value="">{t("filters.allStatuses")}</option>
+          {STATUSES.map((s) => (
+            <option key={s} value={s}>
+              {tStatus(s)}
+            </option>
+          ))}
+        </Select>
+        <Select
+          name="lastVisit"
+          defaultValue={filters.lastVisit ?? ""}
+          aria-label={t("columns.lastVisit")}
+          className="lg:w-52"
+        >
+          <option value="">{t("filters.anyTime")}</option>
+          {BUCKETS.map((b) => (
+            <option key={b} value={b}>
+              {t(`filters.buckets.${b}`)}
+            </option>
+          ))}
+        </Select>
+        <Select
+          name="category"
+          defaultValue={filters.category ?? ""}
+          aria-label={t("filters.anyCategory")}
+          className="lg:w-44"
+        >
+          <option value="">{t("filters.anyCategory")}</option>
+          {CATEGORIES.map((c) => (
+            <option key={c} value={c}>
+              {tCategory(c)}
+            </option>
+          ))}
+        </Select>
+        <Select
+          name="eligibility"
+          defaultValue={filters.eligibility ?? ""}
+          aria-label={t("filters.anyEligibility")}
+          className="lg:w-44"
+        >
+          <option value="">{t("filters.anyEligibility")}</option>
+          <option value="eligible">{t("filters.eligible")}</option>
+          <option value="ineligible">{t("filters.ineligible")}</option>
+        </Select>
+      </div>
+      <div className="flex gap-2">
+        <Button type="submit" variant="default">
+          {t("filters.apply")}
+        </Button>
+        {active && (
+          <Button asChild variant="ghost">
+            <Link href={basePath}>{t("filters.clear")}</Link>
+          </Button>
+        )}
+      </div>
+    </form>
   );
 }

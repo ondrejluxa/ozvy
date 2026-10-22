@@ -74,6 +74,12 @@ test.describe.serial("seeded world", () => {
     await expect(page).toHaveURL(/\?page=2$/);
     await expect(page.getByText("Strana 2 z 36")).toBeVisible();
 
+    // The operator opens a customer of this company.
+    await page.locator("tbody tr td a").first().click();
+    await expect(page).toHaveURL(new RegExp(`/admin/companies/${ids.dvorak}/customers/[0-9a-f-]{36}$`));
+    await expect(page.getByText("Vozidla a návštěvy")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Upravit kontakt" })).toBeVisible();
+
     // Unknown or malformed company IDs are a plain 404.
     await page.goto("/admin/companies/00000000-0000-4000-8000-000000000000");
     await expect(page.getByRole("heading", { name: "Stránka nebyla nalezena" })).toBeVisible();

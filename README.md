@@ -46,7 +46,8 @@ in the order of spec §40. The demo stays available as `DATA_SOURCE=demo`
 | 3. Auth: login, reset, invitations, TOTP MFA for admins, permissions, protected layouts       | done ([ADR-003](docs/decisions/ADR-003-auth.md))            |
 | 4. Seed: deterministic world for 3 shops (spec §31), seeded accounts, import fixtures         | done ([ADR-004](docs/decisions/ADR-004-seed.md))            |
 | 5. Admin companies: create/edit, settings with defaults, DPA upload, sending switch, users    | done ([ADR-005](docs/decisions/ADR-005-admin-companies.md)) |
-| 6. Customers                                                                                  | next                                                        |
+| 6. Customers: search, filters, detail with vehicles and visits, contact editing               | done ([ADR-006](docs/decisions/ADR-006-customers.md))       |
+| 7. Import wizard                                                                              | next                                                        |
 
 ### Running against local Supabase
 
