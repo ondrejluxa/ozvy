@@ -46,6 +46,15 @@ insert into public.invitations (company_id, email, role, token_hash, expires_at)
 insert into public.audit_logs (company_id, actor_type, action) values
   ('aaaaaaaa-0000-0000-0000-000000000000', 'system', 'company.created'),
   ('bbbbbbbb-0000-0000-0000-000000000000', 'system', 'company.created');
+insert into public.imports (id, company_id, type, file_name) values
+  ('aaaaaaaa-0000-0000-0000-00000000e001', 'aaaaaaaa-0000-0000-0000-000000000000', 'visits', 'a.csv'),
+  ('bbbbbbbb-0000-0000-0000-00000000e001', 'bbbbbbbb-0000-0000-0000-000000000000', 'visits', 'b.csv');
+insert into public.import_rows (import_id, company_id, row_number, raw) values
+  ('aaaaaaaa-0000-0000-0000-00000000e001', 'aaaaaaaa-0000-0000-0000-000000000000', 1, '["a"]'),
+  ('bbbbbbbb-0000-0000-0000-00000000e001', 'bbbbbbbb-0000-0000-0000-000000000000', 1, '["b"]');
+insert into public.import_mapping_templates (company_id, type, mapping) values
+  ('aaaaaaaa-0000-0000-0000-000000000000', 'visits', '{}'),
+  ('bbbbbbbb-0000-0000-0000-000000000000', 'visits', '{}');
 
 -- ---------- 1. RLS enabled and forced on every public table ----------
 select is(
@@ -75,7 +84,12 @@ insert into tests.tenant_tables values
   ('service_category_mappings', 'company_id', $$insert into public.service_category_mappings (company_id, raw_value_norm, category)
       values ('bbbbbbbb-0000-0000-0000-000000000000', 'rogue', 'brakes')$$),
   ('audit_logs', 'company_id', $$insert into public.audit_logs (company_id, actor_type, action)
-      values ('bbbbbbbb-0000-0000-0000-000000000000', 'user', 'rogue')$$);
+      values ('bbbbbbbb-0000-0000-0000-000000000000', 'user', 'rogue')$$),
+  ('imports', 'company_id', $$insert into public.imports (company_id, type) values ('bbbbbbbb-0000-0000-0000-000000000000', 'customers')$$),
+  ('import_rows', 'company_id', $$insert into public.import_rows (import_id, company_id, row_number, raw)
+      values ('bbbbbbbb-0000-0000-0000-00000000e001', 'bbbbbbbb-0000-0000-0000-000000000000', 2, '[]')$$),
+  ('import_mapping_templates', 'company_id', $$insert into public.import_mapping_templates (company_id, type, mapping)
+      values ('bbbbbbbb-0000-0000-0000-000000000000', 'customers', '{}')$$);
 
 select set_eq(
   $$select table_name::text from information_schema.columns

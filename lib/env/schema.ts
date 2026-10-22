@@ -49,6 +49,10 @@ const schema = z
     // Jobs
     INNGEST_EVENT_KEY: optional,
     INNGEST_SIGNING_KEY: optional,
+    // inngest = events to Inngest (required in production); inline = run the job right after the response (local, CI).
+    JOB_RUNNER: z.enum(["inline", "inngest"]).default("inline"),
+    // Importer: allow files whose e-mails look real outside production (one specific test only, spec §22).
+    DEV_ALLOW_REAL_LOOKING_DATA: z.enum(["true", "false"]).default("false"),
 
     // Messaging
     SMS_PROVIDER: z.string().trim().min(1).default("mock"),
@@ -133,6 +137,12 @@ const schema = z
     }
     if (env.APP_ENV === "production" && (!env.INNGEST_EVENT_KEY || !env.INNGEST_SIGNING_KEY)) {
       fail("INNGEST_SIGNING_KEY", "INNGEST_EVENT_KEY and INNGEST_SIGNING_KEY are required in production.");
+    }
+    if (env.APP_ENV === "production" && env.JOB_RUNNER !== "inngest") {
+      fail("JOB_RUNNER", "Production runs background jobs on Inngest.");
+    }
+    if (env.APP_ENV === "production" && env.DEV_ALLOW_REAL_LOOKING_DATA === "true") {
+      fail("DEV_ALLOW_REAL_LOOKING_DATA", "DEV_ALLOW_REAL_LOOKING_DATA is a development flag.");
     }
   });
 

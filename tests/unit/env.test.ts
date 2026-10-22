@@ -63,6 +63,12 @@ describe("parseEnv", () => {
     expect(found).toMatch(/DATA_SOURCE/);
     expect(found).toMatch(/mock SMS provider/);
     expect(found).toMatch(/INNGEST/);
+    expect(found).toMatch(/JOB_RUNNER/);
+  });
+
+  it("keeps the real-looking-data importer flag out of production", () => {
+    expect(parseEnv({ DEV_ALLOW_REAL_LOOKING_DATA: "true" }).DEV_ALLOW_REAL_LOOKING_DATA).toBe("true");
+    expect(issues({ APP_ENV: "production", DEV_ALLOW_REAL_LOOKING_DATA: "true" }).join()).toMatch(/development flag/);
   });
 
   it("accepts a complete production configuration", () => {
@@ -74,6 +80,7 @@ describe("parseEnv", () => {
       SMS_WEBHOOK_SECRET: "s",
       INNGEST_EVENT_KEY: "e",
       INNGEST_SIGNING_KEY: "s",
+      JOB_RUNNER: "inngest",
       EMAIL_PROVIDER: "smtp",
       SMTP_URL: "smtp://mail.example.com:587",
     });

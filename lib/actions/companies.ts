@@ -7,7 +7,7 @@ import { z } from "zod";
 import { requireContext } from "../auth/context";
 import { audit } from "../audit";
 import { DomainError } from "../db/mutations";
-import { getCompanyRecord } from "../db/supabase/companies";
+import { getCompanyRecord, hasCompletedImport } from "../db/supabase/companies";
 import { createSupabaseServerClient } from "../db/supabase/server-client";
 import { changedFields, parseCompanyProfile, type CompanyProfileInput } from "../domain/company-profile";
 import {
@@ -263,7 +263,11 @@ export async function setSendingEnabledAction(input: {
     const company = await getCompanyRecord(data.companyId);
     if (!company) throw new Error("company not found");
     if (data.enabled) {
-      const blockers = sendingBlockers({ dpaSignedAt: company.dpa_signed_at, status: company.status });
+      const blockers = sendingBlockers({
+        dpaSignedAt: company.dpa_signed_at,
+        status: company.status,
+        hasCompletedImport: await hasCompletedImport(data.companyId),
+      });
       if (blockers.length) throw new DomainError(`sending_blocked_${blockers[0]}`);
     }
     const supabase = await createSupabaseServerClient();

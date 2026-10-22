@@ -147,3 +147,14 @@ export async function listCompanyUsers(companyId: string): Promise<CompanyUsers>
     })),
   };
 }
+
+/** At least one import was reviewed and committed (a sending prerequisite, spec §19). */
+export async function hasCompletedImport(companyId: string): Promise<boolean> {
+  const supabase = await createSupabaseServerClient();
+  const { count } = await supabase
+    .from("imports")
+    .select("id", { count: "exact", head: true })
+    .eq("company_id", companyId)
+    .eq("status", "completed");
+  return (count ?? 0) > 0;
+}

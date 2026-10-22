@@ -25,7 +25,10 @@ export type AuditAction =
   | "company.dpa_confirmed"
   | "company.sending_enabled"
   | "company.document_downloaded"
-  | "customer.updated";
+  | "customer.updated"
+  | "import.uploaded"
+  | "import.committed"
+  | "import.failed";
 
 export interface AuditEntry {
   action: AuditAction;

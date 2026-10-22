@@ -223,6 +223,171 @@ export type Database = {
           },
         ];
       };
+      import_mapping_templates: {
+        Row: {
+          company_id: string;
+          mapping: NonNullable<Json>;
+          type: string;
+          updated_at: string;
+        };
+        Insert: {
+          company_id: string;
+          mapping: NonNullable<Json>;
+          type: string;
+          updated_at?: string;
+        };
+        Update: {
+          company_id?: string;
+          mapping?: NonNullable<Json>;
+          type?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "import_mapping_templates_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      import_rows: {
+        Row: {
+          company_id: string;
+          id: number;
+          import_id: string;
+          issues: NonNullable<Json>;
+          match_customer_id: string | null;
+          normalized: Json | null;
+          raw: NonNullable<Json>;
+          row_number: number;
+          status: string;
+        };
+        Insert: {
+          company_id: string;
+          id?: never;
+          import_id: string;
+          issues?: NonNullable<Json>;
+          match_customer_id?: string | null;
+          normalized?: Json | null;
+          raw: NonNullable<Json>;
+          row_number: number;
+          status?: string;
+        };
+        Update: {
+          company_id?: string;
+          id?: never;
+          import_id?: string;
+          issues?: NonNullable<Json>;
+          match_customer_id?: string | null;
+          normalized?: Json | null;
+          raw?: NonNullable<Json>;
+          row_number?: number;
+          status?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "import_rows_import_id_company_id_fkey";
+            columns: ["import_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "imports";
+            referencedColumns: ["id", "company_id"];
+          },
+        ];
+      };
+      imports: {
+        Row: {
+          company_id: string;
+          completed_at: string | null;
+          counts: NonNullable<Json>;
+          created_at: string;
+          created_by: string | null;
+          delimiter: string | null;
+          encoding: string | null;
+          error: string | null;
+          file_name: string | null;
+          file_path: string | null;
+          file_size_bytes: number | null;
+          header: NonNullable<Json>;
+          id: string;
+          legal_basis_confirmed_at: string | null;
+          legal_basis_confirmed_by: string | null;
+          legal_basis_declared: Database["public"]["Enums"]["legal_basis"] | null;
+          mapping: Json | null;
+          preview: NonNullable<Json>;
+          progress: NonNullable<Json>;
+          row_count: number;
+          sheet: string | null;
+          sheet_names: NonNullable<Json>;
+          status: string;
+          type: string;
+          updated_at: string;
+        };
+        Insert: {
+          company_id: string;
+          completed_at?: string | null;
+          counts?: NonNullable<Json>;
+          created_at?: string;
+          created_by?: string | null;
+          delimiter?: string | null;
+          encoding?: string | null;
+          error?: string | null;
+          file_name?: string | null;
+          file_path?: string | null;
+          file_size_bytes?: number | null;
+          header?: NonNullable<Json>;
+          id?: string;
+          legal_basis_confirmed_at?: string | null;
+          legal_basis_confirmed_by?: string | null;
+          legal_basis_declared?: Database["public"]["Enums"]["legal_basis"] | null;
+          mapping?: Json | null;
+          preview?: NonNullable<Json>;
+          progress?: NonNullable<Json>;
+          row_count?: number;
+          sheet?: string | null;
+          sheet_names?: NonNullable<Json>;
+          status?: string;
+          type: string;
+          updated_at?: string;
+        };
+        Update: {
+          company_id?: string;
+          completed_at?: string | null;
+          counts?: NonNullable<Json>;
+          created_at?: string;
+          created_by?: string | null;
+          delimiter?: string | null;
+          encoding?: string | null;
+          error?: string | null;
+          file_name?: string | null;
+          file_path?: string | null;
+          file_size_bytes?: number | null;
+          header?: NonNullable<Json>;
+          id?: string;
+          legal_basis_confirmed_at?: string | null;
+          legal_basis_confirmed_by?: string | null;
+          legal_basis_declared?: Database["public"]["Enums"]["legal_basis"] | null;
+          mapping?: Json | null;
+          preview?: NonNullable<Json>;
+          progress?: NonNullable<Json>;
+          row_count?: number;
+          sheet?: string | null;
+          sheet_names?: NonNullable<Json>;
+          status?: string;
+          type?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "imports_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       invitations: {
         Row: {
           accepted_at: string | null;
@@ -491,6 +656,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      commit_import_batch: {
+        Args: { p_batch: number; p_company_id: string; p_import_id: string; p_payload: Json };
+        Returns: Json;
+      };
       list_customers: {
         Args: {
           p_category?: Database["public"]["Enums"]["service_category"];
@@ -521,6 +690,11 @@ export type Database = {
           visit_count: number;
         }[];
       };
+      recompute_lifecycle: {
+        Args: { p_company_id: string; p_customer_ids?: string[]; p_today?: string };
+        Returns: number;
+      };
+      set_import_row_results: { Args: { p_company_id: string; p_import_id: string; p_rows: Json }; Returns: number };
     };
     Enums: {
       company_role: "shop_owner" | "shop_manager";

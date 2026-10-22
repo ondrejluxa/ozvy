@@ -238,7 +238,8 @@
       "customers": "Zákazníci",
       "segments": "Segmenty",
       "campaigns": "Kampaně",
-      "settings": "Nastavení"
+      "settings": "Nastavení",
+      "imports": "Import"
     },
     "meta": {
       "customers": "{count, plural, one {# zákazník} few {# zákazníci} other {# zákazníků}}",
@@ -703,7 +704,12 @@
     "forbidden": "K této akci nemáte oprávnění.",
     "unauthenticated": "Přihlaste se prosím znovu.",
     "sending_blocked_dpa_missing": "Odesílání lze zapnout až po potvrzení zpracovatelské smlouvy.",
-    "sending_blocked_company_inactive": "U ukončované spolupráce nelze odesílání zapnout."
+    "sending_blocked_company_inactive": "U ukončované spolupráce nelze odesílání zapnout.",
+    "sending_blocked_no_reviewed_import": "Odesílání lze zapnout až po dokončeném importu dat.",
+    "import_dpa_missing": "Import je možný až po potvrzení zpracovatelské smlouvy.",
+    "import_unsupported_type": "Nahrajte soubor CSV, TXT nebo XLSX.",
+    "import_too_large": "Soubor je větší než 20 MB.",
+    "import_wrong_state": "Import je v jiném kroku. Obnovte stránku."
   },
   "common": {
     "perMonth": "{value} / měsíc",
@@ -947,7 +953,8 @@
       "turnedOff": "Odesílání vypnuto.",
       "blockers": {
         "dpa_missing": "Nejdřív potvrďte zpracovatelskou smlouvu.",
-        "company_inactive": "Spolupráce se ukončuje."
+        "company_inactive": "Spolupráce se ukončuje.",
+        "no_reviewed_import": "Nejdřív dokončete první import a zkontrolujte data."
       }
     },
     "sections": {
@@ -976,6 +983,192 @@
       "done": "Hotovo",
       "todo": "Zbývá",
       "open": "Otevřít nastavení"
+    }
+  },
+  "imports": {
+    "title": "Importy",
+    "description": "Export z programu servisu projde kontrolou, než se cokoli zapíše. Opakovaný import stejného souboru nic nezdvojí.",
+    "empty": "Zatím žádný import. Nahrajte export zakázek nebo kontaktů z programu servisu.",
+    "dpaMissing": "Import je možný až po potvrzení zpracovatelské smlouvy v Nastavení.",
+    "types": {
+      "customers": "Kontakty zákazníků",
+      "visits": "Historie zakázek (doporučeno)"
+    },
+    "typeHints": {
+      "customers": "Jeden řádek = jeden zákazník, případně s vozidlem a poslední návštěvou.",
+      "visits": "Jeden řádek = jedna zakázka. Vznikne celá historie návštěv po vozidlech."
+    },
+    "statuses": {
+      "uploaded": "Nahráno",
+      "parsing": "Načítám soubor",
+      "mapping": "Přiřazení sloupců",
+      "validating": "Kontroluji data",
+      "needs_review": "Ke kontrole",
+      "committing": "Importuji",
+      "completed": "Dokončeno",
+      "failed": "Selhalo",
+      "cancelled": "Zrušeno"
+    },
+    "columns": {
+      "date": "Datum",
+      "file": "Soubor",
+      "type": "Typ",
+      "user": "Kdo",
+      "result": "Výsledek",
+      "status": "Stav"
+    },
+    "resultSummary": "{rows} řádků · {created} nových, {updated} aktualizovaných zákazníků",
+    "rowsSummary": "{rows} řádků",
+    "downloadErrors": "Stáhnout chyby",
+    "open": "Otevřít",
+    "upload": {
+      "title": "Nový import",
+      "type": "Co soubor obsahuje",
+      "file": "Soubor (CSV, TXT nebo XLSX, max. 20 MB)",
+      "submit": "Nahrát soubor",
+      "uploading": "Nahrávám…",
+      "failed": "Soubor se nepodařilo nahrát."
+    },
+    "working": "Zpracovávám… Stránka se obnoví sama.",
+    "failures": {
+      "file_missing": "Soubor se v úložišti nenašel. Nahrajte ho znovu.",
+      "empty": "Soubor je prázdný.",
+      "too_large": "Soubor je větší než 20 MB.",
+      "unsupported_type": "Soubor není platné CSV, TXT ani XLSX (nebo je poškozený).",
+      "macro_enabled": "Soubory s makry (.xlsm) nepřijímáme. Uložte jej jako .xlsx.",
+      "archive_too_large": "Sešit je po rozbalení příliš velký.",
+      "malformed_csv": "Soubor má neuzavřené uvozovky, nelze ho bezpečně načíst. Zkontrolujte export.",
+      "no_data": "V souboru nejsou žádná data.",
+      "too_many_rows": "Soubor má víc než 100 000 řádků. Rozdělte ho.",
+      "unreadable_xlsx": "Sešit XLSX nelze přečíst.",
+      "parse_failed": "Soubor se nepodařilo načíst.",
+      "validate_failed": "Kontrola dat selhala.",
+      "commit_failed": "Import selhal. Hotové dávky zůstaly, lze pokračovat.",
+      "real_looking_data": "Mimo produkci přijímáme jen testovací data (e-maily @example.cz / @example.com)."
+    },
+    "retryCommit": "Pokračovat v importu",
+    "newImport": "Nový import",
+    "cancel": "Zrušit import",
+    "cancelled": "Import zrušen.",
+    "mapping": {
+      "title": "Přiřazení sloupců",
+      "description": "Návrh vychází ze záhlaví souboru. Zkontrolujte ho.",
+      "templateApplied": "Použili jsme mapování uložené z minulého importu.",
+      "encoding": "Kódování",
+      "sheet": "List",
+      "reparse": "Načíst znovu",
+      "preview": "Ukázka prvních řádků",
+      "unused": "— nepoužívat —",
+      "submit": "Zkontrolovat data",
+      "saving": "Ukládám…",
+      "fieldsTitle": "Cílová pole",
+      "encodings": {
+        "utf-8": "UTF-8",
+        "utf-8-bom": "UTF-8 s BOM",
+        "windows-1250": "Windows-1250 (Excel CZ)",
+        "iso-8859-2": "ISO-8859-2"
+      },
+      "fields": {
+        "external_customer_id": "Číslo zákazníka",
+        "first_name": "Jméno",
+        "last_name": "Příjmení",
+        "full_name": "Celé jméno (Jméno Příjmení)",
+        "full_name_last_first": "Celé jméno (Příjmení Jméno)",
+        "phone": "Telefon",
+        "email": "E-mail",
+        "vehicle_brand": "Značka vozidla",
+        "vehicle_model": "Model vozidla",
+        "vehicle_full": "Vozidlo (značka a model)",
+        "license_plate": "SPZ",
+        "vin": "VIN",
+        "visit_date": "Datum zakázky / poslední návštěvy",
+        "service_type": "Druh práce",
+        "job_value": "Cena zakázky",
+        "total_lifetime_value": "Útrata celkem",
+        "marketing_consent": "Souhlas s marketingem",
+        "notes": "Poznámka"
+      },
+      "legal": {
+        "title": "Právní základ pro oslovení",
+        "description": "Vyberte jeden základ pro celý soubor, nebo přiřaďte sloupec se souhlasem.",
+        "label": "Právní základ",
+        "consent": "Souhlas zákazníka",
+        "existing_customer": "Stávající zákazník (oprávněný zájem)",
+        "unknown": "Neznámý (tito zákazníci nebudou osloveni)",
+        "fromColumn": "Jen podle sloupce se souhlasem",
+        "confirm": "Majitel servisu písemně potvrdil právní základ pro tato data (zpracovatelská smlouva)."
+      },
+      "problems": {
+        "name_required": "Přiřaďte jméno, příjmení nebo celé jméno.",
+        "contact_required": "Přiřaďte telefon nebo e-mail.",
+        "visit_date_required": "Import zakázek potřebuje datum zakázky.",
+        "duplicate_column": "Jeden sloupec je přiřazený dvakrát.",
+        "legal_basis_required": "Vyberte právní základ nebo přiřaďte sloupec se souhlasem.",
+        "legal_basis_confirmation_required": "Potvrďte, že majitel servisu právní základ potvrdil.",
+        "import_wrong_state": "Import je v jiném kroku. Obnovte stránku.",
+        "save_failed": "Uložení se nepodařilo."
+      }
+    },
+    "review": {
+      "title": "Kontrola dat",
+      "description": "Nic se zatím nezapsalo. Zkontrolujte řádky s problémy, případně je vyřaďte nebo upravte mapování.",
+      "total": "Celkem",
+      "valid": "V pořádku",
+      "warning": "S upozorněním",
+      "invalid": "Chybné",
+      "duplicate": "Duplicitní",
+      "excluded": "Vyřazené",
+      "all": "Vše",
+      "matched": "{count} řádků patří stávajícím zákazníkům, jejich údaje se aktualizují.",
+      "ambiguous": "{count} řádků odpovídá více zákazníkům. Nesloučíme je, zůstanou mimo import.",
+      "commit": "Importovat {count, plural, one {# řádek} few {# řádky} other {# řádků}}",
+      "nothing": "Není co importovat.",
+      "backToMapping": "Upravit mapování",
+      "exclude": "Vyřadit",
+      "include": "Vrátit",
+      "row": "Řádek",
+      "customer": "Zákazník",
+      "phone": "Telefon",
+      "date": "Datum",
+      "problems": "Problémy",
+      "noRows": "Žádné řádky v tomto filtru.",
+      "pagination": "Strana {page} z {pages}",
+      "prev": "Předchozí",
+      "next": "Další"
+    },
+    "issues": {
+      "column_count": "Jiný počet sloupců než záhlaví",
+      "name_missing": "Chybí jméno",
+      "no_contact": "Chybí telefon i e-mail",
+      "phone_unparseable": "Telefon nelze přečíst",
+      "visit_date_missing": "Chybí datum zakázky",
+      "visit_date_invalid": "Neplatné datum",
+      "visit_date_future": "Datum v budoucnosti",
+      "fixed_line": "Pevná linka (SMS nedorazí)",
+      "foreign_phone": "Zahraniční číslo",
+      "email_suspicious": "Podezřelý e-mail",
+      "vin_malformed": "Neplatný VIN",
+      "vin_on_other_customer": "VIN patří jinému zákazníkovi",
+      "job_value_out_of_range": "Neobvyklá cena",
+      "job_value_invalid": "Cenu nelze přečíst",
+      "visit_too_old": "Zakázka starší než 10 let",
+      "ambiguous_match": "Odpovídá více zákazníkům",
+      "duplicate_in_file": "Duplicitní řádek v souboru"
+    },
+    "done": {
+      "title": "Import dokončen",
+      "customersCreated": "Noví zákazníci",
+      "customersUpdated": "Aktualizovaní zákazníci",
+      "vehiclesCreated": "Nová vozidla",
+      "visitsCreated": "Nové návštěvy",
+      "visitsUpdated": "Aktualizované návštěvy",
+      "skipped": "Řádky mimo import",
+      "showCustomers": "Zobrazit zákazníky"
+    },
+    "csv": {
+      "row": "Řádek",
+      "status": "Stav",
+      "issues": "Problémy"
     }
   }
 }

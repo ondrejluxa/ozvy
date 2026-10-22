@@ -142,8 +142,15 @@ test("operator onboards a new shop end to end", async ({ page }) => {
     expect((await download.body()).subarray(0, 5).toString()).toBe("%PDF-");
   });
 
-  await test.step("sending can now be switched on", async () => {
+  await test.step("sending needs a completed import, then can be switched on", async () => {
     const toggle = page.getByRole("switch", { name: "Odesílání SMS" });
+    await expect(toggle).toBeDisabled();
+    await expect(page.getByText("Nejdřív dokončete první import a zkontrolujte data.")).toBeVisible();
+    // The import wizard has its own E2E suite (imports.spec.ts); here a finished import is enough.
+    await service
+      .from("imports")
+      .insert({ company_id: companyId, type: "visits", status: "completed", file_name: "e2e.csv" });
+    await page.reload();
     await expect(toggle).toBeEnabled();
     await toggle.click();
     await expect(page.getByText("Odesílání zapnuto.")).toBeVisible();

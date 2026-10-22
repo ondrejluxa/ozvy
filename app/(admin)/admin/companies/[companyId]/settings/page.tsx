@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requirePageContext } from "@/lib/auth/context";
-import { getCompanyRecord, listCompanyUsers } from "@/lib/db/supabase/companies";
+import { getCompanyRecord, hasCompletedImport, listCompanyUsers } from "@/lib/db/supabase/companies";
 import { formatDate } from "@/lib/domain/dates";
 import { sendingBlockers } from "@/lib/domain/dpa";
 import { env } from "@/lib/env";
@@ -28,7 +28,12 @@ export default async function CompanySettingsPage(props: PageProps<"/admin/compa
   const users = await listCompanyUsers(companyId);
   const t = await getTranslations("companyForm");
   const tRoles = await getTranslations("realData.invite.roles");
-  const blocker = sendingBlockers({ dpaSignedAt: company.dpa_signed_at, status: company.status })[0] ?? null;
+  const blocker =
+    sendingBlockers({
+      dpaSignedAt: company.dpa_signed_at,
+      status: company.status,
+      hasCompletedImport: await hasCompletedImport(companyId),
+    })[0] ?? null;
 
   return (
     <div className="grid max-w-3xl grid-cols-1 gap-6">

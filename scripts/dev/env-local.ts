@@ -48,6 +48,7 @@ const lines = [
   `SUPPRESSION_PEPPER=${keep("SUPPRESSION_PEPPER") ?? randomBytes(32).toString("base64")}`,
   // Local seeded accounts only (pnpm db:seed): letters and digits, 20 characters.
   `SEED_USER_PASSWORD=${keep("SEED_USER_PASSWORD") ?? `Navrat${randomInt(1000, 9999)}${randomBytes(5).toString("hex")}`}`,
+  "JOB_RUNNER=inline",
   "SMS_PROVIDER=mock",
   "AI_PROVIDER=mock",
   "",

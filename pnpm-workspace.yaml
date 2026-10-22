@@ -5,3 +5,4 @@ allowBuilds:
   "@swc/core": false
   supabase: true
   esbuild: false
+  protobufjs: false

@@ -23,15 +23,20 @@ export function dpaObjectPath(companyId: string, uploadId: string): string {
   return `${companyId}/dpa/${uploadId}.pdf`;
 }
 
-export type SendingBlocker = "dpa_missing" | "company_inactive";
+export type SendingBlocker = "dpa_missing" | "no_reviewed_import" | "company_inactive";
 
 /**
- * Why sending cannot be switched on. The spec also requires the first import
- * to be reviewed; that condition joins in the import slice (spec §40.7).
+ * Why sending cannot be switched on (spec §19): a confirmed DPA and at least
+ * one import the operator reviewed and committed.
  */
-export function sendingBlockers(company: { dpaSignedAt: string | null; status: string }): SendingBlocker[] {
+export function sendingBlockers(company: {
+  dpaSignedAt: string | null;
+  status: string;
+  hasCompletedImport: boolean;
+}): SendingBlocker[] {
   const blockers: SendingBlocker[] = [];
   if (!company.dpaSignedAt) blockers.push("dpa_missing");
+  if (!company.hasCompletedImport) blockers.push("no_reviewed_import");
   if (company.status === "offboarding" || company.status === "closed") blockers.push("company_inactive");
   return blockers;
 }

@@ -210,8 +210,15 @@ describe("DPA and sending gate", () => {
   });
 
   it("blocks sending until the DPA is confirmed and while the cooperation ends", () => {
-    expect(sendingBlockers({ dpaSignedAt: null, status: "onboarding" })).toEqual(["dpa_missing"]);
-    expect(sendingBlockers({ dpaSignedAt: "2026-10-01T10:00:00Z", status: "active" })).toEqual([]);
-    expect(sendingBlockers({ dpaSignedAt: "2026-10-01T10:00:00Z", status: "closed" })).toEqual(["company_inactive"]);
+    expect(sendingBlockers({ dpaSignedAt: null, status: "onboarding", hasCompletedImport: false })).toEqual([
+      "dpa_missing",
+      "no_reviewed_import",
+    ]);
+    expect(
+      sendingBlockers({ dpaSignedAt: "2026-10-01T10:00:00Z", status: "active", hasCompletedImport: true }),
+    ).toEqual([]);
+    expect(
+      sendingBlockers({ dpaSignedAt: "2026-10-01T10:00:00Z", status: "closed", hasCompletedImport: true }),
+    ).toEqual(["company_inactive"]);
   });
 });
