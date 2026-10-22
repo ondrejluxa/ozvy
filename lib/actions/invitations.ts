@@ -1,5 +1,6 @@
 "use server";
 
+import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireContext } from "../auth/context";
@@ -76,6 +77,7 @@ export async function createInvitationAction(
       entityId: invitation.id,
       metadata: { role: data.role },
     });
+    refresh();
     return { invitationId: invitation.id };
   });
 }

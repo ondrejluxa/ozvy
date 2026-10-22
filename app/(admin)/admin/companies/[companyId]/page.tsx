@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { AttentionRequired } from "@/components/admin/attention-required";
-import { RealCompanyProfile } from "@/components/admin/real-company";
+import { OnboardingChecklist, RealCompanyProfile } from "@/components/admin/real-company";
 import { KpiCard } from "@/components/common/kpi-card";
 import { LifecycleBreakdown } from "@/components/common/lifecycle-breakdown";
 import { OpportunityCard } from "@/components/common/opportunity-card";
@@ -12,7 +12,7 @@ import { SectionTitle } from "@/components/shell/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requirePageContext } from "@/lib/auth/context";
 import { getCompanyBasics, getCompanyOverview } from "@/lib/db/queries";
-import { getCompanyDetail } from "@/lib/db/supabase/companies";
+import { getCompanyDetail, getCompanyRecord, listCompanyUsers } from "@/lib/db/supabase/companies";
 import { formatDate } from "@/lib/domain/dates";
 import { formatCZK, formatInt, formatROI } from "@/lib/domain/money";
 import { formatPhone } from "@/lib/domain/phone";
@@ -29,8 +29,14 @@ export default async function CompanyOverviewPage(props: PageProps<"/admin/compa
   if (env.DATA_SOURCE === "supabase") {
     await requirePageContext({ permission: "admin.access" }, `/admin/companies/${companyId}`);
     const company = await getCompanyDetail(companyId);
-    if (!company) notFound();
-    return <RealCompanyProfile company={company} />;
+    const record = await getCompanyRecord(companyId);
+    if (!company || !record) notFound();
+    return (
+      <div className="space-y-6">
+        <OnboardingChecklist company={record} users={await listCompanyUsers(companyId)} />
+        <RealCompanyProfile company={company} />
+      </div>
+    );
   }
   const data = getCompanyOverview(companyId);
   if (!data) notFound();

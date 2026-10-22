@@ -47,6 +47,8 @@ export interface CompanySettings {
   attribution_window_days: number;
   holdout_pct: number;
   expected_conversion_rate: number;
+  /** Optional gross margin (0–1) to show profit ROI next to revenue ROI (spec §0). */
+  gross_margin_pct: number | null;
   /** Shop name as written inside SMS bodies ({{servis}}). */
   message_shop_name: string | null;
 }

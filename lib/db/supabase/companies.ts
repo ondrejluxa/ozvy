@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { isUuid } from "../../real-data-routes";
+import type { Tables } from "../types.gen";
 import { createSupabaseServerClient } from "./server-client";
 
 /**
@@ -95,3 +96,54 @@ export const getCompanyDetail = cache(async (companyId: string): Promise<Company
     vehicles: vehicles.count ?? 0,
   };
 });
+
+export type CompanyRecord = Tables<"companies">;
+
+/** The full company row for the operator's edit forms, or null when RLS hides it. */
+export const getCompanyRecord = cache(async (companyId: string): Promise<CompanyRecord | null> => {
+  if (!isUuid(companyId)) return null;
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.from("companies").select("*").eq("id", companyId).maybeSingle();
+  if (error) throw new Error(`company query failed: ${error.code}`);
+  return data;
+});
+
+export interface CompanyUsers {
+  members: { userId: string; fullName: string | null; role: "shop_owner" | "shop_manager"; since: string }[];
+  pending: { id: string; email: string; role: "shop_owner" | "shop_manager"; expiresAt: string }[];
+}
+
+/** Members and still-valid invitations of one company (operator view). */
+export async function listCompanyUsers(companyId: string): Promise<CompanyUsers> {
+  const supabase = await createSupabaseServerClient();
+  const [members, invitations] = await Promise.all([
+    supabase.from("memberships").select("user_id, role, created_at").eq("company_id", companyId).order("created_at"),
+    supabase
+      .from("invitations")
+      .select("id, email, role, expires_at")
+      .eq("company_id", companyId)
+      .is("accepted_at", null)
+      .gt("expires_at", new Date().toISOString())
+      .order("created_at"),
+  ]);
+  if (members.error || invitations.error) throw new Error("company users query failed");
+  const ids = (members.data ?? []).map((m) => m.user_id);
+  const { data: profiles } = ids.length
+    ? await supabase.from("profiles").select("user_id, full_name").in("user_id", ids)
+    : { data: [] };
+  const names = new Map((profiles ?? []).map((p) => [p.user_id, p.full_name]));
+  return {
+    members: (members.data ?? []).map((m) => ({
+      userId: m.user_id,
+      fullName: names.get(m.user_id) ?? null,
+      role: m.role,
+      since: m.created_at,
+    })),
+    pending: (invitations.data ?? []).map((i) => ({
+      id: i.id,
+      email: i.email,
+      role: i.role,
+      expiresAt: i.expires_at,
+    })),
+  };
+}

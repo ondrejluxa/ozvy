@@ -237,7 +237,8 @@
       "overview": "Přehled",
       "customers": "Zákazníci",
       "segments": "Segmenty",
-      "campaigns": "Kampaně"
+      "campaigns": "Kampaně",
+      "settings": "Nastavení"
     },
     "meta": {
       "customers": "{count, plural, one {# zákazník} few {# zákazníci} other {# zákazníků}}",
@@ -673,7 +674,9 @@
     "boundaryTitle": "Stránku se nepodařilo načíst",
     "retry": "Zkusit znovu",
     "forbidden": "K této akci nemáte oprávnění.",
-    "unauthenticated": "Přihlaste se prosím znovu."
+    "unauthenticated": "Přihlaste se prosím znovu.",
+    "sending_blocked_dpa_missing": "Odesílání lze zapnout až po potvrzení zpracovatelské smlouvy.",
+    "sending_blocked_company_inactive": "U ukončované spolupráce nelze odesílání zapnout."
   },
   "common": {
     "perMonth": "{value} / měsíc",
@@ -825,6 +828,127 @@
       "sending": "Odesílám…",
       "cancel": "Zrušit",
       "sent": "Pozvánka odeslána."
+    }
+  },
+  "companyForm": {
+    "create": "Založit klienta",
+    "save": "Uložit změny",
+    "saving": "Ukládám…",
+    "saved": "Uloženo.",
+    "fixErrors": "Opravte označená pole.",
+    "fields": {
+      "name": "Název servisu",
+      "ico": "IČO",
+      "dic": "DIČ",
+      "address_line": "Ulice a číslo",
+      "city": "Město",
+      "postal_code": "PSČ",
+      "contact_person": "Kontaktní osoba",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "website": "Web",
+      "average_job_value_czk": "Průměrná zakázka (Kč)",
+      "default_sender_name": "Odesílatel SMS",
+      "opening_hours": "Otevírací doba",
+      "status": "Stav spolupráce",
+      "requires_client_approval": "Kampaně schvaluje klient (jinak operátor)",
+      "active_max_months": "Aktivní do (měsíců)",
+      "at_risk_max_months": "Ohrožený do (měsíců)",
+      "max_lookback_months": "Nejstarší kontakt (měsíců)",
+      "attribution_window_days": "Okno pro započtení návratu (dní)",
+      "holdout_percent": "Kontrolní skupina (%)",
+      "expected_conversion_percent": "Očekávaná úspěšnost (%)",
+      "gross_margin_percent": "Hrubá marže (%)",
+      "message_shop_name": "Název servisu ve zprávách"
+    },
+    "hints": {
+      "ico": "8 číslic, ověřujeme kontrolní číslici.",
+      "average_job_value_czk": "Pro odhad očekávaných tržeb.",
+      "default_sender_name": "3–11 znaků, písmena bez diakritiky a číslice.",
+      "opening_hours": "např. Po–Pá 7:30–17:00, So 8:00–12:00",
+      "active_max_months": "Výchozí 9. Poslední návštěva do této doby = aktivní.",
+      "at_risk_max_months": "Výchozí 12. Mezi aktivním a touto hranicí = ohrožený.",
+      "max_lookback_months": "Výchozí 48 (4 roky). Starší zákazníky neoslovujeme.",
+      "attribution_window_days": "Výchozí 60, rozsah 30–120.",
+      "holdout_percent": "Výchozí 10 %, rozsah 5–30 %. Tito zákazníci zprávu nedostanou.",
+      "expected_conversion_percent": "Výchozí 6 %. Konzervativní odhad pro plánování.",
+      "gross_margin_percent": "Nepovinné. Umožní ukázat návratnost ze zisku.",
+      "message_shop_name": "Nepovinné. Jinak název servisu."
+    },
+    "errors": {
+      "required": "Vyplňte toto pole.",
+      "too_long": "Text je příliš dlouhý.",
+      "invalid_ico": "IČO nemá platný tvar (8 číslic s kontrolní číslicí).",
+      "invalid_dic": "DIČ zadejte jako CZ a 8–10 číslic.",
+      "invalid_postal_code": "PSČ má 5 číslic, např. 280 02.",
+      "invalid_phone": "Zadejte české telefonní číslo.",
+      "invalid_email": "Zadejte platný e-mail.",
+      "invalid_website": "Zadejte adresu webu, např. servis.cz.",
+      "invalid_job_value": "Zadejte celé číslo od 100 do 200 000 Kč.",
+      "invalid_sender": "3–11 znaků: písmena bez diakritiky a číslice, aspoň jedno písmeno.",
+      "invalid_status": "Vyberte stav.",
+      "out_of_range": "Hodnota je mimo povolený rozsah.",
+      "at_risk_must_exceed_active": "Musí být víc než hranice pro aktivní.",
+      "save_failed": "Uložení se nepodařilo. Zkuste to znovu.",
+      "not_found": "Klient nebyl nalezen.",
+      "upload_failed": "Soubor se nepodařilo nahrát.",
+      "dpa_missing": "Vyberte podepsanou smlouvu (PDF).",
+      "dpa_too_large": "Soubor je větší než 10 MB.",
+      "dpa_not_pdf": "Soubor není PDF.",
+      "dpa_confirm_required": "Potvrďte, že je smlouva podepsaná."
+    },
+    "dpa": {
+      "title": "Zpracovatelská smlouva",
+      "description": "Bez podepsané smlouvy nelze importovat data ani odesílat zprávy.",
+      "file": "Podepsaná smlouva (PDF, max. 10 MB)",
+      "fileHint": "Uloží se do soukromého úložiště klienta.",
+      "confirm": "Zpracovatelská smlouva podepsána",
+      "submit": "Nahrát a potvrdit",
+      "signed": "Podepsána {date}",
+      "download": "Stáhnout smlouvu",
+      "replace": "Nahrát novou verzi"
+    },
+    "sending": {
+      "title": "Odesílání SMS",
+      "label": "Odesílání SMS",
+      "on": "Odesílání je zapnuté",
+      "off": "Odesílání je vypnuté",
+      "hint": "Hlavní vypínač pro všechny kampaně tohoto klienta.",
+      "turnOn": "Zapnout odesílání",
+      "turnOff": "Vypnout odesílání",
+      "turnedOn": "Odesílání zapnuto.",
+      "turnedOff": "Odesílání vypnuto.",
+      "blockers": {
+        "dpa_missing": "Nejdřív potvrďte zpracovatelskou smlouvu.",
+        "company_inactive": "Spolupráce se ukončuje."
+      }
+    },
+    "sections": {
+      "profile": "Profil servisu",
+      "settings": "Pravidla a výpočty",
+      "settingsDescription": "Hranice stavů zákazníků, kontrolní skupina a odhady. Prázdná nastavení používají výchozí hodnoty.",
+      "users": "Uživatelé"
+    },
+    "users": {
+      "empty": "Zatím tu nikdo není. Pozvěte majitele servisu.",
+      "pending": "Čeká na přijetí · platí do {date}",
+      "since": "od {date}",
+      "noName": "Bez jména"
+    },
+    "newCompany": {
+      "title": "Nový klient",
+      "description": "Profil servisu. Smlouvu, nastavení a pozvánku pro majitele doplníte v dalším kroku.",
+      "open": "Nový klient"
+    },
+    "checklist": {
+      "title": "Zprovoznění",
+      "profile": "Profil servisu vyplněn (IČO, odesílatel SMS)",
+      "dpa": "Zpracovatelská smlouva potvrzena",
+      "owner": "Majitel pozván",
+      "sending": "Odesílání zapnuto",
+      "done": "Hotovo",
+      "todo": "Zbývá",
+      "open": "Otevřít nastavení"
     }
   }
 }

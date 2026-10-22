@@ -19,7 +19,12 @@ export type AuditAction =
   | "user.invited"
   | "user.invitation_accepted"
   | "user.role_changed"
-  | "user.removed";
+  | "user.removed"
+  | "company.created"
+  | "company.settings_changed"
+  | "company.dpa_confirmed"
+  | "company.sending_enabled"
+  | "company.document_downloaded";
 
 export interface AuditEntry {
   action: AuditAction;

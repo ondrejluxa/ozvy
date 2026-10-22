@@ -140,7 +140,7 @@ const DVORAK: CompanySpec = {
   city: "Kolín",
   postalCode: "280 02",
   street: "Havlíčkova 1187",
-  ico: "28451327",
+  ico: "28451325",
   phone: "+420321724118",
   email: "servis@dvorak-demo.example.cz",
   website: "dvorak-demo.example.cz",
@@ -200,7 +200,7 @@ const HORAK: CompanySpec = {
   city: "Brno",
   postalCode: "612 00",
   street: "Purkyňova 2214/64",
-  ico: "07315842",
+  ico: "07315848",
   phone: "+420541217930",
   email: "info@horak-demo.example.cz",
   website: "horak-demo.example.cz",
@@ -242,7 +242,7 @@ const NADRAZI: CompanySpec = {
   city: "Jihlava",
   postalCode: "586 01",
   street: "Nádražní 48",
-  ico: "19284460",
+  ico: "19284462",
   phone: "+420567301442",
   email: "garaz@nadrazi-demo.example.cz",
   website: "nadrazi-demo.example.cz",
@@ -293,6 +293,7 @@ const DEFAULT_SETTINGS: Omit<CompanySettings, "message_shop_name"> = {
   attribution_window_days: 60,
   holdout_pct: 0.1,
   expected_conversion_rate: 0.06,
+  gross_margin_pct: null,
 };
 
 function seedCompany(db: DemoDatabase, spec: CompanySpec, now: Date, ordinal: number) {

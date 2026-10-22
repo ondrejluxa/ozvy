@@ -7,8 +7,8 @@ const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 
 const READY: RegExp[] = [
   /^\/admin$/,
-  /^\/admin\/companies$/,
-  new RegExp(`^/admin/companies/${UUID}(/customers)?$`, "i"),
+  /^\/admin\/companies(\/new)?$/,
+  new RegExp(`^/admin/companies/${UUID}(/customers|/settings|/dpa)?$`, "i"),
   /^\/app$/,
   /^\/app\/customers$/,
 ];

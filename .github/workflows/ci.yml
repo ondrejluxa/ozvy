@@ -55,7 +55,7 @@ jobs:
         with:
           version: 2.119.0
       # Applies every migration from scratch; only the services the tests need.
-      - run: supabase start -x studio,imgproxy,storage-api,realtime,edge-runtime,logflare,vector,supavisor,postgres-meta
+      - run: supabase start -x studio,imgproxy,realtime,edge-runtime,logflare,vector,supavisor,postgres-meta
       - name: Database tests (RLS, constraints)
         if: hashFiles('supabase/tests/**/*.sql') != ''
         run: supabase test db
@@ -79,7 +79,7 @@ jobs:
       - name: Seed the local stack (spec §31)
         run: pnpm db:seed
       - run: pnpm exec playwright install --with-deps chromium
-      - name: E2E on Supabase (auth, MFA, invitations, password reset, scoping, seeded world)
+      - name: E2E on Supabase (auth, MFA, invitations, scoping, seeded world, company onboarding)
         run: pnpm test:e2e:supabase
       - uses: actions/upload-artifact@v4
         if: failure()

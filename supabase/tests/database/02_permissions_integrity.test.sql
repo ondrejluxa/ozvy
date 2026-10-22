@@ -29,9 +29,10 @@ insert into auth.users (id, email, raw_user_meta_data) values
   ('00000000-0000-0000-0000-0000000000b1', 'owner-b@example.cz', '{}'),
   ('00000000-0000-0000-0000-0000000000ff', 'admin@example.com', '{}');
 insert into public.platform_admins (user_id) values ('00000000-0000-0000-0000-0000000000ff');
-insert into public.companies (id, name, status, sending_enabled) values
-  ('aaaaaaaa-0000-0000-0000-000000000000', 'Autoservis A', 'active', false),
-  ('bbbbbbbb-0000-0000-0000-000000000000', 'Autoservis B', 'active', false);
+-- A has a confirmed DPA, so the operator may switch its sending on (constraint since slice 5).
+insert into public.companies (id, name, status, sending_enabled, dpa_signed_at) values
+  ('aaaaaaaa-0000-0000-0000-000000000000', 'Autoservis A', 'active', false, now()),
+  ('bbbbbbbb-0000-0000-0000-000000000000', 'Autoservis B', 'active', false, null);
 insert into public.memberships (user_id, company_id, role) values
   ('00000000-0000-0000-0000-0000000000a1', 'aaaaaaaa-0000-0000-0000-000000000000', 'shop_owner'),
   ('00000000-0000-0000-0000-0000000000a2', 'aaaaaaaa-0000-0000-0000-000000000000', 'shop_manager'),

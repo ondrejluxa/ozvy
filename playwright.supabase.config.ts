@@ -14,6 +14,8 @@ export default defineConfig({
   workers: 1,
   retries: 0,
   timeout: 120_000,
+  // First visits compile routes in the dev server; give assertions room.
+  expect: { timeout: 15_000 },
   reporter: isCI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL: `http://localhost:${PORT}`,

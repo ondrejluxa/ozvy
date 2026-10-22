@@ -8,6 +8,9 @@ describe("isRealDataReady", () => {
     for (const path of [
       "/admin",
       "/admin/companies",
+      "/admin/companies/new",
+      `/admin/companies/${ID}/settings`,
+      `/admin/companies/${ID}/dpa`,
       `/admin/companies/${ID}`,
       `/admin/companies/${ID}/customers`,
       `/admin/companies/${ID.toUpperCase()}/`,
@@ -25,6 +28,7 @@ describe("isRealDataReady", () => {
       `/admin/companies/${ID}/campaigns/new`,
       `/admin/companies/${ID}/customers/${ID}`,
       "/admin/companies/not-a-uuid",
+      "/admin/companies/new/settings",
       "/app/campaigns",
       "/app/results",
       `/app/customers/${ID}`,
