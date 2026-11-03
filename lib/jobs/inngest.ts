@@ -1,6 +1,7 @@
 import "server-only";
 import { Inngest } from "inngest";
 import { runCommitImport, runParseImport, runValidateImport } from "./imports";
+import { runLifecycleRecompute, runNightlyLifecycle } from "./lifecycle";
 import type { JobEvent } from "./runner";
 
 /**
@@ -34,4 +35,22 @@ export const importCommit = inngest.createFunction(
   async ({ event, step }) => step.run("commit", () => runCommitImport(event.data as Data<"import/commit.requested">)),
 );
 
-export const functions = [importParse, importValidate, importCommit];
+/** Nightly lifecycle recompute for every open company (spec §12), 03:00 Prague time. */
+export const lifecycleNightly = inngest.createFunction(
+  { id: "lifecycle-nightly", retries: 1, triggers: [{ cron: "TZ=Europe/Prague 0 3 * * *" }] },
+  async ({ step }) => step.run("recompute-all", () => runNightlyLifecycle()),
+);
+
+/** One company, after its thresholds changed or on the operator's request. */
+export const lifecycleRecompute = inngest.createFunction(
+  {
+    id: "lifecycle-recompute",
+    retries: 3,
+    concurrency: { key: "event.data.companyId", limit: 1 },
+    triggers: [{ event: "lifecycle/recompute.requested" }],
+  },
+  async ({ event, step }) =>
+    step.run("recompute", () => runLifecycleRecompute(event.data as Data<"lifecycle/recompute.requested">)),
+);
+
+export const functions = [importParse, importValidate, importCommit, lifecycleNightly, lifecycleRecompute];

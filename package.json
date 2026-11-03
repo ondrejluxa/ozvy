@@ -25,7 +25,8 @@
     "db:fixtures": "tsx scripts/db/generate-fixtures.ts",
     "db:test": "supabase test db",
     "db:test:local": "tsx scripts/db/pglite-test.ts",
-    "db:types": "supabase gen types typescript --local --schema public > lib/db/types.gen.ts && prettier --write lib/db/types.gen.ts"
+    "db:types": "supabase gen types typescript --local --schema public > lib/db/types.gen.ts && prettier --write lib/db/types.gen.ts",
+    "jobs:nightly": "tsx --env-file=.env.supabase.local scripts/jobs/nightly.ts"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.23",

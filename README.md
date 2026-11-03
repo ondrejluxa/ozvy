@@ -48,7 +48,8 @@ in the order of spec §40. The demo stays available as `DATA_SOURCE=demo`
 | 5. Admin companies: create/edit, settings with defaults, DPA upload, sending switch, users            | done ([ADR-005](docs/decisions/ADR-005-admin-companies.md)) |
 | 6. Customers: search, filters, detail with vehicles and visits, contact editing                       | done ([ADR-006](docs/decisions/ADR-006-customers.md))       |
 | 7. Import wizard: CSV/XLSX, encodings, mapping templates, validation, review, batched commit, history | done ([ADR-007](docs/decisions/ADR-007-imports.md))         |
-| 8. Lifecycle job                                                                                      | next                                                        |
+| 8. Lifecycle job: nightly + post-import recompute, stored eligibility, service category mapping       | done ([ADR-008](docs/decisions/ADR-008-lifecycle.md))       |
+| 9. Segments                                                                                           | next                                                        |
 
 ### Running against local Supabase
 
@@ -82,7 +83,7 @@ demo data show "Tato část se připravuje" until their slice moves them to real
 
 Tests on the local stack: `pnpm db:test` (pgTAP) and `pnpm test:e2e:supabase` (auth flows and the
 seeded world; run `pnpm db:seed` first). Messy import fixtures (Windows-1250 CSV, two-sheet XLSX,
-duplicates, broken files) live in `supabase/seed/fixtures` with a manifest; `pnpm db:fixtures` regenerates them.
+duplicates, broken files) live in `supabase/seed/fixtures` with a manifest; `pnpm db:fixtures` regenerates them. `pnpm jobs:nightly` runs the nightly lifecycle recompute by hand.
 Without Docker, `pnpm db:test:local` applies every migration to an in-process
 PGlite (real PostgreSQL in WebAssembly) with a minimal Supabase stub and runs the same pgTAP files through
 a small pgTAP shim; it is part of `pnpm check` and CI.

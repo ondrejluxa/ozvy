@@ -239,7 +239,8 @@
       "segments": "Segmenty",
       "campaigns": "Kampaně",
       "settings": "Nastavení",
-      "imports": "Import"
+      "imports": "Import",
+      "services": "Služby"
     },
     "meta": {
       "customers": "{count, plural, one {# zákazník} few {# zákazníci} other {# zákazníků}}",
@@ -1170,5 +1171,29 @@
       "status": "Stav",
       "issues": "Problémy"
     }
+  },
+  "lifecycle": {
+    "title": "Stavy zákazníků",
+    "description": "Stav (aktivní, ohrožený, neaktivní) a způsobilost k oslovení se přepočítávají každou noc, po každém importu a po změně pravidel.",
+    "computedAt": "Naposledy přepočítáno {date} v {time}",
+    "never": "Zatím nepřepočítáno.",
+    "recompute": "Přepočítat teď",
+    "queued": "Přepočet spuštěn."
+  },
+  "services": {
+    "title": "Kategorie služeb",
+    "description": "Popisy prací z importů a jejich kategorie pro segmenty (např. pravidelný servis, přezutí). Změna se uloží pro příští importy a hned přeřadí i dosavadní návštěvy.",
+    "empty": "Zatím žádné návštěvy. Kategorie se objeví po importu.",
+    "unmapped": "{count, plural, one {# přiřazena automaticky} few {# přiřazeny automaticky} other {# přiřazeno automaticky}}",
+    "columns": {
+      "label": "Popis práce",
+      "visits": "Návštěv",
+      "category": "Kategorie",
+      "source": "Přiřazení"
+    },
+    "mapped": "Uloženo",
+    "automatic": "Automaticky",
+    "categoryFor": "Kategorie pro {label}",
+    "saved": "„{label}“: kategorie uložena, přeřazeno {count, plural, one {# návštěva} few {# návštěvy} other {# návštěv}}."
   }
 }

@@ -17,6 +17,7 @@ import {
   resolveCompanySettings,
 } from "../domain/company-settings";
 import { DPA_BUCKET, dpaFileIssue, dpaObjectPath, sendingBlockers } from "../domain/dpa";
+import { enqueue } from "../jobs/runner";
 import { run, type ActionResult } from "./result";
 
 /**
@@ -207,6 +208,10 @@ export async function updateCompanySettingsAction(_prev: CompanyFormState, form:
     entityId: companyId,
     metadata: { section: "settings", fields: keys.join(",") },
   });
+  // New thresholds or lookback change statuses and eligibility: recompute now, not tonight.
+  if (keys.includes("lifecycle") || keys.includes("max_lookback_months")) {
+    await enqueue({ name: "lifecycle/recompute.requested", data: { companyId } });
+  }
   refresh();
   return { done: true, values };
 }

@@ -6,8 +6,7 @@ import { isUuid } from "../../real-data-routes";
 import { toDateOnly } from "../../domain/dates";
 import { resolveCompanySettings } from "../../domain/company-settings";
 import { parseSearch } from "../../domain/customer-search";
-import { eligibilityReason, type ExclusionReason } from "../../domain/contact-rules/audience";
-import { fromDateOnly } from "../../domain/dates";
+import type { ExclusionReason } from "../../domain/contact-rules/audience";
 import { getCompanyRecord } from "./companies";
 import { createSupabaseServerClient } from "./server-client";
 
@@ -152,7 +151,6 @@ export const getCustomerDetail = cache(
     const c = customer.data;
     if (!c || !company) return null;
 
-    const settings = resolveCompanySettings(company.settings);
     const phoneType = (["mobile", "fixed"].includes(c.phone_type) ? c.phone_type : "unknown") as
       "mobile" | "fixed" | "unknown";
     const allVisits = visits.data ?? [];
@@ -185,13 +183,8 @@ export const getCustomerDetail = cache(
         notes: c.notes,
       },
       // Suppression joins the check with the opt-out slice (§40.13); until then opted_out status stands in.
-      eligibility: eligibilityReason(
-        { id: c.id, legal_basis: c.legal_basis, phone_type: phoneType, phone_e164: c.phone_e164 },
-        c.lifecycle_status === "opted_out",
-        c.last_visit_at ? fromDateOnly(c.last_visit_at) : null,
-        new Date(),
-        settings,
-      ),
+      // Stored by the database (trigger + nightly recompute, spec §12), the same value the list filters on.
+      eligibility: c.eligibility_reason as ExclusionReason | null,
       vehicles: (vehicles.data ?? []).map((v) => ({
         id: v.id,
         brand: v.brand,

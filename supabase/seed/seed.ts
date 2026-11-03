@@ -103,6 +103,11 @@ async function main() {
   await insertAll("visits", world.visits);
   await insertAll("service_category_mappings", world.serviceCategoryMappings);
   await resetAccounts(world);
+  // Same recompute as the nightly job, so seeded statuses and eligibility are exactly what it produces.
+  for (const company of world.companies) {
+    const { error } = await supabase.rpc("recompute_lifecycle", { p_company_id: company.id });
+    if (error) throw new Error(`lifecycle recompute failed: ${error.message}`);
+  }
 
   for (const company of world.companies) {
     const count = (rows: { company_id: string }[]) => rows.filter((r) => r.company_id === company.id).length;

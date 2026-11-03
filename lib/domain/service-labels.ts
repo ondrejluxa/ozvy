@@ -12,3 +12,16 @@ export function normalizeServiceLabel(raw: string): string {
     .replace(/\s+/g, " ")
     .trim();
 }
+
+/** Canonical service categories (spec §11), the order used in pickers. */
+export const SERVICE_CATEGORIES = [
+  "regular_service",
+  "oil_change",
+  "tyre_change",
+  "tyre_storage",
+  "ac_service",
+  "brakes",
+  "diagnostics",
+  "stk",
+  "repair_other",
+] as const;

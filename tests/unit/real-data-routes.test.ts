@@ -11,6 +11,7 @@ describe("isRealDataReady", () => {
       "/admin/companies/new",
       `/admin/companies/${ID}/settings`,
       `/admin/companies/${ID}/dpa`,
+      `/admin/companies/${ID}/services`,
       `/admin/companies/${ID}`,
       `/admin/companies/${ID}/customers`,
       `/admin/companies/${ID.toUpperCase()}/`,

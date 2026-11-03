@@ -69,6 +69,7 @@ export type Database = {
           email: string | null;
           ico: string | null;
           id: string;
+          lifecycle_computed_at: string | null;
           logo_path: string | null;
           name: string;
           opening_hours: NonNullable<Json>;
@@ -99,6 +100,7 @@ export type Database = {
           email?: string | null;
           ico?: string | null;
           id?: string;
+          lifecycle_computed_at?: string | null;
           logo_path?: string | null;
           name: string;
           opening_hours?: NonNullable<Json>;
@@ -129,6 +131,7 @@ export type Database = {
           email?: string | null;
           ico?: string | null;
           id?: string;
+          lifecycle_computed_at?: string | null;
           logo_path?: string | null;
           name?: string;
           opening_hours?: NonNullable<Json>;
@@ -150,6 +153,7 @@ export type Database = {
         Row: {
           company_id: string;
           created_at: string;
+          eligibility_reason: string | null;
           email: string | null;
           external_id: string | null;
           first_name: string | null;
@@ -172,6 +176,7 @@ export type Database = {
         Insert: {
           company_id: string;
           created_at?: string;
+          eligibility_reason?: string | null;
           email?: string | null;
           external_id?: string | null;
           first_name?: string | null;
@@ -194,6 +199,7 @@ export type Database = {
         Update: {
           company_id?: string;
           created_at?: string;
+          eligibility_reason?: string | null;
           email?: string | null;
           external_id?: string | null;
           first_name?: string | null;
@@ -603,6 +609,7 @@ export type Database = {
           id: string;
           job_value_minor: number | null;
           service_category: Database["public"]["Enums"]["service_category"];
+          service_label_norm: string | null;
           service_type_raw: string | null;
           source_import_id: string | null;
           vehicle_id: string | null;
@@ -616,6 +623,7 @@ export type Database = {
           id?: string;
           job_value_minor?: number | null;
           service_category?: Database["public"]["Enums"]["service_category"];
+          service_label_norm?: never;
           service_type_raw?: string | null;
           source_import_id?: string | null;
           vehicle_id?: string | null;
@@ -629,6 +637,7 @@ export type Database = {
           id?: string;
           job_value_minor?: number | null;
           service_category?: Database["public"]["Enums"]["service_category"];
+          service_label_norm?: never;
           service_type_raw?: string | null;
           source_import_id?: string | null;
           vehicle_id?: string | null;
@@ -690,11 +699,29 @@ export type Database = {
           visit_count: number;
         }[];
       };
+      list_service_labels: {
+        Args: { p_company_id: string };
+        Returns: {
+          category: Database["public"]["Enums"]["service_category"];
+          example: string;
+          label_norm: string;
+          mapped: boolean;
+          visits: number;
+        }[];
+      };
       recompute_lifecycle: {
         Args: { p_company_id: string; p_customer_ids?: string[]; p_today?: string };
         Returns: number;
       };
       set_import_row_results: { Args: { p_company_id: string; p_import_id: string; p_rows: Json }; Returns: number };
+      set_service_category: {
+        Args: {
+          p_category: Database["public"]["Enums"]["service_category"];
+          p_company_id: string;
+          p_label_norm: string;
+        };
+        Returns: number;
+      };
     };
     Enums: {
       company_role: "shop_owner" | "shop_manager";
