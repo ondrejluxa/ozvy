@@ -9,11 +9,12 @@ const READY: RegExp[] = [
   /^\/admin$/,
   /^\/admin\/companies(\/new)?$/,
   new RegExp(
-    `^/admin/companies/${UUID}(/customers(/${UUID})?|/imports(/${UUID}(/errors)?)?|/segments|/services|/settings|/dpa)?$`,
+    `^/admin/companies/${UUID}(/customers(/${UUID})?|/imports(/${UUID}(/errors)?)?|/campaigns(/new|/${UUID}(/edit)?)?|/segments|/services|/settings|/dpa)?$`,
     "i",
   ),
   /^\/app$/,
   new RegExp(`^/app/customers(/${UUID})?$`, "i"),
+  new RegExp(`^/app/campaigns(/${UUID})?$`, "i"),
 ];
 
 export function isRealDataReady(path: string): boolean {

@@ -29,7 +29,14 @@ export interface SegmentPreset {
 }
 
 /** Typical "come back" jobs; tyre and AC jobs are small and seasonal. */
-const WORKSHOP: ServiceCategory[] = ["regular_service", "oil_change", "brakes", "diagnostics", "stk", "repair_other"];
+export const WORKSHOP: ServiceCategory[] = [
+  "regular_service",
+  "oil_change",
+  "brakes",
+  "diagnostics",
+  "stk",
+  "repair_other",
+];
 const always = () => null;
 
 export const PRESETS: SegmentPreset[] = [

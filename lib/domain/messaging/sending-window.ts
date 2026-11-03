@@ -77,3 +77,8 @@ export function nextSendingSlot(from: Date): Date {
   }
   return t;
 }
+
+/** Default send time for a new campaign: the first sending slot from tomorrow, leaving time for approval. */
+export function defaultCampaignSlot(now: Date = new Date()): Date {
+  return nextSendingSlot(addDays(now, 1));
+}

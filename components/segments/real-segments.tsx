@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { ArchiveSegmentButton, SegmentBuilder } from "@/components/segments/segment-builder";
 import { SectionTitle } from "@/components/shell/page-header";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
 import { listSegments, presetsOverview, type SegmentCounts } from "@/lib/db/supabase/segments";
@@ -30,6 +32,7 @@ export async function RealSegments({ companyId }: { companyId: string }) {
                 <TH className="text-right">{t("columns.matched")}</TH>
                 <TH className="text-right">{t("columns.eligible")}</TH>
                 <TH>{t("columns.excluded")}</TH>
+                <TH />
               </TR>
             </THead>
             <TBody>
@@ -47,6 +50,15 @@ export async function RealSegments({ companyId }: { companyId: string }) {
                     {p.counts ? formatInt(p.counts.eligible) : "—"}
                   </TD>
                   <TD>{p.counts && <Exclusions counts={p.counts} />}</TD>
+                  <TD className="text-right">
+                    {p.counts && p.counts.eligible > 0 && (
+                      <Button asChild size="sm" variant="outline">
+                        <Link href={`/admin/companies/${companyId}/campaigns/new?preset=${p.key}`}>
+                          {t("real.createCampaign")}
+                        </Link>
+                      </Button>
+                    )}
+                  </TD>
                 </TR>
               ))}
             </TBody>
@@ -81,7 +93,14 @@ export async function RealSegments({ companyId }: { companyId: string }) {
                     <TD>
                       <Exclusions counts={s.counts} />
                     </TD>
-                    <TD className="text-right">
+                    <TD className="whitespace-nowrap text-right">
+                      {s.counts.eligible > 0 && (
+                        <Button asChild size="sm" variant="outline">
+                          <Link href={`/admin/companies/${companyId}/campaigns/new?segment=${s.id}`}>
+                            {t("real.createCampaign")}
+                          </Link>
+                        </Button>
+                      )}
                       <ArchiveSegmentButton companyId={companyId} segmentId={s.id} />
                     </TD>
                   </TR>

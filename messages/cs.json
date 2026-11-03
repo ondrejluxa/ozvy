@@ -418,7 +418,8 @@
       "subtitle": "Počty po vyřazení zákazníků bez souhlasu, bez mobilu, s příliš starou návštěvou a po pravidlech proti spamu (30 dní, 4× ročně, stejný segment 90 dní).",
       "saved": "Uložené segmenty",
       "noSaved": "Zatím žádný vlastní segment. Sestavte ho níže.",
-      "builderTitle": "Nový segment"
+      "builderTitle": "Nový segment",
+      "createCampaign": "Vytvořit kampaň"
     },
     "builder": {
       "from": "Poslední návštěva před alespoň (měsíců)",
@@ -740,7 +741,15 @@
     "segment_from_required": "Zadejte i dolní hranici měsíců.",
     "segment_categories_required": "„Od té doby žádná návštěva“ potřebuje vybrané služby.",
     "segment_invalid": "Pravidla segmentu nejsou platná.",
-    "segment_name_required": "Zadejte název segmentu."
+    "segment_name_required": "Zadejte název segmentu.",
+    "campaign_wrong_state": "Kampaň je v jiném stavu. Obnovte stránku.",
+    "campaign_too_many_followups": "Kampaň může mít nejvýše 2 připomínky.",
+    "campaign_followup_too_soon": "Mezi zprávami musí být alespoň 2 dny.",
+    "campaign_template_invalid": "Text zprávy nemá povinná pole (servis, odhlášení).",
+    "campaign_send_time_past": "Čas odeslání už uplynul.",
+    "campaign_send_time_outside_window": "Čas odeslání je mimo povolené okno.",
+    "campaign_segment_unavailable": "Segment teď není dostupný.",
+    "campaign_comment_required": "Napište, co upravit."
   },
   "common": {
     "perMonth": "{value} / měsíc",
@@ -854,6 +863,14 @@
       "cta": "Založit účet",
       "validity": "Odkaz platí 7 dní a jen jednou.",
       "ignore": "Pokud jste pozvánku nečekali, e-mail ignorujte."
+    },
+    "campaignApproval": {
+      "subject": "Kampaň čeká na schválení: {campaign}",
+      "greeting": "Dobrý den,",
+      "body": "pro {company} je připravená kampaň „{campaign}“, která čeká na vaše schválení.",
+      "details": "Příjemců: {recipients}. Plánované odeslání: {sendAt}.",
+      "cta": "Zobrazit a schválit",
+      "footer": "Bez vašeho schválení se nic neodešle."
     }
   },
   "realData": {
@@ -1225,5 +1242,70 @@
     "automatic": "Automaticky",
     "categoryFor": "Kategorie pro {label}",
     "saved": "„{label}“: kategorie uložena, přeřazeno {count, plural, one {# návštěva} few {# návštěvy} other {# návštěv}}."
+  },
+  "campaignBuilder": {
+    "initial": "Úvodní zpráva",
+    "followup": "Připomínka {n} · +{days} dní",
+    "addFollowup": "Přidat připomínku",
+    "removeFollowup": "Odebrat připomínku",
+    "delay": "Odeslat dní po úvodní zprávě",
+    "gap": "Mezi zprávami musí být alespoň 2 dny.",
+    "steps": "Zprávy v kampani",
+    "segmentsPerSms": "{count, plural, one {# SMS segment} few {# SMS segmenty} other {# SMS segmentů}} u ukázkového zákazníka",
+    "approvalNote": "Kampaň odejde ke schválení majiteli servisu. Odeslání proběhne až po jeho souhlasu.",
+    "operatorNote": "Servis schvaluje kampaně přes operátora: po odeslání se kampaň rovnou naplánuje.",
+    "confirm": "Potvrzuji naplánování kampaně pro {count} zákazníků na {date}.",
+    "submitForApproval": "Odeslat ke schválení",
+    "schedule": "Naplánovat kampaň",
+    "saveDraft": "Uložit jako koncept",
+    "saveChanges": "Uložit změny",
+    "sentForApproval": "Kampaň čeká na schválení klientem.",
+    "scheduled": "Kampaň je naplánovaná.",
+    "savedDraft": "Koncept uložen.",
+    "edit": "Upravit",
+    "editTitle": "Upravit kampaň",
+    "deleteDraft": "Smazat koncept",
+    "deleted": "Koncept smazán.",
+    "cancel": "Zrušit kampaň",
+    "cancelConfirm": "Opravdu zrušit naplánovanou kampaň?",
+    "cancelYes": "Ano, zrušit",
+    "cancelNo": "Ne",
+    "cancelled": "Kampaň zrušena."
+  },
+  "campaignList": {
+    "empty": "Zatím žádná kampaň. Začněte segmentem nebo předvolbou.",
+    "groups": {
+      "prepared": "Připravené",
+      "active": "Aktivní",
+      "finished": "Dokončené"
+    },
+    "columns": {
+      "name": "Kampaň",
+      "segment": "Segment",
+      "sendAt": "Odeslání",
+      "recipients": "Příjemci",
+      "status": "Stav"
+    }
+  },
+  "campaignDetail": {
+    "back": "Kampaně",
+    "recipients": "Příjemci (při odeslání ke schválení)",
+    "holdout": "Kontrolní skupina",
+    "sendAt": "Odeslání",
+    "steps": "Zpráv",
+    "template": "Šablona s poli",
+    "returned": "Vráceno majitelem servisu:",
+    "waiting": "Kampaň čeká na schválení majitelem servisu.",
+    "sendingLater": "Ukázka je pro jednoho zákazníka ze segmentu. Příjemci se definitivně určí v okamžiku odeslání."
+  },
+  "campaignApproval": {
+    "question": "Schvalujete odeslání této kampaně?",
+    "approve": "Schválit",
+    "return": "Vrátit s komentářem",
+    "comment": "Co upravit",
+    "sendBack": "Vrátit operátorovi",
+    "back": "Zpět",
+    "approved": "Kampaň schválena a naplánována.",
+    "returned": "Kampaň vrácena s komentářem."
   }
 }

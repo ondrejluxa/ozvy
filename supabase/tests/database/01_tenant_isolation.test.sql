@@ -55,6 +55,12 @@ insert into public.import_rows (import_id, company_id, row_number, raw) values
 insert into public.segments (company_id, name, rules) values
   ('aaaaaaaa-0000-0000-0000-000000000000', 'Segment A', '{"all": []}'),
   ('bbbbbbbb-0000-0000-0000-000000000000', 'Segment B', '{"all": []}');
+insert into public.campaigns (id, company_id, name, segment_rules_snapshot) values
+  ('aaaaaaaa-0000-0000-0000-00000000ca01', 'aaaaaaaa-0000-0000-0000-000000000000', 'Kampaň A', '{"all": []}'),
+  ('bbbbbbbb-0000-0000-0000-00000000ca01', 'bbbbbbbb-0000-0000-0000-000000000000', 'Kampaň B', '{"all": []}');
+insert into public.campaign_steps (company_id, campaign_id, step_number, body_template) values
+  ('aaaaaaaa-0000-0000-0000-000000000000', 'aaaaaaaa-0000-0000-0000-00000000ca01', 0, '{{servis}} {{odhlaseni}}'),
+  ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ca01', 0, '{{servis}} {{odhlaseni}}');
 insert into public.import_mapping_templates (company_id, type, mapping) values
   ('aaaaaaaa-0000-0000-0000-000000000000', 'visits', '{}'),
   ('bbbbbbbb-0000-0000-0000-000000000000', 'visits', '{}');
@@ -94,7 +100,11 @@ insert into tests.tenant_tables values
   ('import_mapping_templates', 'company_id', $$insert into public.import_mapping_templates (company_id, type, mapping)
       values ('bbbbbbbb-0000-0000-0000-000000000000', 'customers', '{}')$$),
   ('segments', 'company_id', $$insert into public.segments (company_id, name, rules)
-      values ('bbbbbbbb-0000-0000-0000-000000000000', 'Rogue', '{}')$$);
+      values ('bbbbbbbb-0000-0000-0000-000000000000', 'Rogue', '{}')$$),
+  ('campaigns', 'company_id', $$insert into public.campaigns (company_id, name, segment_rules_snapshot)
+      values ('bbbbbbbb-0000-0000-0000-000000000000', 'Rogue', '{}')$$),
+  ('campaign_steps', 'company_id', $$insert into public.campaign_steps (company_id, campaign_id, step_number, body_template)
+      values ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ca01', 1, 'x')$$);
 
 select set_eq(
   $$select table_name::text from information_schema.columns

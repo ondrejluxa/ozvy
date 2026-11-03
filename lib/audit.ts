@@ -28,7 +28,15 @@ export type AuditAction =
   | "customer.updated"
   | "import.uploaded"
   | "import.committed"
-  | "import.failed";
+  | "import.failed"
+  | "campaign.created"
+  | "campaign.updated"
+  | "campaign.deleted"
+  | "campaign.submitted"
+  | "campaign.approved"
+  | "campaign.rejected"
+  | "campaign.scheduled"
+  | "campaign.cancelled";
 
 export interface AuditEntry {
   action: AuditAction;

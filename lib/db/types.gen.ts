@@ -53,6 +53,146 @@ export type Database = {
           },
         ];
       };
+      campaign_steps: {
+        Row: {
+          body_template: string;
+          campaign_id: string;
+          company_id: string;
+          created_at: string;
+          delay_days: number;
+          id: string;
+          step_number: number;
+          strip_diacritics: boolean;
+        };
+        Insert: {
+          body_template: string;
+          campaign_id: string;
+          company_id: string;
+          created_at?: string;
+          delay_days?: number;
+          id?: string;
+          step_number: number;
+          strip_diacritics?: boolean;
+        };
+        Update: {
+          body_template?: string;
+          campaign_id?: string;
+          company_id?: string;
+          created_at?: string;
+          delay_days?: number;
+          id?: string;
+          step_number?: number;
+          strip_diacritics?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "campaign_steps_campaign_id_company_id_fkey";
+            columns: ["campaign_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "campaigns";
+            referencedColumns: ["id", "company_id"];
+          },
+        ];
+      };
+      campaigns: {
+        Row: {
+          approval_comment: string | null;
+          approved_at: string | null;
+          approved_by: string | null;
+          approved_recipient_count: number | null;
+          attribution_window_days: number;
+          automation_rule_id: string | null;
+          avg_job_value_minor_snapshot: number | null;
+          channel: string;
+          company_id: string;
+          completed_at: string | null;
+          created_at: string;
+          created_by: string | null;
+          expected_conversion_rate: number;
+          holdout_pct: number;
+          id: string;
+          name: string;
+          offer_text: string | null;
+          scheduled_at: string | null;
+          segment_id: string | null;
+          segment_preset: string | null;
+          segment_rules_snapshot: NonNullable<Json>;
+          status: Database["public"]["Enums"]["campaign_status"];
+          submitted_at: string | null;
+          submitted_by: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          approval_comment?: string | null;
+          approved_at?: string | null;
+          approved_by?: string | null;
+          approved_recipient_count?: number | null;
+          attribution_window_days?: number;
+          automation_rule_id?: string | null;
+          avg_job_value_minor_snapshot?: number | null;
+          channel?: string;
+          company_id: string;
+          completed_at?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          expected_conversion_rate?: number;
+          holdout_pct?: number;
+          id?: string;
+          name: string;
+          offer_text?: string | null;
+          scheduled_at?: string | null;
+          segment_id?: string | null;
+          segment_preset?: string | null;
+          segment_rules_snapshot: NonNullable<Json>;
+          status?: Database["public"]["Enums"]["campaign_status"];
+          submitted_at?: string | null;
+          submitted_by?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          approval_comment?: string | null;
+          approved_at?: string | null;
+          approved_by?: string | null;
+          approved_recipient_count?: number | null;
+          attribution_window_days?: number;
+          automation_rule_id?: string | null;
+          avg_job_value_minor_snapshot?: number | null;
+          channel?: string;
+          company_id?: string;
+          completed_at?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          expected_conversion_rate?: number;
+          holdout_pct?: number;
+          id?: string;
+          name?: string;
+          offer_text?: string | null;
+          scheduled_at?: string | null;
+          segment_id?: string | null;
+          segment_preset?: string | null;
+          segment_rules_snapshot?: NonNullable<Json>;
+          status?: Database["public"]["Enums"]["campaign_status"];
+          submitted_at?: string | null;
+          submitted_by?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "campaigns_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "campaigns_segment_id_company_id_fkey";
+            columns: ["segment_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "segments";
+            referencedColumns: ["id", "company_id"];
+          },
+        ];
+      };
       companies: {
         Row: {
           address_line: string | null;
@@ -713,6 +853,13 @@ export type Database = {
         Args: { p_batch: number; p_company_id: string; p_import_id: string; p_payload: Json };
         Returns: Json;
       };
+      job_value_median: {
+        Args: { p_categories: Database["public"]["Enums"]["service_category"][]; p_company_id: string };
+        Returns: {
+          median_minor: number;
+          visits: number;
+        }[];
+      };
       list_customers: {
         Args: {
           p_category?: Database["public"]["Enums"]["service_category"];
@@ -770,6 +917,19 @@ export type Database = {
         Args: { p_company_id: string; p_preset_key?: string; p_rules: Json; p_today?: string };
         Returns: Json;
       };
+      segment_recipients: {
+        Args: { p_company_id: string; p_preset_key?: string; p_rules: Json; p_today?: string };
+        Returns: {
+          customer_id: string;
+          first_name: string;
+          last_name: string;
+          last_visit_at: string;
+          plate: string;
+          vehicle_brand: string;
+          vehicle_id: string;
+          vehicle_model: string;
+        }[];
+      };
       set_import_row_results: { Args: { p_company_id: string; p_import_id: string; p_rows: Json }; Returns: number };
       set_service_category: {
         Args: {
@@ -781,7 +941,18 @@ export type Database = {
       };
     };
     Enums: {
+      campaign_status:
+        | "draft"
+        | "waiting_for_approval"
+        | "scheduled"
+        | "sending"
+        | "active"
+        | "paused"
+        | "completed"
+        | "cancelled"
+        | "failed";
       company_role: "shop_owner" | "shop_manager";
+      conversion_stage: "contacted" | "replied" | "booked" | "completed" | "lost" | "opted_out";
       legal_basis: "consent" | "existing_customer" | "unknown";
       lifecycle_status: "active" | "at_risk" | "inactive" | "reactivated" | "opted_out";
       service_category:
@@ -902,7 +1073,19 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      campaign_status: [
+        "draft",
+        "waiting_for_approval",
+        "scheduled",
+        "sending",
+        "active",
+        "paused",
+        "completed",
+        "cancelled",
+        "failed",
+      ],
       company_role: ["shop_owner", "shop_manager"],
+      conversion_stage: ["contacted", "replied", "booked", "completed", "lost", "opted_out"],
       legal_basis: ["consent", "existing_customer", "unknown"],
       lifecycle_status: ["active", "at_risk", "inactive", "reactivated", "opted_out"],
       service_category: [
