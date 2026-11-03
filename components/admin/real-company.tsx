@@ -39,6 +39,7 @@ export async function RealCompanyHeader({ company }: { company: CompanyDetail })
         tabs={[
           { href: base, label: t("tabs.overview"), exact: true },
           { href: `${base}/customers`, label: t("tabs.customers") },
+          { href: `${base}/segments`, label: t("tabs.segments") },
           { href: `${base}/imports`, label: t("tabs.imports") },
           { href: `${base}/services`, label: t("tabs.services") },
           { href: `${base}/settings`, label: t("tabs.settings") },

@@ -49,7 +49,8 @@ in the order of spec §40. The demo stays available as `DATA_SOURCE=demo`
 | 6. Customers: search, filters, detail with vehicles and visits, contact editing                       | done ([ADR-006](docs/decisions/ADR-006-customers.md))       |
 | 7. Import wizard: CSV/XLSX, encodings, mapping templates, validation, review, batched commit, history | done ([ADR-007](docs/decisions/ADR-007-imports.md))         |
 | 8. Lifecycle job: nightly + post-import recompute, stored eligibility, service category mapping       | done ([ADR-008](docs/decisions/ADR-008-lifecycle.md))       |
-| 9. Segments                                                                                           | next                                                        |
+| 9. Segments: DSL compiled in SQL, presets with fixture tests, contact rules, builder with preview     | done ([ADR-009](docs/decisions/ADR-009-segments.md))        |
+| 10. Campaigns (no sending)                                                                            | next                                                        |
 
 ### Running against local Supabase
 

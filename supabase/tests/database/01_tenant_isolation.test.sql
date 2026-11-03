@@ -52,6 +52,9 @@ insert into public.imports (id, company_id, type, file_name) values
 insert into public.import_rows (import_id, company_id, row_number, raw) values
   ('aaaaaaaa-0000-0000-0000-00000000e001', 'aaaaaaaa-0000-0000-0000-000000000000', 1, '["a"]'),
   ('bbbbbbbb-0000-0000-0000-00000000e001', 'bbbbbbbb-0000-0000-0000-000000000000', 1, '["b"]');
+insert into public.segments (company_id, name, rules) values
+  ('aaaaaaaa-0000-0000-0000-000000000000', 'Segment A', '{"all": []}'),
+  ('bbbbbbbb-0000-0000-0000-000000000000', 'Segment B', '{"all": []}');
 insert into public.import_mapping_templates (company_id, type, mapping) values
   ('aaaaaaaa-0000-0000-0000-000000000000', 'visits', '{}'),
   ('bbbbbbbb-0000-0000-0000-000000000000', 'visits', '{}');
@@ -89,7 +92,9 @@ insert into tests.tenant_tables values
   ('import_rows', 'company_id', $$insert into public.import_rows (import_id, company_id, row_number, raw)
       values ('bbbbbbbb-0000-0000-0000-00000000e001', 'bbbbbbbb-0000-0000-0000-000000000000', 2, '[]')$$),
   ('import_mapping_templates', 'company_id', $$insert into public.import_mapping_templates (company_id, type, mapping)
-      values ('bbbbbbbb-0000-0000-0000-000000000000', 'customers', '{}')$$);
+      values ('bbbbbbbb-0000-0000-0000-000000000000', 'customers', '{}')$$),
+  ('segments', 'company_id', $$insert into public.segments (company_id, name, rules)
+      values ('bbbbbbbb-0000-0000-0000-000000000000', 'Rogue', '{}')$$);
 
 select set_eq(
   $$select table_name::text from information_schema.columns

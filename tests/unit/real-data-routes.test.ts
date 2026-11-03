@@ -12,6 +12,7 @@ describe("isRealDataReady", () => {
       `/admin/companies/${ID}/settings`,
       `/admin/companies/${ID}/dpa`,
       `/admin/companies/${ID}/services`,
+      `/admin/companies/${ID}/segments`,
       `/admin/companies/${ID}`,
       `/admin/companies/${ID}/customers`,
       `/admin/companies/${ID.toUpperCase()}/`,
@@ -27,7 +28,6 @@ describe("isRealDataReady", () => {
   it("keeps demo-store screens behind 'Tato část se připravuje'", () => {
     for (const path of [
       "/admin/campaigns",
-      `/admin/companies/${ID}/segments`,
       `/admin/companies/${ID}/campaigns/new`,
 
       "/admin/companies/not-a-uuid",

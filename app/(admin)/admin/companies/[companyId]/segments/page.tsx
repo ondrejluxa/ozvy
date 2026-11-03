@@ -8,7 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
+import { RealSegments } from "@/components/segments/real-segments";
+import { requirePageContext } from "@/lib/auth/context";
 import { getSegmentsOverview } from "@/lib/db/queries";
+import { env } from "@/lib/env";
 import { formatCZK, formatInt, roundEstimateMinor } from "@/lib/domain/money";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -19,6 +22,10 @@ export async function generateMetadata(): Promise<Metadata> {
 /** Segment presets, read-only in Phase 0 (spec §29): counts, exclusions and expected revenue. */
 export default async function SegmentsPage(props: PageProps<"/admin/companies/[companyId]/segments">) {
   const { companyId } = await props.params;
+  if (env.DATA_SOURCE === "supabase") {
+    await requirePageContext({ permission: "admin.access" }, `/admin/companies/${companyId}/segments`);
+    return <RealSegments companyId={companyId} />;
+  }
   const data = getSegmentsOverview(companyId);
   if (!data) notFound();
   const t = await getTranslations("segments");

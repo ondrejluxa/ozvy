@@ -509,6 +509,50 @@ export type Database = {
         };
         Relationships: [];
       };
+      segments: {
+        Row: {
+          archived_at: string | null;
+          company_id: string;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          name: string;
+          preset_key: string | null;
+          rules: NonNullable<Json>;
+          updated_at: string;
+        };
+        Insert: {
+          archived_at?: string | null;
+          company_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          name: string;
+          preset_key?: string | null;
+          rules: NonNullable<Json>;
+          updated_at?: string;
+        };
+        Update: {
+          archived_at?: string | null;
+          company_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          name?: string;
+          preset_key?: string | null;
+          rules?: NonNullable<Json>;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "segments_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       service_category_mappings: {
         Row: {
           category: Database["public"]["Enums"]["service_category"];
@@ -712,6 +756,19 @@ export type Database = {
       recompute_lifecycle: {
         Args: { p_company_id: string; p_customer_ids?: string[]; p_today?: string };
         Returns: number;
+      };
+      segment_audience: {
+        Args: { p_company_id: string; p_preset_key?: string; p_rules: Json; p_today?: string };
+        Returns: {
+          customer_id: string;
+          last_visit_at: string;
+          reason: string;
+          vehicle_id: string;
+        }[];
+      };
+      segment_preview: {
+        Args: { p_company_id: string; p_preset_key?: string; p_rules: Json; p_today?: string };
+        Returns: Json;
       };
       set_import_row_results: { Args: { p_company_id: string; p_import_id: string; p_rows: Json }; Returns: number };
       set_service_category: {

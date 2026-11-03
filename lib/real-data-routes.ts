@@ -9,7 +9,7 @@ const READY: RegExp[] = [
   /^\/admin$/,
   /^\/admin\/companies(\/new)?$/,
   new RegExp(
-    `^/admin/companies/${UUID}(/customers(/${UUID})?|/imports(/${UUID}(/errors)?)?|/services|/settings|/dpa)?$`,
+    `^/admin/companies/${UUID}(/customers(/${UUID})?|/imports(/${UUID}(/errors)?)?|/segments|/services|/settings|/dpa)?$`,
     "i",
   ),
   /^\/app$/,

@@ -413,7 +413,31 @@
       "expected": "Očekávané tržby"
     },
     "create": "Vytvořit kampaň",
-    "recentlyUsed": "Osloveno v posledních 90 dnech"
+    "recentlyUsed": "Osloveno v posledních 90 dnech",
+    "real": {
+      "subtitle": "Počty po vyřazení zákazníků bez souhlasu, bez mobilu, s příliš starou návštěvou a po pravidlech proti spamu (30 dní, 4× ročně, stejný segment 90 dní).",
+      "saved": "Uložené segmenty",
+      "noSaved": "Zatím žádný vlastní segment. Sestavte ho níže.",
+      "builderTitle": "Nový segment"
+    },
+    "builder": {
+      "from": "Poslední návštěva před alespoň (měsíců)",
+      "to": "…a méně než (měsíců)",
+      "toHint": "Nepovinné. Bez horní hranice se vezmou všechny starší.",
+      "categories": "Jen návštěvy těchto služeb",
+      "nothingSince": "Od té doby žádná další návštěva",
+      "statuses": "Stav zákazníka",
+      "topSpend": "Jen nejlepší zákazníci podle útraty (horních %)",
+      "minVisits": "Alespoň tolik návštěv během 2 let",
+      "preview": "Spočítat",
+      "matched": "Odpovídá",
+      "eligible": "Lze oslovit",
+      "sample": "Ukázka zákazníků",
+      "name": "Název segmentu",
+      "save": "Uložit segment",
+      "saved": "Segment uložen.",
+      "archive": "Archivovat"
+    }
   },
   "campaigns": {
     "title": "Kampaně",
@@ -710,7 +734,13 @@
     "import_dpa_missing": "Import je možný až po potvrzení zpracovatelské smlouvy.",
     "import_unsupported_type": "Nahrajte soubor CSV, TXT nebo XLSX.",
     "import_too_large": "Soubor je větší než 20 MB.",
-    "import_wrong_state": "Import je v jiném kroku. Obnovte stránku."
+    "import_wrong_state": "Import je v jiném kroku. Obnovte stránku.",
+    "segment_empty_segment": "Zadejte aspoň jedno pravidlo.",
+    "segment_range_reversed": "Horní hranice musí být větší než dolní.",
+    "segment_from_required": "Zadejte i dolní hranici měsíců.",
+    "segment_categories_required": "„Od té doby žádná návštěva“ potřebuje vybrané služby.",
+    "segment_invalid": "Pravidla segmentu nejsou platná.",
+    "segment_name_required": "Zadejte název segmentu."
   },
   "common": {
     "perMonth": "{value} / měsíc",
