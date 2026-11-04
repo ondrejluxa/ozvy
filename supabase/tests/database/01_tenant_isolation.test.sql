@@ -67,6 +67,12 @@ insert into public.import_mapping_templates (company_id, type, mapping) values
 insert into public.ai_generations (company_id, kind, prompt_version, model, input) values
   ('aaaaaaaa-0000-0000-0000-000000000000', 'campaign_template', 'v1', 'mock', '{}'),
   ('bbbbbbbb-0000-0000-0000-000000000000', 'campaign_template', 'v1', 'mock', '{}');
+insert into public.campaign_enrollments (id, company_id, campaign_id, customer_id) values
+  ('aaaaaaaa-0000-0000-0000-00000000ee01', 'aaaaaaaa-0000-0000-0000-000000000000', 'aaaaaaaa-0000-0000-0000-00000000ca01', 'aaaaaaaa-0000-0000-0000-00000000c001'),
+  ('bbbbbbbb-0000-0000-0000-00000000ee01', 'bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ca01', 'bbbbbbbb-0000-0000-0000-00000000c001');
+insert into public.messages (company_id, campaign_id, enrollment_id, to_address, body_rendered, idempotency_key, opt_out_token) values
+  ('aaaaaaaa-0000-0000-0000-000000000000', 'aaaaaaaa-0000-0000-0000-00000000ca01', 'aaaaaaaa-0000-0000-0000-00000000ee01', '+420777000001', 'A', 'key-a', 'TokenAAA'),
+  ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ca01', 'bbbbbbbb-0000-0000-0000-00000000ee01', '+420777000002', 'B', 'key-b', 'TokenBBB');
 insert into public.name_vocatives (company_id, surname, vocative, gender, confidence, source) values
   ('aaaaaaaa-0000-0000-0000-000000000000', 'Novák', 'Nováku', 'm', 0.95, 'rule'),
   ('bbbbbbbb-0000-0000-0000-000000000000', 'Novák', 'Nováku', 'm', 0.95, 'rule');
@@ -113,6 +119,10 @@ insert into tests.tenant_tables values
       values ('bbbbbbbb-0000-0000-0000-000000000000', 'vocatives', 'v1', 'mock', '{}')$$),
   ('name_vocatives', 'company_id', $$insert into public.name_vocatives (company_id, surname, vocative, confidence, source)
       values ('bbbbbbbb-0000-0000-0000-000000000000', 'Rogue', 'Rogue', 1, 'operator')$$),
+  ('campaign_enrollments', 'company_id', $$insert into public.campaign_enrollments (company_id, campaign_id, customer_id)
+      values ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ca01', 'bbbbbbbb-0000-0000-0000-00000000c001')$$),
+  ('messages', 'company_id', $$insert into public.messages (company_id, to_address, body_rendered, idempotency_key, opt_out_token)
+      values ('bbbbbbbb-0000-0000-0000-000000000000', '+420777000009', 'x', 'key-rogue', 'TokenRGE')$$),
   ('campaign_steps', 'company_id', $$insert into public.campaign_steps (company_id, campaign_id, step_number, body_template)
       values ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ca01', 1, 'x')$$);
 

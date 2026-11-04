@@ -5,6 +5,7 @@ import { requireClientCompany } from "@/lib/auth/client-company";
 import { getSupportView } from "@/lib/auth/context";
 import { getCampaignDetail, type RecipientFilter } from "@/lib/db/queries";
 import { getCampaign } from "@/lib/db/supabase/campaigns";
+import { can } from "@/lib/auth/permissions";
 import { canDecideApproval } from "@/lib/domain/campaigns/status";
 import { env } from "@/lib/env";
 
@@ -29,6 +30,7 @@ export default async function ClientCampaignPage(props: PageProps<"/app/campaign
             role: membership.role,
             requiresClientApproval: membership.requiresClientApproval,
           }),
+          canPause: can({ isPlatformAdmin: session.isPlatformAdmin, ...membership }, "campaigns.pause"),
         }}
       />
     );

@@ -23,7 +23,8 @@
     "admin": {
       "overview": "Přehled",
       "clients": "Klienti",
-      "campaigns": "Kampaně"
+      "campaigns": "Kampaně",
+      "system": "Systém"
     },
     "client": {
       "overview": "Přehled",
@@ -1345,5 +1346,76 @@
       "greeting": "Pozdrav",
       "reviewedAt": "Schváleno"
     }
+  },
+  "campaignDelivery": {
+    "title": "Průběh odesílání",
+    "facts": {
+      "enrolled": "Příjemci v kampani",
+      "contacted": "Oslovení",
+      "holdout": "Kontrolní skupina",
+      "cost": "Cena SMS"
+    },
+    "columns": {
+      "step": "Zpráva",
+      "queued": "Ve frontě",
+      "sent": "Odesláno",
+      "failed": "Nedoručeno",
+      "cancelled": "Zastaveno",
+      "review": "Ke kontrole"
+    },
+    "followup": "Připomínka {n}",
+    "holdoutNote": "Kontrolní skupina nedostane žádnou zprávu. Slouží k porovnání, kolik zákazníků by se vrátilo i bez kampaně.",
+    "pause": "Pozastavit kampaň",
+    "resume": "Pokračovat v odesílání",
+    "toDraft": "Vrátit do konceptu",
+    "pausedToast": "Kampaň pozastavena. Další zprávy neodejdou.",
+    "resumedToast": "Odesílání pokračuje.",
+    "toDraftToast": "Kampaň je zpět v konceptu.",
+    "reasons": {
+      "render_failed": "Zprávu nešlo sestavit pro všechny příjemce. Upravte šablonu a kampaň odešlete znovu.",
+      "no_recipients": "V době odeslání nezbyl v segmentu žádný příjemce.",
+      "company_paused": "Servis je pozastavený, kampaň se neodeslala.",
+      "company_closed": "Servis už není aktivní, kampaň se neodeslala.",
+      "company_sending_disabled": "Servis má vypnuté odesílání SMS, kampaň se neodeslala.",
+      "provider_credit": "Kredit u SMS brány nestačí na celou kampaň.",
+      "recipient_drift": "Počet příjemců se od schválení změnil o víc než 20 %. Zkontrolujte segment a pokračujte, nebo kampaň zrušte.",
+      "start_interrupted": "Spuštění kampaně bylo přerušeno. Vraťte ji do konceptu a odešlete znovu."
+    }
+  },
+  "system": {
+    "title": "Systém",
+    "description": "Odesílání napříč servisy: hlavní vypínač, fronta zpráv a zprávy ke kontrole.",
+    "killSwitch": "Hlavní vypínač odesílání",
+    "stateRunning": "Odesílání běží",
+    "stateStopped": "Odesílání zastaveno",
+    "stoppedSince": "Zastaveno od {at}.",
+    "killSwitchHint": "Okamžitě zastaví spouštění kampaní i odesílání všech zpráv ve všech servisech. Zprávy zůstanou ve frontě.",
+    "reason": "Důvod zastavení",
+    "pauseAll": "Zastavit veškeré odesílání",
+    "resumeAll": "Obnovit odesílání",
+    "pausedToast": "Veškeré odesílání je zastavené.",
+    "resumedToast": "Odesílání je obnovené.",
+    "queue": "Fronta zpráv",
+    "runQueue": "Zpracovat frontu teď",
+    "queueToast": "Fronta se zpracovává.",
+    "stats": {
+      "queued": "Ve frontě",
+      "sending": "Odesílá se",
+      "needsReview": "Ke kontrole",
+      "sent24h": "Odesláno za 24 h",
+      "failed24h": "Selhalo za 24 h"
+    },
+    "oldestQueued": "Nejstarší zpráva ve frontě: {at}",
+    "reviewTitle": "Zprávy ke kontrole",
+    "reviewHint": "Zprávy, u kterých není jisté, jestli odešly (výpadek během odesílání). Nikdy se neposílají znovu automaticky. Ověřte stav v SMS bráně a označte výsledek.",
+    "reviewEmpty": "Žádné zprávy ke kontrole.",
+    "columns": {
+      "company": "Servis",
+      "campaign": "Kampaň",
+      "since": "Od"
+    },
+    "markSent": "Odešla",
+    "markFailed": "Neodešla",
+    "resolvedToast": "Výsledek uložen."
   }
 }

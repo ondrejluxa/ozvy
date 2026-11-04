@@ -116,6 +116,80 @@ export type Database = {
           },
         ];
       };
+      campaign_enrollments: {
+        Row: {
+          campaign_id: string;
+          company_id: string;
+          created_at: string;
+          customer_id: string;
+          first_sent_at: string | null;
+          id: string;
+          is_holdout: boolean;
+          stage: Database["public"]["Enums"]["conversion_stage"];
+          stopped_reason: string | null;
+          updated_at: string;
+          vehicle_id: string | null;
+          window_ends_at: string | null;
+        };
+        Insert: {
+          campaign_id: string;
+          company_id: string;
+          created_at?: string;
+          customer_id: string;
+          first_sent_at?: string | null;
+          id?: string;
+          is_holdout?: boolean;
+          stage?: Database["public"]["Enums"]["conversion_stage"];
+          stopped_reason?: string | null;
+          updated_at?: string;
+          vehicle_id?: string | null;
+          window_ends_at?: string | null;
+        };
+        Update: {
+          campaign_id?: string;
+          company_id?: string;
+          created_at?: string;
+          customer_id?: string;
+          first_sent_at?: string | null;
+          id?: string;
+          is_holdout?: boolean;
+          stage?: Database["public"]["Enums"]["conversion_stage"];
+          stopped_reason?: string | null;
+          updated_at?: string;
+          vehicle_id?: string | null;
+          window_ends_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "campaign_enrollments_campaign_id_company_id_fkey";
+            columns: ["campaign_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "campaigns";
+            referencedColumns: ["id", "company_id"];
+          },
+          {
+            foreignKeyName: "campaign_enrollments_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "campaign_enrollments_customer_id_company_id_fkey";
+            columns: ["customer_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id", "company_id"];
+          },
+          {
+            foreignKeyName: "campaign_enrollments_vehicle_id_company_id_fkey";
+            columns: ["vehicle_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "vehicles";
+            referencedColumns: ["id", "company_id"];
+          },
+        ];
+      };
       campaign_steps: {
         Row: {
           body_template: string;
@@ -180,7 +254,9 @@ export type Database = {
           segment_id: string | null;
           segment_preset: string | null;
           segment_rules_snapshot: NonNullable<Json>;
+          started_at: string | null;
           status: Database["public"]["Enums"]["campaign_status"];
+          status_reason: string | null;
           submitted_at: string | null;
           submitted_by: string | null;
           updated_at: string;
@@ -207,7 +283,9 @@ export type Database = {
           segment_id?: string | null;
           segment_preset?: string | null;
           segment_rules_snapshot: NonNullable<Json>;
+          started_at?: string | null;
           status?: Database["public"]["Enums"]["campaign_status"];
+          status_reason?: string | null;
           submitted_at?: string | null;
           submitted_by?: string | null;
           updated_at?: string;
@@ -234,7 +312,9 @@ export type Database = {
           segment_id?: string | null;
           segment_preset?: string | null;
           segment_rules_snapshot?: NonNullable<Json>;
+          started_at?: string | null;
           status?: Database["public"]["Enums"]["campaign_status"];
+          status_reason?: string | null;
           submitted_at?: string | null;
           submitted_by?: string | null;
           updated_at?: string;
@@ -673,6 +753,135 @@ export type Database = {
           },
         ];
       };
+      messages: {
+        Row: {
+          attempts: number;
+          body_rendered: string;
+          campaign_id: string | null;
+          channel: string;
+          company_id: string;
+          cost_minor: number | null;
+          customer_id: string | null;
+          delivered_at: string | null;
+          encoding: string | null;
+          enrollment_id: string | null;
+          error_code: string | null;
+          error_detail: string | null;
+          failed_at: string | null;
+          id: string;
+          idempotency_key: string;
+          next_attempt_at: string | null;
+          opt_out_token: string;
+          provider_id: string | null;
+          provider_message_id: string | null;
+          queued_at: string;
+          segments: number | null;
+          sending_started_at: string | null;
+          sent_at: string | null;
+          status: Database["public"]["Enums"]["message_status"];
+          step_id: string | null;
+          step_number: number;
+          to_address: string;
+          updated_at: string;
+        };
+        Insert: {
+          attempts?: number;
+          body_rendered: string;
+          campaign_id?: string | null;
+          channel?: string;
+          company_id: string;
+          cost_minor?: number | null;
+          customer_id?: string | null;
+          delivered_at?: string | null;
+          encoding?: string | null;
+          enrollment_id?: string | null;
+          error_code?: string | null;
+          error_detail?: string | null;
+          failed_at?: string | null;
+          id?: string;
+          idempotency_key: string;
+          next_attempt_at?: string | null;
+          opt_out_token: string;
+          provider_id?: string | null;
+          provider_message_id?: string | null;
+          queued_at?: string;
+          segments?: number | null;
+          sending_started_at?: string | null;
+          sent_at?: string | null;
+          status?: Database["public"]["Enums"]["message_status"];
+          step_id?: string | null;
+          step_number?: number;
+          to_address: string;
+          updated_at?: string;
+        };
+        Update: {
+          attempts?: number;
+          body_rendered?: string;
+          campaign_id?: string | null;
+          channel?: string;
+          company_id?: string;
+          cost_minor?: number | null;
+          customer_id?: string | null;
+          delivered_at?: string | null;
+          encoding?: string | null;
+          enrollment_id?: string | null;
+          error_code?: string | null;
+          error_detail?: string | null;
+          failed_at?: string | null;
+          id?: string;
+          idempotency_key?: string;
+          next_attempt_at?: string | null;
+          opt_out_token?: string;
+          provider_id?: string | null;
+          provider_message_id?: string | null;
+          queued_at?: string;
+          segments?: number | null;
+          sending_started_at?: string | null;
+          sent_at?: string | null;
+          status?: Database["public"]["Enums"]["message_status"];
+          step_id?: string | null;
+          step_number?: number;
+          to_address?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "messages_campaign_id_company_id_fkey";
+            columns: ["campaign_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "campaigns";
+            referencedColumns: ["id", "company_id"];
+          },
+          {
+            foreignKeyName: "messages_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "messages_customer_id_company_id_fkey";
+            columns: ["customer_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id", "company_id"];
+          },
+          {
+            foreignKeyName: "messages_enrollment_id_company_id_fkey";
+            columns: ["enrollment_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "campaign_enrollments";
+            referencedColumns: ["id", "company_id"];
+          },
+          {
+            foreignKeyName: "messages_step_id_company_id_fkey";
+            columns: ["step_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "campaign_steps";
+            referencedColumns: ["id", "company_id"];
+          },
+        ];
+      };
       name_vocatives: {
         Row: {
           company_id: string;
@@ -735,6 +944,33 @@ export type Database = {
         Update: {
           created_at?: string;
           user_id?: string;
+        };
+        Relationships: [];
+      };
+      platform_settings: {
+        Row: {
+          id: boolean;
+          sending_paused: boolean;
+          sending_paused_at: string | null;
+          sending_paused_by: string | null;
+          sending_paused_reason: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          id?: boolean;
+          sending_paused?: boolean;
+          sending_paused_at?: string | null;
+          sending_paused_by?: string | null;
+          sending_paused_reason?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          id?: boolean;
+          sending_paused?: boolean;
+          sending_paused_at?: string | null;
+          sending_paused_by?: string | null;
+          sending_paused_reason?: string | null;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -962,10 +1198,70 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      campaign_audience: {
+        Args: { p_campaign_id: string; p_company_id: string; p_today: string };
+        Returns: {
+          customer_id: string;
+          first_name: string;
+          last_name: string;
+          last_visit_at: string;
+          phone_e164: string;
+          plate: string;
+          vehicle_brand: string;
+          vehicle_id: string;
+          vehicle_model: string;
+        }[];
+      };
+      campaign_delivery_stats: {
+        Args: { p_campaign_id: string; p_company_id: string };
+        Returns: {
+          cost_minor: number;
+          messages: number;
+          segments: number;
+          status: Database["public"]["Enums"]["message_status"];
+          step_number: number;
+        }[];
+      };
+      claim_messages: {
+        Args: { p_limit: number; p_now: string };
+        Returns: {
+          attempts: number;
+          body_rendered: string;
+          campaign_id: string;
+          company_id: string;
+          enrollment_id: string;
+          id: string;
+          idempotency_key: string;
+          step_number: number;
+          stop_reason: string;
+          to_address: string;
+        }[];
+      };
       commit_import_batch: {
         Args: { p_batch: number; p_company_id: string; p_import_id: string; p_payload: Json };
         Returns: Json;
       };
+      due_followups: {
+        Args: {
+          p_campaign_id: string;
+          p_company_id: string;
+          p_delay_days: number;
+          p_now: string;
+          p_step_number: number;
+        };
+        Returns: {
+          customer_id: string;
+          enrollment_id: string;
+          first_name: string;
+          last_name: string;
+          last_visit_at: string;
+          phone_e164: string;
+          plate: string;
+          vehicle_brand: string;
+          vehicle_model: string;
+        }[];
+      };
+      flag_stuck_messages: { Args: { p_after?: string; p_now: string }; Returns: number };
       job_value_median: {
         Args: { p_categories: Database["public"]["Enums"]["service_category"][]; p_company_id: string };
         Returns: {
@@ -1011,6 +1307,17 @@ export type Database = {
           label_norm: string;
           mapped: boolean;
           visits: number;
+        }[];
+      };
+      messaging_queue_health: {
+        Args: { p_now?: string };
+        Returns: {
+          failed_24h: number;
+          needs_review: number;
+          oldest_queued_at: string;
+          queued: number;
+          sending: number;
+          sent_24h: number;
         }[];
       };
       recompute_lifecycle: {
@@ -1074,6 +1381,16 @@ export type Database = {
       conversion_stage: "contacted" | "replied" | "booked" | "completed" | "lost" | "opted_out";
       legal_basis: "consent" | "existing_customer" | "unknown";
       lifecycle_status: "active" | "at_risk" | "inactive" | "reactivated" | "opted_out";
+      message_status:
+        | "queued"
+        | "sending"
+        | "sent"
+        | "delivered"
+        | "undelivered"
+        | "expired"
+        | "failed"
+        | "cancelled"
+        | "needs_review";
       service_category:
         | "regular_service"
         | "oil_change"
@@ -1207,6 +1524,17 @@ export const Constants = {
       conversion_stage: ["contacted", "replied", "booked", "completed", "lost", "opted_out"],
       legal_basis: ["consent", "existing_customer", "unknown"],
       lifecycle_status: ["active", "at_risk", "inactive", "reactivated", "opted_out"],
+      message_status: [
+        "queued",
+        "sending",
+        "sent",
+        "delivered",
+        "undelivered",
+        "expired",
+        "failed",
+        "cancelled",
+        "needs_review",
+      ],
       service_category: [
         "regular_service",
         "oil_change",

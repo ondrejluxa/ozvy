@@ -31,4 +31,6 @@ export interface MessagingProvider {
    * demand. Real adapters implement parseWebhook/verifyWebhook in Phase 1.
    */
   pollDeliveryReports?(providerMessageIds: string[]): Promise<DeliveryEvent[]>;
+  /** Remaining credit in SMS segments, when the provider reports one (pre-send check 4). */
+  getBalanceSegments?(): Promise<number>;
 }

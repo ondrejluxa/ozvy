@@ -38,7 +38,12 @@ export type AuditAction =
   | "campaign.scheduled"
   | "campaign.cancelled"
   | "vocatives.refreshed"
-  | "vocative.reviewed";
+  | "vocative.reviewed"
+  | "campaign.paused"
+  | "campaign.resumed"
+  | "campaign.returned_to_draft"
+  | "system.kill_switch_changed"
+  | "message.review_resolved";
 
 export interface AuditEntry {
   action: AuditAction;

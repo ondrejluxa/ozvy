@@ -5,10 +5,10 @@ import type { CampaignStatus, ServiceCategory } from "../types";
 import type { Json, Tables } from "../types.gen";
 import { resolveCompanySettings } from "../../domain/company-settings";
 import { toDateOnly } from "../../domain/dates";
-import { greetingFor, isVocativeApproved, type Gender } from "../../domain/messaging/vocative";
 import { PRESET_BY_KEY, isPresetKey, WORKSHOP, type PresetKey } from "../../domain/segments/presets";
 import type { RuleGroup, RuleNode } from "../../domain/segments/types";
 import { PRICE_PER_SEGMENT_MINOR } from "../../providers/sms/mock";
+import { lookupGreetings } from "../greetings";
 import { getCompanyRecord } from "./companies";
 import { hasStkVisits, listSegments, presetsOverview, previewRules, type SegmentCounts } from "./segments";
 import { createSupabaseServerClient } from "./server-client";
@@ -114,32 +114,11 @@ export async function withGreetings(
   enabled: boolean,
 ): Promise<RealRecipient[]> {
   if (!enabled || recipients.length === 0) return recipients;
-  const surnames = [...new Set(recipients.map((r) => r.lastName?.trim()).filter((s): s is string => Boolean(s)))];
-  const supabase = await createSupabaseServerClient();
-  const chunks = Array.from({ length: Math.ceil(surnames.length / 150) }, (_, i) =>
-    surnames.slice(i * 150, i * 150 + 150),
+  const greetings = await lookupGreetings(
+    await createSupabaseServerClient(),
+    companyId,
+    recipients.map((r) => r.lastName),
   );
-  const results = await Promise.all(
-    chunks.map((chunk) =>
-      supabase
-        .from("name_vocatives")
-        .select("surname, vocative, gender, confidence, reviewed_at")
-        .eq("company_id", companyId)
-        .in("surname", chunk),
-    ),
-  );
-  const greetings = new Map<string, string>();
-  for (const { data } of results) {
-    for (const v of data ?? []) {
-      const stored = {
-        vocative: v.vocative,
-        gender: v.gender as Gender,
-        confidence: Number(v.confidence),
-        reviewedAt: v.reviewed_at,
-      };
-      if (isVocativeApproved(stored)) greetings.set(v.surname, greetingFor(stored));
-    }
-  }
   return recipients.map((r) => ({ ...r, greeting: (r.lastName && greetings.get(r.lastName.trim())) || null }));
 }
 

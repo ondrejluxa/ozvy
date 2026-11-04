@@ -15,6 +15,7 @@ import { getCampaign, resolveSource } from "../db/supabase/campaigns";
 import { getCompanyRecord } from "../db/supabase/companies";
 import { previewRules } from "../db/supabase/segments";
 import { createSupabaseServerClient } from "../db/supabase/server-client";
+import { createServiceClient } from "../db/supabase/service-client";
 import { canDecideApproval, CampaignTransitionError, nextStatus } from "../domain/campaigns/status";
 import { campaignContentIssues, MAX_FOLLOWUPS } from "../domain/campaigns/steps";
 import { resolveCompanySettings } from "../domain/company-settings";
@@ -457,6 +458,14 @@ export async function cancelCampaignAction(input: {
       .eq("company_id", data.companyId)
       .eq("id", data.campaignId);
     if (error) throw new Error(`campaign cancel failed: ${error.code}`);
+    // Queued messages of a cancelled campaign never go out (spec §16).
+    const { error: msgError } = await createServiceClient()
+      .from("messages")
+      .update({ status: "cancelled", error_code: "campaign_cancelled" })
+      .eq("company_id", data.companyId)
+      .eq("campaign_id", data.campaignId)
+      .eq("status", "queued");
+    if (msgError) throw new Error(`message cancel failed: ${msgError.code}`);
     await auditCampaign(ctx, "campaign.cancelled", data.companyId, data.campaignId);
     refresh();
     return null;

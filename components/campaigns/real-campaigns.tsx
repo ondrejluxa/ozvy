@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { CampaignStatusBadge } from "@/components/common/badges";
-import { ApprovalPanel, OperatorCampaignActions } from "@/components/campaigns/real-campaign-actions";
+import { DeliveryPanel } from "@/components/campaigns/delivery-panel";
+import { ApprovalPanel, OperatorCampaignActions, OwnerPauseButton } from "@/components/campaigns/real-campaign-actions";
 import { PageHeader } from "@/components/shell/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
@@ -14,9 +15,11 @@ import { optOutToken, renderTemplate } from "@/lib/domain/messaging/render";
 import { countSmsSegments } from "@/lib/domain/messaging/sms-segments";
 import { formatInt, formatPercent } from "@/lib/domain/money";
 
-/** Campaigns on real data (spec §8 "Kampaně – seznam", "Kampaň – detail"). Sending arrives in slice 12. */
+/** Campaigns on real data (spec §8 "Kampaně – seznam", "Kampaň – detail"), with delivery progress once sent. */
 
 const GROUPS = ["prepared", "active", "finished"] as const;
+/** Statuses with an enrollment snapshot and messages. */
+const SENT_STATUSES: string[] = ["sending", "active", "paused", "completed", "failed", "cancelled"];
 
 export async function RealCampaignList({ companyId, basePath }: { companyId: string; basePath: string }) {
   const t = await getTranslations("campaignList");
@@ -91,11 +94,12 @@ export async function RealCampaignDetail({
   companyId: string;
   campaignId: string;
   basePath: string;
-  viewer: { kind: "operator" } | { kind: "client"; canDecide: boolean };
+  viewer: { kind: "operator" } | { kind: "client"; canDecide: boolean; canPause: boolean };
 }) {
   const t = await getTranslations("campaignDetail");
   const tc = await getTranslations("campaignBuilder");
   const tPreset = await getTranslations("presets");
+  const tDelivery = await getTranslations("campaignDelivery");
   const [loaded, company] = await Promise.all([getCampaign(companyId, campaignId), getCompanyRecord(companyId)]);
   if (!loaded || !company) return null;
   const { campaign, steps, segmentName } = loaded;
@@ -127,11 +131,21 @@ export async function RealCampaignDetail({
               requiresClientApproval={company.requires_client_approval}
               basePath={basePath}
             />
+          ) : viewer.canPause && (campaign.status === "sending" || campaign.status === "active") ? (
+            <OwnerPauseButton companyId={companyId} campaignId={campaignId} />
           ) : undefined
         }
       />
 
       <div className="space-y-6">
+        {campaign.status_reason && (campaign.status === "failed" || campaign.status === "paused") && (
+          <p
+            className="rounded-md border border-warn-line bg-warn-soft px-4 py-3 text-sm text-warn"
+            data-testid="status-reason"
+          >
+            {tDelivery(`reasons.${campaign.status_reason as "render_failed"}`)}
+          </p>
+        )}
         {campaign.status === "draft" && campaign.approval_comment && (
           <p
             className="rounded-md border border-warn-line bg-warn-soft px-4 py-3 text-sm text-warn"
@@ -161,6 +175,8 @@ export async function RealCampaignDetail({
             </dl>
           </CardContent>
         </Card>
+
+        {SENT_STATUSES.includes(campaign.status) && <DeliveryPanel companyId={companyId} campaignId={campaignId} />}
 
         {steps.map((s) => {
           const rendered = sample
@@ -195,7 +211,7 @@ export async function RealCampaignDetail({
             </Card>
           );
         })}
-        <p className="text-[12px] text-muted">{t("sendingLater")}</p>
+        {!SENT_STATUSES.includes(campaign.status) && <p className="text-[12px] text-muted">{t("sendingLater")}</p>}
       </div>
     </>
   );

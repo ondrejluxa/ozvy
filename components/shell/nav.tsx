@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, Building2, LayoutDashboard, Menu, Send, Users } from "lucide-react";
+import { BarChart3, Building2, LayoutDashboard, Menu, Send, ShieldAlert, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -14,6 +14,7 @@ const ICONS = {
   campaigns: Send,
   customers: Users,
   results: BarChart3,
+  system: ShieldAlert,
 } as const;
 
 export interface NavItem {

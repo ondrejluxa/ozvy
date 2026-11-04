@@ -3,6 +3,7 @@ import { Inngest } from "inngest";
 import { runCommitImport, runParseImport, runValidateImport } from "./imports";
 import { runLifecycleRecompute, runNightlyLifecycle } from "./lifecycle";
 import type { JobEvent } from "./runner";
+import { runMessaging } from "./messaging";
 import { runVocativeRefresh } from "./vocatives";
 
 /**
@@ -66,6 +67,20 @@ export const vocativesRefresh = inngest.createFunction(
     step.run("refresh", () => runVocativeRefresh(event.data as Data<"vocatives/refresh.requested">)),
 );
 
+/**
+ * Messaging tick every minute (spec §16): start due campaigns, queue
+ * follow-ups, dispatch at the provider rate, advance statuses. One at a time.
+ */
+export const messagingTick = inngest.createFunction(
+  {
+    id: "messaging-tick",
+    retries: 0,
+    concurrency: { limit: 1 },
+    triggers: [{ cron: "* * * * *" }, { event: "messaging/tick.requested" }],
+  },
+  async ({ step }) => step.run("tick", () => runMessaging()),
+);
+
 export const functions = [
   importParse,
   importValidate,
@@ -73,4 +88,5 @@ export const functions = [
   lifecycleNightly,
   lifecycleRecompute,
   vocativesRefresh,
+  messagingTick,
 ];

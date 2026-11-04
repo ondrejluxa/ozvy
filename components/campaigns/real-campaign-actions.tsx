@@ -15,6 +15,7 @@ import {
   rejectCampaignAction,
   submitCampaignAction,
 } from "@/lib/actions/real-campaigns";
+import { pauseCampaignAction, resumeCampaignAction, returnFailedToDraftAction } from "@/lib/actions/sending";
 import type { CampaignStatus } from "@/lib/db/types";
 
 type Result = { ok: true } | { ok: false; error: { code: string } };
@@ -50,6 +51,7 @@ export function OperatorCampaignActions({
   basePath: string;
 }) {
   const t = useTranslations("campaignBuilder");
+  const td = useTranslations("campaignDelivery");
   const router = useRouter();
   const { pending, call } = useCall();
   const [confirmCancel, setConfirmCancel] = useState(false);
@@ -89,7 +91,37 @@ export function OperatorCampaignActions({
           </Button>
         </>
       )}
-      {status === "scheduled" &&
+      {(status === "sending" || status === "active") && (
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={pending}
+          onClick={() => call(() => pauseCampaignAction(ids), td("pausedToast"))}
+        >
+          {td("pause")}
+        </Button>
+      )}
+      {status === "paused" && (
+        <Button
+          variant="accent"
+          size="sm"
+          disabled={pending}
+          onClick={() => call(() => resumeCampaignAction(ids), td("resumedToast"))}
+        >
+          {td("resume")}
+        </Button>
+      )}
+      {status === "failed" && (
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={pending}
+          onClick={() => call(() => returnFailedToDraftAction(ids), td("toDraftToast"))}
+        >
+          {td("toDraft")}
+        </Button>
+      )}
+      {(status === "scheduled" || status === "paused") &&
         (confirmCancel ? (
           <>
             <span className="text-[13px] text-ink-2">{t("cancelConfirm")}</span>
@@ -111,6 +143,23 @@ export function OperatorCampaignActions({
           </Button>
         ))}
     </div>
+  );
+}
+
+/** The shop owner can always stop a running campaign (spec §20 campaigns.pause). */
+export function OwnerPauseButton({ companyId, campaignId }: { companyId: string; campaignId: string }) {
+  const td = useTranslations("campaignDelivery");
+  const { pending, call } = useCall();
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={pending}
+      onClick={() => call(() => pauseCampaignAction({ companyId, campaignId }), td("pausedToast"))}
+    >
+      {pending && <Loader2 className="animate-spin" aria-hidden />}
+      {td("pause")}
+    </Button>
   );
 }
 

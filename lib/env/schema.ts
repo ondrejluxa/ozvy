@@ -60,6 +60,8 @@ const schema = z
     SMS_PROVIDER_API_SECRET: optional,
     SMS_WEBHOOK_SECRET: optional,
     SMS_TEST_WHITELIST: e164List,
+    // Provider rate limit for the dispatcher (spec §16, e.g. 10 messages per second).
+    SMS_RATE_PER_SECOND: z.coerce.number().int().min(1).max(100).default(10),
     // Transactional email (invites, password resets, approvals). "smtp" = local Mailpit in development.
     EMAIL_PROVIDER: z.enum(["mock", "smtp"]).default("mock"),
     SMTP_URL: optional,

@@ -3,6 +3,7 @@ import { ProductBrand } from "@/components/shell/brand";
 import { MobileNav, Sidebar, type NavItem } from "@/components/shell/nav";
 import { UserMenu } from "@/components/shell/user-menu";
 import { requirePageContext } from "@/lib/auth/context";
+import { env } from "@/lib/env";
 
 /**
  * Operator app. With DATA_SOURCE=supabase it requires a platform admin with
@@ -16,6 +17,10 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     { href: "/admin", label: t("admin.overview"), icon: "overview", exact: true },
     { href: "/admin/companies", label: t("admin.clients"), icon: "clients" },
     { href: "/admin/campaigns", label: t("admin.campaigns"), icon: "campaigns" },
+    // Kill switch and queue health exist only with real sending.
+    ...(env.DATA_SOURCE === "supabase"
+      ? [{ href: "/admin/system", label: t("admin.system"), icon: "system" } satisfies NavItem]
+      : []),
   ];
   const brand = <ProductBrand product={tMeta("product")} area={t("adminArea")} />;
   const footer = ctx.session ? (
