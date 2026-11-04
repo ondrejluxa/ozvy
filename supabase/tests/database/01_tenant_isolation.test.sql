@@ -64,6 +64,12 @@ insert into public.campaign_steps (company_id, campaign_id, step_number, body_te
 insert into public.import_mapping_templates (company_id, type, mapping) values
   ('aaaaaaaa-0000-0000-0000-000000000000', 'visits', '{}'),
   ('bbbbbbbb-0000-0000-0000-000000000000', 'visits', '{}');
+insert into public.ai_generations (company_id, kind, prompt_version, model, input) values
+  ('aaaaaaaa-0000-0000-0000-000000000000', 'campaign_template', 'v1', 'mock', '{}'),
+  ('bbbbbbbb-0000-0000-0000-000000000000', 'campaign_template', 'v1', 'mock', '{}');
+insert into public.name_vocatives (company_id, surname, vocative, gender, confidence, source) values
+  ('aaaaaaaa-0000-0000-0000-000000000000', 'Novák', 'Nováku', 'm', 0.95, 'rule'),
+  ('bbbbbbbb-0000-0000-0000-000000000000', 'Novák', 'Nováku', 'm', 0.95, 'rule');
 
 -- ---------- 1. RLS enabled and forced on every public table ----------
 select is(
@@ -103,6 +109,10 @@ insert into tests.tenant_tables values
       values ('bbbbbbbb-0000-0000-0000-000000000000', 'Rogue', '{}')$$),
   ('campaigns', 'company_id', $$insert into public.campaigns (company_id, name, segment_rules_snapshot)
       values ('bbbbbbbb-0000-0000-0000-000000000000', 'Rogue', '{}')$$),
+  ('ai_generations', 'company_id', $$insert into public.ai_generations (company_id, kind, prompt_version, model, input)
+      values ('bbbbbbbb-0000-0000-0000-000000000000', 'vocatives', 'v1', 'mock', '{}')$$),
+  ('name_vocatives', 'company_id', $$insert into public.name_vocatives (company_id, surname, vocative, confidence, source)
+      values ('bbbbbbbb-0000-0000-0000-000000000000', 'Rogue', 'Rogue', 1, 'operator')$$),
   ('campaign_steps', 'company_id', $$insert into public.campaign_steps (company_id, campaign_id, step_number, body_template)
       values ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ca01', 1, 'x')$$);
 

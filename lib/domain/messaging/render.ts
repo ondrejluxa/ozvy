@@ -1,5 +1,6 @@
 import { describeLastVisit } from "../dates";
 import { stripDiacritics } from "./diacritics";
+import { DEFAULT_GREETING } from "./vocative";
 
 /**
  * Deterministic template renderer (spec §15 "Template placeholders").
@@ -17,6 +18,8 @@ export interface RecipientRenderData {
   vehicleBrand: string | null;
   vehicleModel: string | null;
   lastVisitAt: string | null;
+  /** Approved personal greeting ("Dobrý den, pane Nováku,"); omitted = safe default. */
+  greeting?: string | null;
 }
 
 export interface ShopRenderData {
@@ -106,8 +109,9 @@ export function renderTemplate(template: string, opts: RenderOptions): RenderRes
   }
 
   const values: Record<Placeholder, string> = {
-    // Personalised vocatives are opt-in (spec §0.5); the safe default is used.
-    osloveni: "Dobrý den,",
+    // Personalised vocatives are opt-in per company (spec §0.5): the caller
+    // passes a greeting only for approved vocatives, else the safe default.
+    osloveni: opts.recipient.greeting || DEFAULT_GREETING,
     vozidlo: vehicle ?? "vaše auto",
     posledni_navsteva: lastVisit ?? "",
     servis: opts.shop.shopName,

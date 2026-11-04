@@ -16,7 +16,8 @@ export type JobEvent =
     }
   | { name: "import/validate.requested"; data: { companyId: string; importId: string } }
   | { name: "import/commit.requested"; data: { companyId: string; importId: string } }
-  | { name: "lifecycle/recompute.requested"; data: { companyId: string } };
+  | { name: "lifecycle/recompute.requested"; data: { companyId: string } }
+  | { name: "vocatives/refresh.requested"; data: { companyId: string; userId: string | null } };
 
 export async function enqueue(event: JobEvent): Promise<void> {
   if (env.JOB_RUNNER === "inngest") {
@@ -26,12 +27,14 @@ export async function enqueue(event: JobEvent): Promise<void> {
   }
   const jobs = await import("./imports");
   const lifecycle = await import("./lifecycle");
+  const vocatives = await import("./vocatives");
   after(async () => {
     try {
       if (event.name === "import/parse.requested") await jobs.runParseImport(event.data);
       else if (event.name === "import/validate.requested") await jobs.runValidateImport(event.data);
       else if (event.name === "import/commit.requested") await jobs.runCommitImport(event.data);
-      else await lifecycle.runLifecycleRecompute(event.data);
+      else if (event.name === "lifecycle/recompute.requested") await lifecycle.runLifecycleRecompute(event.data);
+      else await vocatives.runVocativeRefresh(event.data);
     } catch (err) {
       console.error("[jobs] inline job failed", event.name, err instanceof Error ? err.message : "");
     }

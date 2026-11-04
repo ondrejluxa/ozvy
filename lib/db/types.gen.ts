@@ -3,6 +3,69 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      ai_generations: {
+        Row: {
+          campaign_id: string | null;
+          chosen_index: number | null;
+          company_id: string;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          input: NonNullable<Json>;
+          kind: string;
+          model: string;
+          output: Json | null;
+          prompt_version: string;
+          tokens_in: number | null;
+          tokens_out: number | null;
+        };
+        Insert: {
+          campaign_id?: string | null;
+          chosen_index?: number | null;
+          company_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          input: NonNullable<Json>;
+          kind: string;
+          model: string;
+          output?: Json | null;
+          prompt_version: string;
+          tokens_in?: number | null;
+          tokens_out?: number | null;
+        };
+        Update: {
+          campaign_id?: string | null;
+          chosen_index?: number | null;
+          company_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          input?: NonNullable<Json>;
+          kind?: string;
+          model?: string;
+          output?: Json | null;
+          prompt_version?: string;
+          tokens_in?: number | null;
+          tokens_out?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "ai_generations_campaign_id_company_id_fkey";
+            columns: ["campaign_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "campaigns";
+            referencedColumns: ["id", "company_id"];
+          },
+          {
+            foreignKeyName: "ai_generations_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       audit_logs: {
         Row: {
           action: string;
@@ -610,6 +673,56 @@ export type Database = {
           },
         ];
       };
+      name_vocatives: {
+        Row: {
+          company_id: string;
+          confidence: number;
+          created_at: string;
+          gender: string;
+          id: string;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          source: string;
+          surname: string;
+          updated_at: string;
+          vocative: string;
+        };
+        Insert: {
+          company_id: string;
+          confidence: number;
+          created_at?: string;
+          gender?: string;
+          id?: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          source: string;
+          surname: string;
+          updated_at?: string;
+          vocative: string;
+        };
+        Update: {
+          company_id?: string;
+          confidence?: number;
+          created_at?: string;
+          gender?: string;
+          id?: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          source?: string;
+          surname?: string;
+          updated_at?: string;
+          vocative?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "name_vocatives_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       platform_admins: {
         Row: {
           created_at: string;
@@ -938,6 +1051,12 @@ export type Database = {
           p_label_norm: string;
         };
         Returns: number;
+      };
+      vocative_candidates: {
+        Args: { p_company_id: string; p_limit?: number };
+        Returns: {
+          surname: string;
+        }[];
       };
     };
     Enums: {

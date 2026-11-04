@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input, Label, Textarea } from "@/components/ui/inputs";
 import {
+  chooseVariantAction,
   createCampaignRealAction,
   generateTemplateRealAction,
   rewriteTemplateRealAction,
@@ -88,6 +89,9 @@ export function RealCampaignBuilder({
   );
   const [active, setActive] = useState(0);
   const [variants, setVariants] = useState<string[]>([]);
+  // ai_generations rows of this session: linked to the campaign on save.
+  const [generationIds, setGenerationIds] = useState<string[]>([]);
+  const [variantGeneration, setVariantGeneration] = useState<string | null>(null);
   const [previewIndex, setPreviewIndex] = useState(0);
   const [name, setName] = useState(initial?.name ?? defaultName);
   const [sendAt, setSendAt] = useState(toLocalInput(new Date(initial?.scheduledAt ?? defaultSendAt)));
@@ -169,11 +173,18 @@ export function RealCampaignBuilder({
   // ---------- AI (initial message only; follow-ups start from defaults) ----------
   const generate = () =>
     startAi(async () => {
-      const res = await generateTemplateRealAction({ companyId: data.companyId, presetKey: source.presetKey });
+      const res = await generateTemplateRealAction({
+        companyId: data.companyId,
+        presetKey: source.presetKey,
+        campaignId: initial?.campaignId ?? null,
+      });
       if (!res.ok) {
-        toast.error(t("message.error"));
+        toast.error(aiError(res.error.code));
         return;
       }
+      const id = res.data.generationId;
+      if (id) setGenerationIds((ids) => [...ids, id]);
+      setVariantGeneration(id);
       setVariants(res.data.variants);
       updateStep({ template: res.data.variants[0] });
     });
@@ -184,13 +195,25 @@ export function RealCampaignBuilder({
         presetKey: source.presetKey,
         current: current.template,
         action,
+        campaignId: initial?.campaignId ?? null,
       });
       if (!res.ok) {
-        toast.error(t("message.error"));
+        toast.error(aiError(res.error.code));
         return;
       }
+      const id = res.data.generationId;
+      if (id) setGenerationIds((ids) => [...ids, id]);
       updateStep({ template: res.data.template });
     });
+
+  const aiError = (code: string) =>
+    code === "ai_invalid_output" || code === "ai_unavailable" ? tErrors(code) : t("message.error");
+  const chooseVariant = (i: number) => {
+    updateStep({ template: variants[i] });
+    if (variantGeneration) {
+      void chooseVariantAction({ companyId: data.companyId, generationId: variantGeneration, index: i });
+    }
+  };
 
   const addFollowup = () => {
     if (steps.length > MAX_FOLLOWUPS) return;
@@ -217,6 +240,7 @@ export function RealCampaignBuilder({
             presetKey: source.presetKey,
             segmentId: source.segmentId,
             submit,
+            generationIds,
             ...content,
           });
       if (!res.ok) {
@@ -441,14 +465,8 @@ export function RealCampaignBuilder({
                 )}
                 {active === 0 && variants.length > 1 && (
                   <div className="flex flex-wrap gap-2">
-                    {variants.map((v, i) => (
-                      <Button
-                        key={i}
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => updateStep({ template: v })}
-                      >
+                    {variants.map((_v, i) => (
+                      <Button key={i} type="button" variant="ghost" size="sm" onClick={() => chooseVariant(i)}>
                         {t(`message.variantLabels.${i as 0 | 1 | 2}`)}
                       </Button>
                     ))}

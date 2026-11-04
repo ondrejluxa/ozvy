@@ -3,6 +3,7 @@ import { Inngest } from "inngest";
 import { runCommitImport, runParseImport, runValidateImport } from "./imports";
 import { runLifecycleRecompute, runNightlyLifecycle } from "./lifecycle";
 import type { JobEvent } from "./runner";
+import { runVocativeRefresh } from "./vocatives";
 
 /**
  * Inngest client and functions (spec §26 "Inngest for all background jobs").
@@ -53,4 +54,23 @@ export const lifecycleRecompute = inngest.createFunction(
     step.run("recompute", () => runLifecycleRecompute(event.data as Data<"lifecycle/recompute.requested">)),
 );
 
-export const functions = [importParse, importValidate, importCommit, lifecycleNightly, lifecycleRecompute];
+/** Vocative suggestions for new surnames (spec §15): rules, then one AI batch per 100. */
+export const vocativesRefresh = inngest.createFunction(
+  {
+    id: "vocatives-refresh",
+    retries: 2,
+    concurrency: { key: "event.data.companyId", limit: 1 },
+    triggers: [{ event: "vocatives/refresh.requested" }],
+  },
+  async ({ event, step }) =>
+    step.run("refresh", () => runVocativeRefresh(event.data as Data<"vocatives/refresh.requested">)),
+);
+
+export const functions = [
+  importParse,
+  importValidate,
+  importCommit,
+  lifecycleNightly,
+  lifecycleRecompute,
+  vocativesRefresh,
+];

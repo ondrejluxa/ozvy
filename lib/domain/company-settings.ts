@@ -19,6 +19,7 @@ export const DEFAULT_COMPANY_SETTINGS: CompanySettings = {
   expected_conversion_rate: 0.06,
   gross_margin_pct: null,
   message_shop_name: null,
+  personalized_greeting: false,
 };
 
 const lifecycle = z
@@ -40,6 +41,7 @@ const fields = {
   expected_conversion_rate: z.number().min(0.01).max(0.3),
   gross_margin_pct: z.number().min(0.05).max(0.95).nullable(),
   message_shop_name: z.string().trim().min(2).max(40).nullable(),
+  personalized_greeting: z.boolean(),
 };
 
 export const companySettingsSchema = z.object(fields);

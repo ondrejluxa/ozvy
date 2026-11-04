@@ -43,6 +43,7 @@ export async function RealCompanyHeader({ company }: { company: CompanyDetail })
           { href: `${base}/campaigns`, label: t("tabs.campaigns") },
           { href: `${base}/imports`, label: t("tabs.imports") },
           { href: `${base}/services`, label: t("tabs.services") },
+          { href: `${base}/vocatives`, label: t("tabs.vocatives") },
           { href: `${base}/settings`, label: t("tabs.settings") },
         ]}
       />
@@ -122,6 +123,7 @@ export function settingsDefaults(raw: unknown): Record<string, string> {
     expected_conversion_percent: pct(s.expected_conversion_rate),
     gross_margin_percent: s.gross_margin_pct === null ? "" : pct(s.gross_margin_pct),
     message_shop_name: s.message_shop_name ?? "",
+    personalized_greeting: s.personalized_greeting ? "on" : "",
   };
 }
 

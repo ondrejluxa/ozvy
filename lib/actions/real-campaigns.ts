@@ -2,7 +2,10 @@
 
 import { refresh } from "next/cache";
 import { z } from "zod";
-import { generateCampaignTemplates, rewriteCampaignTemplate } from "../ai/client";
+import { AiOutputError, generateCampaignTemplates, rewriteCampaignTemplate, type GenerationResult } from "../ai/client";
+import { attachGenerations, logGeneration, setChosenVariant } from "../ai/log";
+import type { TextModel } from "../ai/model";
+import { getTextModel } from "../ai/provider";
 import { requireContext, type AuthContext } from "../auth/context";
 import { ownerEmails } from "../auth/company-contacts";
 import { audit, type AuditAction } from "../audit";
@@ -101,17 +104,68 @@ async function saveSteps(companyId: string, campaignId: string, steps: Content["
   if (error) throw new Error(`campaign steps failed: ${error.code}`);
 }
 
-// ---------- AI (mock provider until slice 11) ----------
+// ---------- AI (spec §15): provider from env, every call logged ----------
+
+const generationIds = z.array(uuid).max(50).default([]);
+
+async function shopContext(companyId: string) {
+  const company = await getCompanyRecord(companyId);
+  if (!company) throw new DomainError("not_found");
+  return { companyName: company.name, city: company.city };
+}
+
+/** Runs one generation and logs it, including failed ones. */
+async function generateLogged(
+  ctx: AuthContext,
+  companyId: string,
+  campaignId: string | null,
+  kind: "campaign_template" | "campaign_rewrite",
+  call: (model: TextModel) => Promise<GenerationResult>,
+): Promise<{ variants: string[]; generationId: string | null }> {
+  const model = await getTextModel();
+  const log = (r: Omit<GenerationResult, "variants">, output: Record<string, unknown>, chosenIndex: number | null) =>
+    logGeneration({
+      companyId,
+      campaignId,
+      kind,
+      promptVersion: r.promptVersion,
+      model: r.model,
+      input: r.input,
+      output: { ...output, attempts: r.attempts, rejected: r.rejected },
+      chosenIndex,
+      tokensIn: r.tokensIn,
+      tokensOut: r.tokensOut,
+      createdBy: ctx.userId,
+    });
+  let result: GenerationResult;
+  try {
+    result = await call(model);
+  } catch (err) {
+    if (err instanceof AiOutputError) {
+      await log(err.partial, { error: "invalid_output" }, null);
+      throw new DomainError("ai_invalid_output");
+    }
+    console.error("[ai] provider call failed", model.id, err instanceof Error ? err.name : "");
+    throw new DomainError("ai_unavailable");
+  }
+  const generationId = await log(result, { variants: result.variants }, 0);
+  return { variants: result.variants, generationId };
+}
 
 export async function generateTemplateRealAction(input: {
   companyId: string;
   presetKey: string | null;
-}): Promise<ActionResult<{ variants: string[] }>> {
+  campaignId?: string | null;
+}): Promise<ActionResult<{ variants: string[]; generationId: string | null }>> {
   return run(async () => {
-    const data = z.object({ companyId: uuid, presetKey: presetKey.nullable() }).parse(input);
-    await requireContext({ permission: "campaigns.create", companyId: data.companyId });
-    const result = await generateCampaignTemplates({ presetKey: data.presetKey ?? "no_visit_12m", now: new Date() });
-    return { variants: result.variants };
+    const data = z
+      .object({ companyId: uuid, presetKey: presetKey.nullable(), campaignId: uuid.nullish() })
+      .parse(input);
+    const ctx = await requireContext({ permission: "campaigns.create", companyId: data.companyId });
+    const shop = await shopContext(data.companyId);
+    return generateLogged(ctx, data.companyId, data.campaignId ?? null, "campaign_template", (model) =>
+      generateCampaignTemplates({ presetKey: data.presetKey ?? "no_visit_12m", now: new Date(), shop, model }),
+    );
   });
 }
 
@@ -120,7 +174,8 @@ export async function rewriteTemplateRealAction(input: {
   presetKey: string | null;
   current: string;
   action: string;
-}): Promise<ActionResult<{ template: string }>> {
+  campaignId?: string | null;
+}): Promise<ActionResult<{ template: string; generationId: string | null }>> {
   return run(async () => {
     const data = z
       .object({
@@ -128,27 +183,59 @@ export async function rewriteTemplateRealAction(input: {
         presetKey: presetKey.nullable(),
         current: z.string().max(640),
         action: z.enum(["shorter", "friendlier", "professional", "regenerate"]),
+        campaignId: uuid.nullish(),
       })
       .parse(input);
-    await requireContext({ permission: "campaigns.create", companyId: data.companyId });
-    const result = await rewriteCampaignTemplate({
-      presetKey: data.presetKey ?? "no_visit_12m",
-      current: data.current,
-      action: data.action,
-      now: new Date(),
-    });
-    return { template: result.variants[0] };
+    const ctx = await requireContext({ permission: "campaigns.create", companyId: data.companyId });
+    const shop = await shopContext(data.companyId);
+    const res = await generateLogged(ctx, data.companyId, data.campaignId ?? null, "campaign_rewrite", (model) =>
+      rewriteCampaignTemplate({
+        presetKey: data.presetKey ?? "no_visit_12m",
+        current: data.current,
+        action: data.action,
+        now: new Date(),
+        shop,
+        model,
+      }),
+    );
+    return { template: res.variants[0], generationId: res.generationId };
+  });
+}
+
+/** Records which of the generated variants the operator picked. */
+export async function chooseVariantAction(input: {
+  companyId: string;
+  generationId: string;
+  index: number;
+}): Promise<ActionResult<null>> {
+  return run(async () => {
+    const data = z.object({ companyId: uuid, generationId: uuid, index: z.number().int().min(0).max(2) }).parse(input);
+    const ctx = await requireContext({ permission: "campaigns.create", companyId: data.companyId });
+    await setChosenVariant(data.companyId, data.generationId, ctx.userId, data.index);
+    return null;
   });
 }
 
 // ---------- create / edit ----------
 
 export async function createCampaignRealAction(
-  input: Content & { companyId: string; presetKey: string | null; segmentId: string | null; submit: boolean },
+  input: Content & {
+    companyId: string;
+    presetKey: string | null;
+    segmentId: string | null;
+    submit: boolean;
+    generationIds?: string[];
+  },
 ): Promise<ActionResult<{ campaignId: string }>> {
   return run(async () => {
     const data = contentSchema
-      .extend({ companyId: uuid, presetKey: presetKey.nullable(), segmentId: uuid.nullable(), submit: z.boolean() })
+      .extend({
+        companyId: uuid,
+        presetKey: presetKey.nullable(),
+        segmentId: uuid.nullable(),
+        submit: z.boolean(),
+        generationIds,
+      })
       .parse(input);
     const ctx = await requireContext({ permission: "campaigns.create", companyId: data.companyId });
     checkContent(data);
@@ -180,6 +267,7 @@ export async function createCampaignRealAction(
       .single();
     if (error || !created) throw new Error(`campaign insert failed: ${error?.code}`);
     await saveSteps(data.companyId, created.id, data.steps);
+    await attachGenerations(data.companyId, created.id, ctx.userId, data.generationIds);
     await auditCampaign(ctx, "campaign.created", data.companyId, created.id, { steps: data.steps.length });
     if (data.submit) await submit(ctx, data.companyId, created.id);
     refresh();

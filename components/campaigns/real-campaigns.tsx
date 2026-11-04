@@ -99,8 +99,8 @@ export async function RealCampaignDetail({
   const [loaded, company] = await Promise.all([getCampaign(companyId, campaignId), getCompanyRecord(companyId)]);
   if (!loaded || !company) return null;
   const { campaign, steps, segmentName } = loaded;
-  const sample = (await previewRecipients(companyId, campaign, 1))[0] ?? null;
   const settings = resolveCompanySettings(company.settings);
+  const sample = (await previewRecipients(companyId, campaign, 1, settings.personalized_greeting))[0] ?? null;
   const shop = { shopName: settings.message_shop_name ?? company.name, phone: company.phone };
   const now = new Date();
 

@@ -51,6 +51,8 @@ export interface CompanySettings {
   gross_margin_pct: number | null;
   /** Shop name as written inside SMS bodies ({{servis}}). */
   message_shop_name: string | null;
+  /** "Dobrý den, pane Nováku," for approved vocatives; off by default (spec §0.5, §15). */
+  personalized_greeting: boolean;
 }
 
 export interface Company {

@@ -36,7 +36,9 @@ export type AuditAction =
   | "campaign.approved"
   | "campaign.rejected"
   | "campaign.scheduled"
-  | "campaign.cancelled";
+  | "campaign.cancelled"
+  | "vocatives.refreshed"
+  | "vocative.reviewed";
 
 export interface AuditEntry {
   action: AuditAction;

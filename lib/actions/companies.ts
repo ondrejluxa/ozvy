@@ -146,6 +146,7 @@ const SETTINGS_FIELDS = [
   "expected_conversion_percent",
   "gross_margin_percent",
   "message_shop_name",
+  "personalized_greeting",
 ] as const;
 
 const SETTINGS_ERROR_FIELD: Record<string, string> = {
@@ -177,6 +178,7 @@ export async function updateCompanySettingsAction(_prev: CompanyFormState, form:
     expected_conversion_rate: percent(values.expected_conversion_percent),
     gross_margin_pct: values.gross_margin_percent === "" ? null : percent(values.gross_margin_percent),
     message_shop_name: values.message_shop_name || null,
+    personalized_greeting: values.personalized_greeting === "on",
   });
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};

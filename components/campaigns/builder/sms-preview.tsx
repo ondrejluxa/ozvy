@@ -66,7 +66,10 @@ export function SmsPreview({
       <div className="rounded-lg bg-surface p-3 shadow-sm">
         <div className="mb-2 text-center text-[11px] font-medium uppercase tracking-wide text-faint">{senderName}</div>
         {item.result ? (
-          <p className="max-w-[92%] whitespace-pre-wrap rounded-2xl rounded-bl-sm bg-subtle px-3.5 py-2.5 text-[14px] leading-5 text-ink">
+          <p
+            className="max-w-[92%] whitespace-pre-wrap rounded-2xl rounded-bl-sm bg-subtle px-3.5 py-2.5 text-[14px] leading-5 text-ink"
+            data-testid="sms-text"
+          >
             {item.result.text}
           </p>
         ) : (

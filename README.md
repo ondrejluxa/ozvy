@@ -51,7 +51,8 @@ in the order of spec §40. The demo stays available as `DATA_SOURCE=demo`
 | 8. Lifecycle job: nightly + post-import recompute, stored eligibility, service category mapping       | done ([ADR-008](docs/decisions/ADR-008-lifecycle.md))       |
 | 9. Segments: DSL compiled in SQL, presets with fixture tests, contact rules, builder with preview     | done ([ADR-009](docs/decisions/ADR-009-segments.md))        |
 | 10. Campaigns (no sending): builder with follow-ups, status machine, client approval by e-mail        | done ([ADR-010](docs/decisions/ADR-010-campaigns.md))       |
-| 11. AI template generation                                                                            | next                                                        |
+| 11. AI templates: provider wrapper, prompt v1, validator + retry, generation log, vocatives + review  | done ([ADR-011](docs/decisions/ADR-011-ai.md))              |
+| 12. Messaging                                                                                         | next                                                        |
 
 ### Running against local Supabase
 

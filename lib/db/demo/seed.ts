@@ -294,6 +294,7 @@ const DEFAULT_SETTINGS: Omit<CompanySettings, "message_shop_name"> = {
   holdout_pct: 0.1,
   expected_conversion_rate: 0.06,
   gross_margin_pct: null,
+  personalized_greeting: false,
 };
 
 function seedCompany(db: DemoDatabase, spec: CompanySpec, now: Date, ordinal: number) {

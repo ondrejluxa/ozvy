@@ -20,7 +20,10 @@ export type TemplateIssue =
 
 const DENYLIST = ["potřebuje", "nutně", "hrozí", "poškozen", "nebezpeč", "zdarma"];
 
-/** Typical values used for the length check: long brand + model, real phone. */
+/**
+ * Typical values used for the length check: long brand + model, real phone
+ * and a personalised greeting, so templates also fit when vocatives are on.
+ */
 const TYPICAL = {
   recipient: {
     firstName: "Jana",
@@ -28,6 +31,7 @@ const TYPICAL = {
     vehicleBrand: "Volkswagen",
     vehicleModel: "Passat Variant",
     lastVisitAt: "2025-09-12",
+    greeting: "Dobrý den, paní Procházková,",
   },
   shop: { shopName: "Autoservis Dvořák", phone: "+420321724118" },
   optOutUrl: "example.cz/o/Xk3P9aQ2",

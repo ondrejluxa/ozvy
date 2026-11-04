@@ -178,6 +178,18 @@ export function CompanySettingsForm({ companyId, defaults }: { companyId: string
         <Field name="gross_margin_percent" {...f} hint={t("hints.gross_margin_percent")} />
         <Field name="message_shop_name" {...f} inputMode="text" hint={t("hints.message_shop_name")} />
       </div>
+      <label className="flex items-start gap-2 text-sm text-ink-2">
+        <input
+          type="checkbox"
+          name="personalized_greeting"
+          defaultChecked={defaults.personalized_greeting === "on"}
+          className="mt-0.5 size-4 accent-[var(--color-accent)]"
+        />
+        <span>
+          {t("fields.personalized_greeting")}
+          <span className="block text-[12px] text-muted">{t("hints.personalized_greeting")}</span>
+        </span>
+      </label>
       <FormFooter pending={pending} state={state} label={t("save")} />
     </form>
   );

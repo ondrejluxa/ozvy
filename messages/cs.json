@@ -240,7 +240,8 @@
       "campaigns": "Kampaně",
       "settings": "Nastavení",
       "imports": "Import",
-      "services": "Služby"
+      "services": "Služby",
+      "vocatives": "Oslovení"
     },
     "meta": {
       "customers": "{count, plural, one {# zákazník} few {# zákazníci} other {# zákazníků}}",
@@ -749,7 +750,9 @@
     "campaign_send_time_past": "Čas odeslání už uplynul.",
     "campaign_send_time_outside_window": "Čas odeslání je mimo povolené okno.",
     "campaign_segment_unavailable": "Segment teď není dostupný.",
-    "campaign_comment_required": "Napište, co upravit."
+    "campaign_comment_required": "Napište, co upravit.",
+    "ai_invalid_output": "AI nenapsala zprávu, která by prošla kontrolou. Zkuste to znovu, nebo zprávu napište ručně.",
+    "ai_unavailable": "Služba AI teď neodpovídá. Zkuste to za chvíli, nebo zprávu napište ručně."
   },
   "common": {
     "perMonth": "{value} / měsíc",
@@ -940,7 +943,8 @@
       "holdout_percent": "Kontrolní skupina (%)",
       "expected_conversion_percent": "Očekávaná úspěšnost (%)",
       "gross_margin_percent": "Hrubá marže (%)",
-      "message_shop_name": "Název servisu ve zprávách"
+      "message_shop_name": "Název servisu ve zprávách",
+      "personalized_greeting": "Oslovovat zákazníky příjmením"
     },
     "hints": {
       "ico": "8 číslic, ověřujeme kontrolní číslici.",
@@ -954,7 +958,8 @@
       "holdout_percent": "Výchozí 10 %, rozsah 5–30 %. Tito zákazníci zprávu nedostanou.",
       "expected_conversion_percent": "Výchozí 6 %. Konzervativní odhad pro plánování.",
       "gross_margin_percent": "Nepovinné. Umožní ukázat návratnost ze zisku.",
-      "message_shop_name": "Nepovinné. Jinak název servisu."
+      "message_shop_name": "Nepovinné. Jinak název servisu.",
+      "personalized_greeting": "„Dobrý den, pane Nováku,“ jen u schválených oslovení, ostatní dostanou „Dobrý den,“. Ve výchozím stavu vypnuto."
     },
     "errors": {
       "required": "Vyplňte toto pole.",
@@ -1307,5 +1312,38 @@
     "back": "Zpět",
     "approved": "Kampaň schválena a naplánována.",
     "returned": "Kampaň vrácena s komentářem."
+  },
+  "vocatives": {
+    "title": "Oslovení",
+    "description": "Pro osobní pozdrav „Dobrý den, pane Nováku,“ potřebuje každé příjmení 5. pád a rod. Pravidla navrhnou běžné tvary, zbytek AI (dostává jen příjmení). Nejisté tvary schvalujete tady.",
+    "refresh": "Navrhnout oslovení",
+    "queued": "Návrhy se připravují. Stránka se za chvíli obnoví.",
+    "stats": {
+      "total": "Příjmení s návrhem",
+      "approved": "Použitelná oslovení",
+      "needsReview": "Ke kontrole",
+      "missing": "Bez návrhu"
+    },
+    "enabled": "Osobní oslovení je pro tento servis zapnuté.",
+    "disabled": "Osobní oslovení je vypnuté, všechny zprávy začínají „Dobrý den,“.",
+    "settingsLink": "Nastavení",
+    "reviewTitle": "Ke kontrole",
+    "reviewDescription": "Nejisté návrhy. Upravte tvar nebo rod a schvalte. Dokud tvar neschválíte, zákazník dostane „Dobrý den,“.",
+    "nothingToReview": "Nic ke kontrole.",
+    "vocativeFor": "Oslovení pro {surname}",
+    "genderFor": "Rod pro {surname}",
+    "gender": {
+      "m": "pan",
+      "f": "paní",
+      "unknown": "nevím"
+    },
+    "approve": "Schválit",
+    "approved": "Oslovení pro {surname} schváleno.",
+    "reviewedTitle": "Naposledy schválené",
+    "columns": {
+      "surname": "Příjmení",
+      "greeting": "Pozdrav",
+      "reviewedAt": "Schváleno"
+    }
   }
 }

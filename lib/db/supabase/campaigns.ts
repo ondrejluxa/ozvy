@@ -5,6 +5,7 @@ import type { CampaignStatus, ServiceCategory } from "../types";
 import type { Json, Tables } from "../types.gen";
 import { resolveCompanySettings } from "../../domain/company-settings";
 import { toDateOnly } from "../../domain/dates";
+import { greetingFor, isVocativeApproved, type Gender } from "../../domain/messaging/vocative";
 import { PRESET_BY_KEY, isPresetKey, WORKSHOP, type PresetKey } from "../../domain/segments/presets";
 import type { RuleGroup, RuleNode } from "../../domain/segments/types";
 import { PRICE_PER_SEGMENT_MINOR } from "../../providers/sms/mock";
@@ -77,6 +78,8 @@ export interface RealRecipient {
   vehicleModel: string | null;
   plate: string | null;
   lastVisitAt: string | null;
+  /** Approved personal greeting, only when the shop turned greetings on. */
+  greeting: string | null;
 }
 
 export async function segmentRecipients(companyId: string, source: CampaignSource): Promise<RealRecipient[]> {
@@ -96,7 +99,48 @@ export async function segmentRecipients(companyId: string, source: CampaignSourc
     vehicleModel: r.vehicle_model,
     plate: r.plate,
     lastVisitAt: r.last_visit_at,
+    greeting: null,
   }));
+}
+
+/**
+ * Adds "Dobrý den, pane Nováku," for surnames with an approved vocative when
+ * the shop turned personalised greetings on (spec §0.5, §15). Everyone else
+ * keeps the safe "Dobrý den,".
+ */
+export async function withGreetings(
+  companyId: string,
+  recipients: RealRecipient[],
+  enabled: boolean,
+): Promise<RealRecipient[]> {
+  if (!enabled || recipients.length === 0) return recipients;
+  const surnames = [...new Set(recipients.map((r) => r.lastName?.trim()).filter((s): s is string => Boolean(s)))];
+  const supabase = await createSupabaseServerClient();
+  const chunks = Array.from({ length: Math.ceil(surnames.length / 150) }, (_, i) =>
+    surnames.slice(i * 150, i * 150 + 150),
+  );
+  const results = await Promise.all(
+    chunks.map((chunk) =>
+      supabase
+        .from("name_vocatives")
+        .select("surname, vocative, gender, confidence, reviewed_at")
+        .eq("company_id", companyId)
+        .in("surname", chunk),
+    ),
+  );
+  const greetings = new Map<string, string>();
+  for (const { data } of results) {
+    for (const v of data ?? []) {
+      const stored = {
+        vocative: v.vocative,
+        gender: v.gender as Gender,
+        confidence: Number(v.confidence),
+        reviewedAt: v.reviewed_at,
+      };
+      if (isVocativeApproved(stored)) greetings.set(v.surname, greetingFor(stored));
+    }
+  }
+  return recipients.map((r) => ({ ...r, greeting: (r.lastName && greetings.get(r.lastName.trim())) || null }));
 }
 
 /** Median job value of the segment's categories if at least 20 visits exist, else the company average (spec §12). */
@@ -138,7 +182,9 @@ export async function getRealBuilderData(
     source.unavailableReason
       ? Promise.resolve({ matched: 0, eligible: 0, excluded: {} } as SegmentCounts)
       : previewRules(companyId, source.rules, source.presetKey),
-    source.unavailableReason ? Promise.resolve([]) : segmentRecipients(companyId, source),
+    source.unavailableReason
+      ? Promise.resolve([])
+      : segmentRecipients(companyId, source).then((r) => withGreetings(companyId, r, settings.personalized_greeting)),
     segmentJobValue(companyId, source.valueCategories, company.average_job_value_minor),
     presetsOverview(companyId),
     listSegments(companyId),
@@ -225,7 +271,12 @@ export const getCampaign = cache(
 );
 
 /** Sample recipients for previews on the detail and approval pages (renderer input, no contact data). */
-export async function previewRecipients(companyId: string, campaign: CampaignRecord, limit = 5) {
+export async function previewRecipients(
+  companyId: string,
+  campaign: CampaignRecord,
+  limit = 5,
+  personalizedGreeting = false,
+) {
   const source: CampaignSource = {
     presetKey: (campaign.segment_preset as PresetKey | null) ?? null,
     segmentId: campaign.segment_id,
@@ -235,10 +286,10 @@ export async function previewRecipients(companyId: string, campaign: CampaignRec
     unavailableReason: null,
   };
   const all = await segmentRecipients(companyId, source);
-  if (all.length <= limit) return all;
+  if (all.length <= limit) return withGreetings(companyId, all, personalizedGreeting);
   // Spread across the list and include one without a vehicle, so fallbacks are visible (spec §15).
   const picked = Array.from({ length: limit }, (_, i) => all[Math.floor((i * all.length) / limit)]);
   const missing = all.find((r) => !r.vehicleBrand);
   if (missing && !picked.includes(missing)) picked[limit - 1] = missing;
-  return picked;
+  return withGreetings(companyId, picked, personalizedGreeting);
 }
