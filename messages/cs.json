@@ -38,7 +38,19 @@
     "readOnly": "pouze čtení",
     "exit": "Ukončit",
     "open": "Otevřít účet klienta",
-    "readOnlyHint": "V klientském pohledu jen pro čtení"
+    "readOnlyHint": "V klientském pohledu jen pro čtení",
+    "dialogDescription": "Uvidíte klientský přehled servisu {company} jen pro čtení. Otevření se zapíše do auditního logu.",
+    "reason": "Důvod",
+    "note": "Poznámka (nepovinné)",
+    "cancel": "Zrušit",
+    "start": "Otevřít jen pro čtení",
+    "reasons": {
+      "client_request": "Na žádost klienta",
+      "troubleshooting": "Řešení problému",
+      "onboarding": "Zavádění servisu",
+      "results_review": "Kontrola výsledků",
+      "other": "Jiný důvod"
+    }
   },
   "status": {
     "active": "Aktivní",
@@ -783,7 +795,8 @@
     "conversion_outside_window": "Datum je mimo okno kampaně, návrat se do ní nepočítá.",
     "conversion_newer_campaign": "Zákazníka mezitím oslovila novější kampaň. Návrat zapište u ní.",
     "conversion_wrong_stage": "Tento krok teď nejde. Obnovte stránku.",
-    "conversion_revenue_required": "Zadejte částku zakázky."
+    "conversion_revenue_required": "Zadejte částku zakázky.",
+    "rate_limited": "Příliš mnoho požadavků. Zkuste to prosím za chvíli."
   },
   "common": {
     "perMonth": "{value} / měsíc",
@@ -882,7 +895,8 @@
       "generic": "Něco se pokazilo. Zkuste to znovu.",
       "too_short": "Heslo musí mít alespoň 12 znaků.",
       "needs_letters_and_digits": "Heslo musí obsahovat písmena i číslice.",
-      "mismatch": "Hesla se neshodují."
+      "mismatch": "Hesla se neshodují.",
+      "rate_limited": "Příliš mnoho pokusů. Zkuste to prosím za chvíli."
     }
   },
   "emails": {
@@ -1457,7 +1471,8 @@
     "text": "Nechcete už dostávat SMS od servisu {shop}? Jedním kliknutím se odhlásíte.",
     "button": "Odhlásit se",
     "doneTitle": "Jste odhlášeni",
-    "doneText": "Od servisu {shop} vám už žádné SMS nepřijdou."
+    "doneText": "Od servisu {shop} vám už žádné SMS nepřijdou.",
+    "tooMany": "Příliš mnoho pokusů z tohoto zařízení. Zkuste to prosím za pár minut."
   },
   "campaignResults": {
     "title": "Výsledky",

@@ -56,7 +56,12 @@ in the order of spec §40. The demo stays available as `DATA_SOURCE=demo`
 | 13. Opt-out page, suppression, DLR/inbound webhooks, BulkGate adapter                                 | done ([ADR-013](docs/decisions/ADR-013-optout-dlr.md))      |
 | 14. Conversions: pipeline buttons, attribution rules, monthly stats, closing windows                  | done ([ADR-014](docs/decisions/ADR-014-conversions.md))     |
 | 15. Dashboards: client Přehled/Výsledky, admin overview, Attention Required, digest                   | done ([ADR-015](docs/decisions/ADR-015-dashboards.md))      |
-| 16. Hardening                                                                                         | next                                                        |
+| 16. Hardening: headers, rate limits, Sentry, health, retention, backups + drill, runbooks             | done ([ADR-016](docs/decisions/ADR-016-hardening.md))       |
+
+Phase 1 is code-complete. What still needs the owner (production accounts, a real SMS test on
+the staging whitelist, the first production backup and restore drill, legal documents) is
+listed in [docs/definition-of-done.md](docs/definition-of-done.md). Operations:
+[docs/runbooks/](docs/runbooks/README.md).
 
 ### Running against local Supabase
 

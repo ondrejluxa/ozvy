@@ -31,12 +31,17 @@ export default async function ClientCampaignPage(props: PageProps<"/app/campaign
             role: membership.role,
             requiresClientApproval: membership.requiresClientApproval,
           }),
-          canPause: can({ isPlatformAdmin: session.isPlatformAdmin, ...membership }, "campaigns.pause"),
+          // The operator's support view is read-only (spec §10).
+          canPause:
+            !membership.supportView &&
+            can({ isPlatformAdmin: session.isPlatformAdmin, ...membership }, "campaigns.pause"),
         }}
         recipients={{
           filter: typeof sp.stav === "string" ? sp.stav : undefined,
           page: typeof sp.strana === "string" ? sp.strana : undefined,
-          canMark: can({ isPlatformAdmin: session.isPlatformAdmin, ...membership }, "conversions.mark"),
+          canMark:
+            !membership.supportView &&
+            can({ isPlatformAdmin: session.isPlatformAdmin, ...membership }, "conversions.mark"),
           customerHref: "/app/customers",
         }}
       />

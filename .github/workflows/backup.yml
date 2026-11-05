@@ -1,0 +1,63 @@
+# Independent nightly logical backup (spec §30): pg_dump (custom format) of
+# the production database, encrypted with age, uploaded to EU object storage
+# in another provider's account (Cloudflare R2 EU or S3 eu-central-1) with a
+# 30-day lifecycle rule on the bucket. Supabase's own daily backups are the
+# first line; this protects against losing the Supabase account.
+#
+# Repository secrets (environment "production"):
+#   BACKUP_DATABASE_URL   postgres://… direct connection (not the pooler), read-only role
+#   BACKUP_AGE_RECIPIENT  age public key; the private key lives offline with the owner
+#   BACKUP_S3_BUCKET, BACKUP_S3_ENDPOINT, BACKUP_S3_ACCESS_KEY_ID, BACKUP_S3_SECRET_ACCESS_KEY
+# Restore: docs/runbooks/restore-from-dump.md. Drill log: docs/runbooks/restore-drill-log.md.
+name: Nightly backup
+
+on:
+  schedule:
+    - cron: "30 1 * * *" # 02:30 (winter) / 03:30 (summer) Prague, around the quiet night window
+  workflow_dispatch:
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+jobs:
+  dump:
+    name: pg_dump → age → object storage
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 30
+    env:
+      HAS_SECRETS: ${{ secrets.BACKUP_DATABASE_URL != '' && secrets.BACKUP_AGE_RECIPIENT != '' && secrets.BACKUP_S3_BUCKET != '' }}
+    steps:
+      - name: Skip until the backup secrets are configured
+        if: env.HAS_SECRETS != 'true'
+        run: echo "::warning::Backup secrets are not configured; nothing was dumped."
+
+      - name: Install PostgreSQL 17 client and age
+        if: env.HAS_SECRETS == 'true'
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -q
+          sudo apt-get install -y -q postgresql-client-17 age
+
+      - name: Dump, encrypt, upload
+        if: env.HAS_SECRETS == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+          AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.BACKUP_S3_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_S3_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+          ENDPOINT: ${{ secrets.BACKUP_S3_ENDPOINT }}
+        run: |
+          set -euo pipefail
+          name="navrat-$(date -u +%Y%m%dT%H%MZ).dump"
+          # Plaintext never touches the disk: dump → age → file.
+          /usr/lib/postgresql/17/bin/pg_dump "$DATABASE_URL" -Fc --no-owner --no-privileges | age -r "$AGE_RECIPIENT" -o "$name.age"
+          test -s "$name.age"
+          aws s3 cp "$name.age" "s3://$BUCKET/daily/$name.age" --endpoint-url "$ENDPOINT" --only-show-errors
+          echo "Uploaded $name.age ($(du -h "$name.age" | cut -f1))"
+          rm -f "$name.age"

@@ -79,8 +79,10 @@ jobs:
       - name: Seed the local stack (spec §31)
         run: pnpm db:seed
       - run: pnpm exec playwright install --with-deps chromium
-      - name: E2E on Supabase (auth, MFA, invitations, scoping, seeded world, company onboarding)
+      - name: E2E on Supabase (auth, imports, campaigns, sending, opt-out, conversions, dashboards, hardening)
         run: pnpm test:e2e:supabase
+      - name: Restore drill (dump, restore into a fresh database, compare counts and RLS)
+        run: pnpm db:restore-drill
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

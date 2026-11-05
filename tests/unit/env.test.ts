@@ -95,6 +95,7 @@ describe("parseEnv", () => {
       INNGEST_EVENT_KEY: "e",
       INNGEST_SIGNING_KEY: "s",
       JOB_RUNNER: "inngest",
+      SENTRY_DSN: "https://key@o1.ingest.de.sentry.io/1",
       EMAIL_PROVIDER: "smtp",
       SMTP_URL: "smtp://mail.example.com:587",
     });

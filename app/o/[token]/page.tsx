@@ -24,7 +24,9 @@ export default async function OptOutPage(props: PageProps<"/o/[token]">) {
   if (env.DATA_SOURCE !== "supabase") notFound();
   const target = await optOutTarget(createServiceClient(), token);
   if (!target) notFound();
-  const done = target.alreadyOptedOut || (await props.searchParams).hotovo === "1";
+  const sp = await props.searchParams;
+  const done = target.alreadyOptedOut || sp.hotovo === "1";
+  const tooMany = !done && sp.pozdeji === "1";
   const t = await getTranslations("optOut");
 
   return (
@@ -41,6 +43,11 @@ export default async function OptOutPage(props: PageProps<"/o/[token]">) {
           <form action={optOutAction} className="mt-4 space-y-4">
             <h1 className="text-lg font-semibold text-ink">{t("title")}</h1>
             <p className="text-sm text-ink-2">{t("text", { shop: target.shopName })}</p>
+            {tooMany && (
+              <p role="alert" className="text-[13px] text-warn">
+                {t("tooMany")}
+              </p>
+            )}
             <input type="hidden" name="token" value={token} />
             <Button type="submit" variant="default" size="lg" className="w-full">
               {t("button")}

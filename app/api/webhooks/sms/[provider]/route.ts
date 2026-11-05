@@ -3,6 +3,7 @@ import { env } from "@/lib/env";
 import { enqueue } from "@/lib/jobs/runner";
 import { storeEvents } from "@/lib/jobs/opt-out-core";
 import { getSmsProvider } from "@/lib/providers/sms";
+import { allowRate } from "@/lib/rate-limit";
 
 /**
  * SMS gateway callbacks (spec §16 step 5, §17): delivery reports and inbound
@@ -21,6 +22,9 @@ async function handle(req: Request, ctx: RouteContext<"/api/webhooks/sms/[provid
     return new Response("Not found", { status: 404 });
   }
   if (!(await provider.verifyWebhook(req))) return new Response("Unauthorized", { status: 401 });
+  if (!(await allowRate("webhook", { provider: provider.id }))) {
+    return new Response("Too many requests", { status: 429, headers: { "Retry-After": "60" } });
+  }
   let events;
   try {
     events = await provider.parseWebhook(req);

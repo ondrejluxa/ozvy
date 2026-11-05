@@ -6,6 +6,7 @@ import { AiOutputError, generateCampaignTemplates, rewriteCampaignTemplate, type
 import { attachGenerations, logGeneration, setChosenVariant } from "../ai/log";
 import type { TextModel } from "../ai/model";
 import { getTextModel } from "../ai/provider";
+import { allowRate } from "../rate-limit";
 import { requireContext, type AuthContext } from "../auth/context";
 import { ownerEmails } from "../auth/company-contacts";
 import { audit, type AuditAction } from "../audit";
@@ -123,6 +124,8 @@ async function generateLogged(
   kind: "campaign_template" | "campaign_rewrite",
   call: (model: TextModel) => Promise<GenerationResult>,
 ): Promise<{ variants: string[]; generationId: string | null }> {
+  // 30 generations or rewrites per user and hour (spec §22).
+  if (!(await allowRate("ai", { user: ctx.userId ?? "unknown" }))) throw new DomainError("rate_limited");
   const model = await getTextModel();
   const log = (r: Omit<GenerationResult, "variants">, output: Record<string, unknown>, chosenIndex: number | null) =>
     logGeneration({

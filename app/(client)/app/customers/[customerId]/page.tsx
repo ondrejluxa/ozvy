@@ -15,12 +15,18 @@ export default async function ClientCustomerPage(props: PageProps<"/app/customer
     const { membership } = await requireClientCompany(`/app/customers/${customerId}`);
     const data = await getRealCustomerDetail(membership.companyId, customerId);
     if (!data) notFound();
-    const canEdit = await requireContext({ permission: "customers.edit_contact", companyId: membership.companyId })
-      .then(() => true)
-      .catch(() => false);
-    const canMark = await requireContext({ permission: "conversions.mark", companyId: membership.companyId })
-      .then(() => true)
-      .catch(() => false);
+    // The operator's support view is read-only (spec §10).
+    const writable = !membership.supportView;
+    const canEdit =
+      writable &&
+      (await requireContext({ permission: "customers.edit_contact", companyId: membership.companyId })
+        .then(() => true)
+        .catch(() => false));
+    const canMark =
+      writable &&
+      (await requireContext({ permission: "conversions.mark", companyId: membership.companyId })
+        .then(() => true)
+        .catch(() => false));
     return <RealCustomerDetail data={data} backHref="/app/customers" canEdit={canEdit} canMark={canMark} />;
   }
 

@@ -5,6 +5,7 @@ import { runLifecycleRecompute, runNightlyLifecycle, runNightlyStatsJob } from "
 import type { JobEvent } from "./runner";
 import { runDailyDigestJob, runHealthCheckJob } from "./health";
 import { runMessaging, runProviderEvents } from "./messaging";
+import { runRetentionJob } from "./retention";
 import { runVocativeRefresh } from "./vocatives";
 
 /**
@@ -116,6 +117,12 @@ export const dailyDigest = inngest.createFunction(
   async ({ step }) => step.run("digest", () => runDailyDigestJob()),
 );
 
+/** Retention (spec §21), 04:00 Prague, after the lifecycle and stats jobs. */
+export const retentionNightly = inngest.createFunction(
+  { id: "retention-nightly", retries: 2, triggers: [{ cron: "TZ=Europe/Prague 0 4 * * *" }] },
+  async ({ step }) => step.run("retention", () => runRetentionJob()),
+);
+
 export const functions = [
   importParse,
   importValidate,
@@ -128,4 +135,5 @@ export const functions = [
   messagingEvents,
   healthCheck,
   dailyDigest,
+  retentionNightly,
 ];

@@ -7,6 +7,7 @@ import { UserMenu } from "@/components/shell/user-menu";
 import { requireClientCompany } from "@/lib/auth/client-company";
 import { getSupportView } from "@/lib/auth/context";
 import { exitClientViewAction } from "@/lib/actions/demo";
+import { endSupportViewAction } from "@/lib/actions/support-view";
 import { getCompanyBasics } from "@/lib/db/queries";
 import { env } from "@/lib/env";
 
@@ -29,11 +30,29 @@ export default async function ClientLayout({ children }: LayoutProps<"/app">) {
     const { session, membership } = await requireClientCompany("/app");
     const brand = <ClientBrand name={membership.companyName} city={null} />;
     const footer = <UserMenu session={session} companyId={membership.companyId} />;
+    const tView = await getTranslations("supportView");
     return (
       <div className="flex flex-1">
         <Sidebar items={items} brand={brand} footer={footer} />
         <div className="min-w-0 flex-1">
           <MobileNav items={items} brand={brand} footer={footer} />
+          {membership.supportView && (
+            <div
+              className="sticky top-20 z-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-b border-warn-line bg-warn-soft px-4 py-2 text-[13px] text-warn lg:top-8"
+              data-testid="support-view-banner"
+            >
+              <Eye className="size-4 shrink-0" aria-hidden />
+              <span>
+                {tView("banner", { company: membership.companyName })} ·{" "}
+                <strong className="font-semibold">{tView("readOnly")}</strong>
+              </span>
+              <form action={endSupportViewAction}>
+                <button type="submit" className="font-semibold underline underline-offset-2 hover:no-underline">
+                  {tView("exit")}
+                </button>
+              </form>
+            </div>
+          )}
           {main}
         </div>
       </div>

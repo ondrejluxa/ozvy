@@ -13,6 +13,8 @@ export interface MembershipInfo {
   role: CompanyRole;
   serviceMode: ServiceMode;
   requiresClientApproval: boolean;
+  /** The operator's read-only support view of this shop (spec §10), not a real membership. */
+  supportView?: boolean;
 }
 
 export interface SessionInfo {

@@ -47,7 +47,9 @@ export type AuditAction =
   | "conversion.booked"
   | "conversion.completed"
   | "conversion.updated"
-  | "conversion.reverted";
+  | "conversion.reverted"
+  | "admin.support_view_started"
+  | "admin.support_view_ended";
 
 export interface AuditEntry {
   action: AuditAction;

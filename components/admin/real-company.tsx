@@ -1,4 +1,5 @@
 import { CheckCircle2, Circle } from "lucide-react";
+import { SupportViewDialog } from "@/components/admin/support-view-dialog";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { CompanyName } from "@/components/demo/demo-labels";
@@ -23,9 +24,12 @@ export async function RealCompanyHeader({ company }: { company: CompanyDetail })
   return (
     <>
       <div className="mb-5 min-w-0">
-        <h1 className="text-[22px] font-semibold leading-tight tracking-tight text-ink sm:text-[26px]">
-          <CompanyName name={company.name} />
-        </h1>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <h1 className="text-[22px] font-semibold leading-tight tracking-tight text-ink sm:text-[26px]">
+            <CompanyName name={company.name} />
+          </h1>
+          <SupportViewDialog companyId={company.id} companyName={company.name} />
+        </div>
         <p className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-muted">
           {company.city && <span>{company.city} ·</span>}
           <span>{t("meta.customers", { count: company.customers })} ·</span>

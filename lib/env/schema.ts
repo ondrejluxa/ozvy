@@ -147,6 +147,9 @@ const schema = z
     if (env.APP_ENV === "production" && env.JOB_RUNNER !== "inngest") {
       fail("JOB_RUNNER", "Production runs background jobs on Inngest.");
     }
+    if (env.APP_ENV === "production" && !env.SENTRY_DSN) {
+      fail("SENTRY_DSN", "Production reports errors to Sentry (PII scrubbed).");
+    }
     if (env.APP_ENV === "production" && env.DEV_ALLOW_REAL_LOOKING_DATA === "true") {
       fail("DEV_ALLOW_REAL_LOOKING_DATA", "DEV_ALLOW_REAL_LOOKING_DATA is a development flag.");
     }

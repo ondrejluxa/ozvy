@@ -15,6 +15,7 @@ import { env } from "../env";
 import { invitationEmail } from "../emails/invitation";
 import { getEmailProvider } from "../providers/email";
 import type { FormState } from "./auth";
+import { allowRate, requestIp } from "../rate-limit";
 import { run, type ActionResult } from "./result";
 
 /**
@@ -93,6 +94,7 @@ export async function acceptInvitationAction(_prev: FormState, form: FormData): 
   const password = String(form.get("password") ?? "");
   const issues = passwordIssues(password, String(form.get("confirm") ?? ""));
   const values = { fullName };
+  if (!(await allowRate("invitation", { ip: await requestIp() }))) return { error: "rate_limited", values };
   if (!fullName) return { error: "name_required", values };
   if (issues.length) return { issues, values };
 
@@ -120,6 +122,7 @@ export async function acceptInvitationAction(_prev: FormState, form: FormData): 
 
 /** Existing user who is signed in with the invited address. */
 export async function acceptInvitationAsCurrentUserAction(_prev: FormState, form: FormData): Promise<FormState> {
+  if (!(await allowRate("invitation", { ip: await requestIp() }))) return { error: "rate_limited" };
   const invitation = await loadInvitation(String(form.get("token") ?? ""));
   const session = await getSessionInfo();
   if (!invitation || invitation.state !== "valid") return { error: "invitation_invalid" };

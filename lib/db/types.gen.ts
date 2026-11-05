@@ -394,6 +394,7 @@ export type Database = {
           address_line: string | null;
           average_job_value_minor: number;
           city: string | null;
+          closed_at: string | null;
           contact_person: string | null;
           country: string;
           created_at: string;
@@ -426,6 +427,7 @@ export type Database = {
           address_line?: string | null;
           average_job_value_minor?: number;
           city?: string | null;
+          closed_at?: string | null;
           contact_person?: string | null;
           country?: string;
           created_at?: string;
@@ -458,6 +460,7 @@ export type Database = {
           address_line?: string | null;
           average_job_value_minor?: number;
           city?: string | null;
+          closed_at?: string | null;
           contact_person?: string | null;
           country?: string;
           created_at?: string;
@@ -660,6 +663,7 @@ export type Database = {
           notes: string | null;
           phone_e164: string | null;
           phone_type: string;
+          retention_flagged_at: string | null;
           search_name: string | null;
           source_import_id: string | null;
           updated_at: string;
@@ -683,6 +687,7 @@ export type Database = {
           notes?: string | null;
           phone_e164?: string | null;
           phone_type?: string;
+          retention_flagged_at?: string | null;
           search_name?: never;
           source_import_id?: string | null;
           updated_at?: string;
@@ -706,6 +711,7 @@ export type Database = {
           notes?: string | null;
           phone_e164?: string | null;
           phone_type?: string;
+          retention_flagged_at?: string | null;
           search_name?: never;
           source_import_id?: string | null;
           updated_at?: string;
@@ -1264,6 +1270,24 @@ export type Database = {
         };
         Relationships: [];
       };
+      rate_limits: {
+        Row: {
+          hits: number;
+          key: string;
+          window_start: string;
+        };
+        Insert: {
+          hits?: number;
+          key: string;
+          window_start: string;
+        };
+        Update: {
+          hits?: number;
+          key?: string;
+          window_start?: string;
+        };
+        Relationships: [];
+      };
       segments: {
         Row: {
           archived_at: string | null;
@@ -1596,6 +1620,10 @@ export type Database = {
         }[];
       };
       flag_stuck_messages: { Args: { p_after?: string; p_now: string }; Returns: number };
+      hit_rate_limit: {
+        Args: { p_increment?: boolean; p_key: string; p_limit: number; p_now?: string; p_window_seconds: number };
+        Returns: boolean;
+      };
       job_value_median: {
         Args: { p_categories: Database["public"]["Enums"]["service_category"][]; p_company_id: string };
         Returns: {
@@ -1696,6 +1724,7 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      run_retention: { Args: { p_now: string }; Returns: Json };
       segment_audience: {
         Args: { p_company_id: string; p_preset_key?: string; p_rules: Json; p_today?: string };
         Returns: {

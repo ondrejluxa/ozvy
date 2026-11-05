@@ -24,17 +24,20 @@
     "db:seed": "tsx --env-file=.env.supabase.local supabase/seed/seed.ts",
     "db:fixtures": "tsx scripts/db/generate-fixtures.ts",
     "db:test": "supabase test db",
+    "db:restore-drill": "tsx scripts/db/restore-drill.ts",
     "db:test:local": "tsx scripts/db/pglite-test.ts",
     "db:types": "supabase gen types typescript --local --schema public > lib/db/types.gen.ts && prettier --write lib/db/types.gen.ts",
     "jobs:nightly": "tsx --env-file=.env.supabase.local scripts/jobs/nightly.ts",
     "jobs:tick": "tsx --env-file=.env.supabase.local scripts/jobs/tick.ts",
-    "jobs:health": "tsx --env-file=.env.supabase.local scripts/jobs/health.ts"
+    "jobs:health": "tsx --env-file=.env.supabase.local scripts/jobs/health.ts",
+    "jobs:retention": "tsx --env-file=.env.supabase.local scripts/jobs/retention.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "4.0.96",
     "@ai-sdk/openai": "4.0.108",
     "@radix-ui/react-dialog": "^1.1.23",
     "@radix-ui/react-slot": "^1.3.3",
+    "@sentry/nextjs": "11.11.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
     "ai": "7.0.162",

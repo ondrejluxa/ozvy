@@ -8,6 +8,7 @@ import { audit } from "../audit";
 import { createSupabaseServerClient } from "../db/supabase/server-client";
 import { passwordIssues, type PasswordIssue } from "../domain/passwords";
 import { env } from "../env";
+import { allowRate, requestIp } from "../rate-limit";
 
 /**
  * Auth server actions (spec §20). Error messages are generic and never
@@ -32,6 +33,9 @@ export async function signInAction(_prev: FormState, form: FormData): Promise<Fo
     .safeParse(Object.fromEntries(form));
   const values = { email: String(form.get("email") ?? "").slice(0, 254) };
   if (!parsed.success) return { error: "invalid_credentials", values };
+  // Only failed attempts count; checked before the attempt (spec §22).
+  const subjects = { ip: await requestIp(), email: parsed.data.email };
+  if (!(await allowRate("login", subjects, { increment: false }))) return { error: "rate_limited", values };
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -39,6 +43,7 @@ export async function signInAction(_prev: FormState, form: FormData): Promise<Fo
     password: parsed.data.password,
   });
   if (error || !data.user) {
+    await allowRate("login", subjects);
     await audit({ action: "auth.login_failed", actorType: "user" });
     return { error: "invalid_credentials", values };
   }
@@ -65,7 +70,8 @@ export async function signOutAction(): Promise<void> {
 
 export async function requestPasswordResetAction(_prev: FormState, form: FormData): Promise<FormState> {
   const email = emailSchema.safeParse(form.get("email"));
-  if (email.success) {
+  // Over the limit nothing is sent, but the answer stays the same (no account probing).
+  if (email.success && (await allowRate("passwordReset", { ip: await requestIp(), email: email.data }))) {
     const supabase = await createSupabaseServerClient();
     // The email template appends token_hash & type to this URL (supabase/templates/recovery.html).
     await supabase.auth.resetPasswordForEmail(email.data, {
