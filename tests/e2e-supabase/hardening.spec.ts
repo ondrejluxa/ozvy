@@ -122,6 +122,16 @@ test.describe.serial("hardening", () => {
       .single();
     expect(started!.metadata).toMatchObject({ reason: "troubleshooting", note: `E2E kontrola ${run}` });
 
+    // Read-only at the server too: an operator write from the admin screens is refused.
+    await page.goto("/admin/system");
+    await expect(page.getByTestId("support-view-admin-banner")).toContainText("Autoservis Dvořák s.r.o.");
+    await page.getByLabel("Důvod zastavení").fill("E2E: má být odmítnuto");
+    await page.getByRole("button", { name: "Zastavit veškeré odesílání" }).click();
+    await expect(page.getByText("V režimu podpory jsou změny zablokované.", { exact: false })).toBeVisible();
+    const { data: settings } = await service.from("platform_settings").select("sending_paused").single();
+    expect(settings!.sending_paused).toBe(false);
+    await page.goto("/app");
+
     await page.getByTestId("support-view-banner").getByRole("button", { name: "Ukončit" }).click();
     await expect(page).toHaveURL(new RegExp(`/admin/companies/${companyId}$`));
     const { count } = await service

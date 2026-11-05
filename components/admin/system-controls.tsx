@@ -7,7 +7,12 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/inputs";
-import { resolveStuckMessageAction, runQueueNowAction, setKillSwitchAction } from "@/lib/actions/sending";
+import {
+  resetBreakerAction,
+  resolveStuckMessageAction,
+  runQueueNowAction,
+  setKillSwitchAction,
+} from "@/lib/actions/sending";
 
 type Result = { ok: true } | { ok: false; error: { code: string } };
 
@@ -59,6 +64,23 @@ export function KillSwitch({ paused }: { paused: boolean }) {
         {t("pauseAll")}
       </Button>
     </div>
+  );
+}
+
+/** Ends the breaker's pause: the next tick sends one probe message (spec §24). */
+export function ResetBreakerButton() {
+  const t = useTranslations("system");
+  const { pending, call } = useCall();
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={pending}
+      onClick={() => call(() => resetBreakerAction(), t("breakerResetToast"))}
+    >
+      {pending && <Loader2 className="animate-spin" aria-hidden />}
+      {t("breakerReset")}
+    </Button>
   );
 }
 

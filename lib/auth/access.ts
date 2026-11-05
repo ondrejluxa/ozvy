@@ -29,7 +29,21 @@ export interface SessionInfo {
   memberships: MembershipInfo[];
 }
 
-export type AccessDenial = "unauthenticated" | "mfa_required" | "mfa_enrollment_required" | "forbidden";
+export type AccessDenial =
+  "unauthenticated" | "mfa_required" | "mfa_enrollment_required" | "forbidden" | "support_view_read_only";
+
+/**
+ * While the operator's support view is open (spec §10), every write is
+ * refused at the server, not only hidden in the UI. Reads (pages, downloads)
+ * pass, and so do the actions that start or end the support view itself.
+ */
+export function supportViewBlocks(
+  session: Pick<SessionInfo, "isPlatformAdmin"> | null,
+  supportViewActive: boolean,
+  opts: { read?: boolean; allowInSupportView?: boolean },
+): boolean {
+  return Boolean(session?.isPlatformAdmin) && supportViewActive && !opts.read && !opts.allowInSupportView;
+}
 
 export type AccessResult =
   { ok: true; membership: MembershipInfo | null; isPlatformAdmin: boolean } | { ok: false; reason: AccessDenial };

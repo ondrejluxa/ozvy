@@ -61,7 +61,8 @@ export function createBulkGateProvider(opts: BulkGateOptions): MessagingProvider
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(body),
-        signal: AbortSignal.timeout(opts.timeoutMs ?? 15_000),
+        // 10 s × a claim batch of 10 stays far below the function limit (ADR-017).
+        signal: AbortSignal.timeout(opts.timeoutMs ?? 10_000),
       });
       let json: Record<string, unknown> = {};
       try {

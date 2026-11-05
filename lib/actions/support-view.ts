@@ -20,7 +20,10 @@ export async function startSupportViewAction(form: FormData): Promise<void> {
     })
     .safeParse(Object.fromEntries(form));
   if (!data.success || env.DATA_SOURCE !== "supabase") redirect("/admin/companies");
-  const ctx = await requireContext({ permission: "admin.access", companyId: data.data.companyId });
+  const ctx = await requireContext(
+    { permission: "admin.access", companyId: data.data.companyId },
+    { allowInSupportView: true },
+  );
   await audit({
     action: "admin.support_view_started",
     actorType: "admin",
@@ -41,7 +44,7 @@ export async function startSupportViewAction(form: FormData): Promise<void> {
 }
 
 export async function endSupportViewAction(): Promise<void> {
-  const ctx = await requireContext({ permission: "admin.access" });
+  const ctx = await requireContext({ permission: "admin.access" }, { allowInSupportView: true });
   const store = await cookies();
   const companyId = store.get(SUPPORT_VIEW_COOKIE)?.value;
   store.delete(SUPPORT_VIEW_COOKIE);

@@ -6,7 +6,20 @@ import { generateCampaignTemplates, rewriteCampaignTemplate } from "../ai/client
 import { createCampaign, markBooked, markCompleted, simulateSendBatch, type SendProgress } from "../db/mutations";
 import { PRESETS, type PresetKey } from "../domain/segments/presets";
 import { toMinor } from "../domain/money";
-import { run, type ActionResult } from "./result";
+import { requireContext } from "../auth/context";
+import { env } from "../env";
+import { fail, run, type ActionResult } from "./result";
+
+/**
+ * Phase 0 demo actions on the in-memory store (DATA_SOURCE=demo). On real
+ * data they refuse before doing anything; the real flows live in
+ * real-campaigns.ts and conversions.ts (ADR-017).
+ */
+async function demoGuard(): Promise<ActionResult<never> | null> {
+  if (env.DATA_SOURCE !== "demo") return fail("forbidden");
+  await requireContext({ permission: "admin.access" });
+  return null;
+}
 
 const presetKey = z.enum(PRESETS.map((p) => p.key) as [PresetKey, ...PresetKey[]]);
 const id = z.string().uuid();
@@ -24,6 +37,8 @@ const createSchema = z.object({
 export async function createCampaignAction(
   input: z.input<typeof createSchema>,
 ): Promise<ActionResult<{ campaignId: string }>> {
+  const blocked = await demoGuard();
+  if (blocked) return blocked;
   return run(() => {
     const data = createSchema.parse(input);
     return createCampaign({ ...data, scheduledAt: new Date(data.scheduledAt) });
@@ -34,12 +49,16 @@ export async function simulateSendBatchAction(input: {
   companyId: string;
   campaignId: string;
 }): Promise<ActionResult<SendProgress>> {
+  const blocked = await demoGuard();
+  if (blocked) return blocked;
   return run(() => simulateSendBatch(z.object({ companyId: id, campaignId: id }).parse(input)));
 }
 
 export async function generateTemplateAction(input: {
   presetKey: string;
 }): Promise<ActionResult<{ variants: string[] }>> {
+  const blocked = await demoGuard();
+  if (blocked) return blocked;
   return run(async () => {
     const data = z.object({ presetKey }).parse(input);
     const result = await generateCampaignTemplates({ presetKey: data.presetKey, now: new Date() });
@@ -52,6 +71,8 @@ export async function rewriteTemplateAction(input: {
   current: string;
   action: string;
 }): Promise<ActionResult<{ template: string }>> {
+  const blocked = await demoGuard();
+  if (blocked) return blocked;
   return run(async () => {
     const data = z
       .object({
@@ -71,6 +92,8 @@ export async function markBookedAction(input: {
   companyId: string;
   enrollmentId: string;
 }): Promise<ActionResult<void>> {
+  const blocked = await demoGuard();
+  if (blocked) return blocked;
   const result = await run(() => markBooked(enrollmentInput.parse(input)));
   if (result.ok) refresh();
   return result;
@@ -81,6 +104,8 @@ export async function markCompletedAction(input: {
   enrollmentId: string;
   revenueCzk: number;
 }): Promise<ActionResult<void>> {
+  const blocked = await demoGuard();
+  if (blocked) return blocked;
   const result = await run(() => {
     const data = enrollmentInput.extend({ revenueCzk: z.number().int().min(1).max(500_000) }).parse(input);
     markCompleted({

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { KillSwitch, ReviewButtons, RunQueueButton } from "@/components/admin/system-controls";
+import { KillSwitch, ResetBreakerButton, ReviewButtons, RunQueueButton } from "@/components/admin/system-controls";
 import { PageHeader } from "@/components/shell/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,7 +25,7 @@ export default async function SystemPage() {
   if (env.DATA_SOURCE !== "supabase") notFound();
   await requirePageContext({ permission: "admin.access" }, "/admin/system");
   const [t, overview] = await Promise.all([getTranslations("system"), getSystemOverview()]);
-  const { killSwitch, queue, review } = overview;
+  const { killSwitch, breaker, queue, review } = overview;
 
   return (
     <>
@@ -47,6 +47,27 @@ export default async function SystemPage() {
               <p className="text-[13px] text-muted">{t("killSwitchHint")}</p>
             )}
             <KillSwitch paused={killSwitch.paused} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("breaker")}</CardTitle>
+            <Badge tone={breaker.pausedUntil ? "danger" : "accent"} data-testid="breaker-state">
+              {breaker.pausedUntil ? t("breakerOpen") : t("breakerClosed")}
+            </Badge>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {breaker.pausedUntil ? (
+              <>
+                <p className="text-sm text-danger">
+                  {t("breakerPausedUntil", { at: formatDateTime(breaker.pausedUntil) })} {breaker.reason}
+                </p>
+                <ResetBreakerButton />
+              </>
+            ) : (
+              <p className="text-[13px] text-muted">{t("breakerHint")}</p>
+            )}
           </CardContent>
         </Card>
 

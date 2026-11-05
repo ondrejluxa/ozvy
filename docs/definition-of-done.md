@@ -35,3 +35,39 @@ owner: accounts, production credentials, legal work.
 | Nightly independent backup and one restore drill                                  | Partly      | `backup.yml` ready (needs secrets); local drill PASS in `runbooks/restore-drill-log.md`. **Open:** production backup and the first production drill.                                                                               |
 | Typecheck, lint, unit, DB, integration and E2E green in CI                        | Locally ✅  | `.github/workflows/ci.yml` runs all of them; **open:** the first run on GitHub (nothing has been pushed).                                                                                                                          |
 | Signed DPA template, sub-processor list, legal review                             | **Open**    | Owner and lawyer.                                                                                                                                                                                                                  |
+
+## Phase 1 review (ADR-017)
+
+The review before the first pilot found and fixed these. Each has a regression test.
+
+| Finding                                                                                            | Status   | Evidence                                                                    |
+| -------------------------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------- |
+| Operator MFA was enforced only in the app; a password-only session read every shop through the API | ✅ fixed | `16_review_fixes.test.sql`, `review-fixes.spec.ts`                          |
+| Campaign snapshots stopped at 1,000 recipients (API row limit)                                     | ✅ fixed | `review-fixes.test.ts`, `review-fixes.spec.ts` (real 1,000+ audience)       |
+| Production could start with example/localhost addresses in SMS and e-mail links                    | ✅ fixed | `env.test.ts`                                                               |
+| Shop owners could change operator-controlled company columns (sender name, price, …)               | ✅ fixed | `16_review_fixes.test.sql`                                                  |
+| No explicit function time limit; up to 500 sequential sends per tick                               | ✅ fixed | `review-fixes.spec.ts` (time budget), `dispatcher-crash.spec.ts`            |
+| Inbound replies and numbers kept forever in gateway events; numbers never redacted                 | ✅ fixed | `16_review_fixes.test.sql`, `messaging.spec.ts`, `review-fixes.test.ts`     |
+| Support view read-only only in the UI                                                              | ✅ fixed | `hardening.spec.ts`, `review-fixes.test.ts`                                 |
+| Demo actions callable on real data                                                                 | ✅ fixed | `action-guards.test.ts`                                                     |
+| SMS gateway circuit breaker (spec §24) missing                                                     | ✅ built | `review-fixes.spec.ts` (trip, alert, pause, probe, recovery, no duplicates) |
+
+The review also found gaps against the spec that are not built yet. They are listed in the
+pilot checklist of the review report:
+
+- **§23 audit actions:** 12 of 35 are never written: `user.role_changed`, `user.removed`,
+  `customer.deleted`, `customer.exported`, `conversion.confirmed_bulk`,
+  `admin.company_viewed`, `admin.write_mode_enabled`, `dsr.created`, `dsr.completed`. Some
+  others are written under other names (`campaign.started` / `completed`,
+  `conversion.booked` / `completed` / `updated` / `reverted`). Most belong to features that do
+  not exist yet. The "Audit entries for spec §23 actions" row above is therefore **partial**.
+- **Missing features:**
+  - data subject requests: customer export and erasure, the `data_subject_requests` log;
+  - the client "Nastavení" page (users, data and privacy, DPA download);
+  - user role change and removal;
+  - an audit log viewer;
+  - the operator's all-campaigns list.
+- **Smaller differences:**
+  - login lockout after 10 failures, not the spec's 5;
+  - the customer-retention flag never fires on imported customers (their records are new), and
+    shops have no screen to object.

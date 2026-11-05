@@ -34,6 +34,14 @@ create function auth.role() returns text language sql stable as $$
   )::text
 $$;
 
+-- The whole claims object (aal, amr, …), as in Supabase.
+create function auth.jwt() returns jsonb language sql stable as $$
+  select coalesce(
+    nullif(current_setting('request.jwt.claim', true), ''),
+    nullif(current_setting('request.jwt.claims', true), '')
+  )::jsonb
+$$;
+
 grant usage on schema auth to anon, authenticated, service_role;
 grant execute on all functions in schema auth to anon, authenticated, service_role;
 grant usage on schema extensions to anon, authenticated, service_role;

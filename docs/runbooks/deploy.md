@@ -6,9 +6,21 @@ only the owner can create. This is the checklist for the first deploy and for ev
 ## One-time setup (owner)
 
 1. **Supabase:** new project in EU (Frankfurt), Pro plan (daily backups).
-   - Auth: e-mail sign-up disabled (invite-only), TOTP MFA enabled, SMTP set to the
-     transactional e-mail provider, site URL set to the app URL, e-mail templates from
-     `supabase/templates/`.
+   - Auth:
+     - e-mail sign-up disabled (invite-only);
+     - TOTP MFA enabled;
+     - minimum password length 12;
+     - leaked-password protection on;
+     - SMTP set to the transactional e-mail provider;
+     - site URL and redirect URLs set to the app URL;
+     - e-mail templates from `supabase/templates/`.
+
+     `supabase/config.toml` holds the local values. Apply them with
+     `supabase config push --project-ref <ref>`, or set them by hand in the dashboard, then
+     check them.
+
+   - API: keep "Max rows" at its default (1,000). The code pages through larger results
+     (ADR-017).
    - Storage: buckets are created by the migrations (private).
    - `supabase link --project-ref <ref>` then `supabase db push`.
 2. **Vercel:** import the repository, framework Next.js, region `fra1`. Set the environment
@@ -34,6 +46,13 @@ only the owner can create. This is the checklist for the first deploy and for ev
    | `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`                                                   | Sentry project in the EU region                                  |
 
    The app refuses to start when a production requirement is missing (`lib/env/schema.ts`).
+   Outside local this includes:
+   - an `https://` `NEXT_PUBLIC_APP_URL`;
+   - a real `OPT_OUT_BASE_URL` domain without a scheme;
+   - a real `EMAIL_FROM`.
+
+   None of them may be localhost or example.*. Use Vercel Pro: `/api/inngest` declares
+   `maxDuration = 300`, and the messaging tick stops sending after 40 s (ADR-017).
 
 3. **Inngest:** connect the Vercel project. The functions are served at `/api/inngest`:
    - messaging tick (every minute);

@@ -50,7 +50,8 @@
       "onboarding": "Zavádění servisu",
       "results_review": "Kontrola výsledků",
       "other": "Jiný důvod"
-    }
+    },
+    "adminBanner": "Režim podpory pro {company} je zapnutý: změny jsou zablokované, dokud ho neukončíte."
   },
   "status": {
     "active": "Aktivní",
@@ -224,7 +225,12 @@
     "checkNow": "Zkontrolovat teď",
     "checkQueued": "Kontrola běží.",
     "lastCheck": "Poslední kontrola {time}",
-    "neverChecked": "Kontrola ještě neproběhla"
+    "neverChecked": "Kontrola ještě neproběhla",
+    "provider_paused": {
+      "title": "SMS brána selhává, odesílání je dočasně pozastavené",
+      "action": "Otevřít systém",
+      "digest": "SMS brána selhává, odesílání pozastaveno"
+    }
   },
   "admin": {
     "overview": {
@@ -796,7 +802,8 @@
     "conversion_newer_campaign": "Zákazníka mezitím oslovila novější kampaň. Návrat zapište u ní.",
     "conversion_wrong_stage": "Tento krok teď nejde. Obnovte stránku.",
     "conversion_revenue_required": "Zadejte částku zakázky.",
-    "rate_limited": "Příliš mnoho požadavků. Zkuste to prosím za chvíli."
+    "rate_limited": "Příliš mnoho požadavků. Zkuste to prosím za chvíli.",
+    "support_view_read_only": "V režimu podpory jsou změny zablokované. Nejdřív režim podpory ukončete."
   },
   "common": {
     "perMonth": "{value} / měsíc",
@@ -1464,7 +1471,14 @@
     },
     "markSent": "Odešla",
     "markFailed": "Neodešla",
-    "resolvedToast": "Výsledek uložen."
+    "resolvedToast": "Výsledek uložen.",
+    "breaker": "SMS brána (jistič)",
+    "breakerOpen": "Pozastaveno kvůli chybám",
+    "breakerClosed": "V pořádku",
+    "breakerHint": "Když v posledních 5 minutách selže víc než 20 % odeslání kvůli chybám brány, odesílání se na 15 minut zastaví. Pak se zkusí jedna zpráva; když projde, odesílání pokračuje.",
+    "breakerPausedUntil": "Odesílání přes bránu je pozastavené do {at}.",
+    "breakerReset": "Zkusit bránu znovu",
+    "breakerResetToast": "Při dalším běhu fronty se zkusí jedna zpráva."
   },
   "optOut": {
     "title": "Odhlásit se ze zpráv",

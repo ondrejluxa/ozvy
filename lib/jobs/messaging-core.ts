@@ -20,6 +20,8 @@ import { suppressionHash } from "../domain/messaging/opt-out";
 import { countSmsSegments } from "../domain/messaging/sms-segments";
 import { PRESET_BY_KEY, WORKSHOP, isPresetKey } from "../domain/segments/presets";
 import type { MessagingProvider } from "../providers/sms/types";
+import { fetchAllPages } from "../db/paginate";
+import { BREAKER, breakerState, isGatewayFailure, pausedUntil, shouldTrip } from "../domain/messaging/circuit-breaker";
 import { expireMessages, processEvents, storeEvents } from "./opt-out-core";
 import { closeWindows, recomputeStats } from "./stats-core";
 
@@ -33,8 +35,10 @@ import { closeWindows, recomputeStats } from "./stats-core";
  * 3. start due campaigns: pre-send checks, enrollment snapshot with holdout,
  *    step-0 messages (idempotent);
  * 4. queue due follow-ups (stop conditions applied at render);
- * 5. dispatch inside the sending window: claim with SKIP LOCKED, re-check
- *    stop conditions, send at the provider rate, retry with backoff;
+ * 5. dispatch inside the sending window: claim small batches with SKIP
+ *    LOCKED within a time budget, re-check stop conditions, send at the
+ *    provider rate, retry with backoff, trip the circuit breaker when the
+ *    gateway fails;
  * 6. move campaigns sending → active → completed.
  */
 
@@ -52,6 +56,12 @@ export interface MessagingDeps {
   suppressionPepper: string;
   whitelist: { realProvider: boolean; production: boolean; numbers: string[] };
   sleep?: (ms: number) => Promise<void>;
+  /** Sending stops for this tick after this much wall time (default SEND_BUDGET_MS). */
+  sendBudgetMs?: number;
+  /** Messages claimed per batch (default CLAIM_BATCH). */
+  claimBatch?: number;
+  /** Monotonic clock in ms for the budget (default performance.now). */
+  elapsedMs?: () => number;
 }
 
 export interface TickResult {
@@ -72,6 +82,9 @@ export interface TickResult {
   optOuts: number;
   expired: number;
   windowsClosed: number;
+  /** Circuit breaker state seen by the dispatcher, and whether it tripped in this tick. */
+  breaker?: "closed" | "open" | "probe";
+  breakerTripped?: boolean;
 }
 
 // ---------- suppression ----------
@@ -308,15 +321,19 @@ async function startCampaign(deps: MessagingDeps, companyId: string, campaignId:
   };
 
   const [company, steps] = await Promise.all([loadCompany(db, companyId), loadSteps(db, companyId, campaignId)]);
-  const { data: audience, error } = await db
-    .rpc("campaign_audience", { p_company_id: companyId, p_campaign_id: campaignId, p_today: toDateOnly(now) })
-    .range(0, 49_999);
-  if (error) throw new Error(`campaign audience failed: ${error.code}`);
+  // Page by page: one API request returns at most 1,000 rows (ADR-017).
+  const audience = await fetchAllPages(
+    (from, to) =>
+      db
+        .rpc("campaign_audience", { p_company_id: companyId, p_campaign_id: campaignId, p_today: toDateOnly(now) })
+        .range(from, to),
+    { label: "campaign audience" },
+  );
   // Numbers on the shop's suppression list never enter the snapshot (spec §16).
   const all = await withoutSuppressed(
     db,
     companyId,
-    (audience ?? []) as (AudienceRow & { vehicle_id: string | null })[],
+    audience as (AudienceRow & { vehicle_id: string | null })[],
     deps.suppressionPepper,
   );
   if (steps.length === 0 || steps[0].step_number !== 0) return fail("render_failed");
@@ -451,6 +468,10 @@ async function startCampaign(deps: MessagingDeps, companyId: string, campaignId:
 async function startDueCampaigns(deps: MessagingDeps, out: TickResult) {
   const now = deps.now();
   if (preSendGate({ now, globalPaused: false }).action === "wait") return;
+  // No new campaign starts while the gateway is paused by the circuit breaker.
+  const { data: settings } = await deps.db.from("platform_settings").select("provider_paused_until").maybeSingle();
+  const until = settings?.provider_paused_until ? new Date(settings.provider_paused_until) : null;
+  if (breakerState(until, now) === "open") return;
   const { data } = await deps.db
     .from("campaigns")
     .select("id, company_id")
@@ -548,17 +569,18 @@ async function queueFollowups(deps: MessagingDeps, out: TickResult) {
 
 // ---------- 5. dispatch ----------
 
-async function dispatch(deps: MessagingDeps, out: TickResult) {
-  const { db, provider } = deps;
-  if (!isWithinSendingWindow(deps.now())) return;
-  const { data: claimed, error } = await db.rpc("claim_messages", {
-    p_limit: deps.maxPerTick,
-    p_now: deps.now().toISOString(),
-  });
-  if (error) throw new Error(`claim failed: ${error.code}`);
-  const rows = claimed ?? [];
-  if (rows.length === 0) return;
+interface BatchResult {
+  /** Messages handed to the gateway, and those that failed at the gateway (breaker input). */
+  attempts: number;
+  gatewayFailures: number;
+}
 
+type ClaimedRow = Database["public"]["Functions"]["claim_messages"]["Returns"][number];
+
+/** Sends one claimed batch: stop conditions, suppression, whitelist, provider call, retry or review. */
+async function sendBatch(deps: MessagingDeps, rows: ClaimedRow[], out: TickResult): Promise<BatchResult> {
+  const { db, provider } = deps;
+  const result: BatchResult = { attempts: 0, gatewayFailures: 0 };
   const campaignIds = [...new Set(rows.map((r) => r.campaign_id).filter((id): id is string => Boolean(id)))];
   const companyIds = [...new Set(rows.map((r) => r.company_id))];
   const [{ data: campaigns }, { data: companies }] = await Promise.all([
@@ -598,9 +620,10 @@ async function dispatch(deps: MessagingDeps, out: TickResult) {
       out.cancelled++;
       continue;
     }
-    let result: Awaited<ReturnType<MessagingProvider["send"]>>;
+    result.attempts++;
+    let sent: Awaited<ReturnType<MessagingProvider["send"]>>;
     try {
-      result = await provider.send({
+      sent = await provider.send({
         to: m.to_address,
         body: m.body_rendered,
         senderId: senders.get(m.company_id) ?? null,
@@ -610,16 +633,17 @@ async function dispatch(deps: MessagingDeps, out: TickResult) {
       // Unknown outcome: maybe sent. Never retry automatically (spec §16).
       await update(m.id, { status: "needs_review", error_code: "provider_exception" });
       out.review++;
+      if (isGatewayFailure({ exception: true })) result.gatewayFailures++;
       continue;
     }
     const at = deps.now();
-    if (result.ok) {
+    if (sent.ok) {
       await update(m.id, {
         status: "sent",
         provider_id: provider.id,
-        provider_message_id: result.providerMessageId,
-        segments: result.segments,
-        cost_minor: result.cost?.amountMinor ?? null,
+        provider_message_id: sent.providerMessageId,
+        segments: sent.segments,
+        cost_minor: sent.cost?.amountMinor ?? null,
         sent_at: at.toISOString(),
         error_code: null,
         error_detail: null,
@@ -636,26 +660,131 @@ async function dispatch(deps: MessagingDeps, out: TickResult) {
       }
       out.sent++;
     } else {
-      const next = afterSendFailure(m.attempts, result.retryable, at);
+      if (isGatewayFailure(sent)) result.gatewayFailures++;
+      // A rejected message was not sent: the retry cannot duplicate it.
+      const next = afterSendFailure(m.attempts, sent.retryable, at);
       if (next.status === "queued") {
         await update(m.id, {
           status: "queued",
           next_attempt_at: next.nextAttemptAt.toISOString(),
-          error_code: result.code,
-          error_detail: result.detail.slice(0, 500),
+          error_code: sent.code,
+          error_detail: sent.detail.slice(0, 500),
         });
         out.retried++;
       } else {
         await update(m.id, {
           status: "failed",
           failed_at: at.toISOString(),
-          error_code: result.code,
-          error_detail: result.detail.slice(0, 500),
+          error_code: sent.code,
+          error_detail: sent.detail.slice(0, 500),
         });
         out.failedMessages++;
       }
     }
     if (gap > 0) await pause(gap);
+  }
+  return result;
+}
+
+/** Default time budget for sending within one tick (the function limit is 300 s, ADR-017). */
+export const SEND_BUDGET_MS = 40_000;
+/** Claim this many at a time: a cut-off invocation leaves at most one small batch in 'sending'. */
+export const CLAIM_BATCH = 10;
+
+async function setBreaker(deps: MessagingDeps, until: Date | null, reason: string | null) {
+  await deps.db
+    .from("platform_settings")
+    .update({
+      provider_paused_until: until?.toISOString() ?? null,
+      provider_pause_reason: reason,
+      provider_paused_at: until ? deps.now().toISOString() : null,
+    })
+    .eq("id", true);
+}
+
+/** Opens the operator alert at once (the health check keeps it open while the breaker is not closed). */
+async function openBreakerAlert(deps: MessagingDeps, reason: string) {
+  const key = `provider_paused:${deps.provider.id}`;
+  const { data: open } = await deps.db.from("alerts").select("id").eq("dedupe_key", key).neq("status", "resolved");
+  if (open?.length) return;
+  await deps.db.from("alerts").insert({
+    type: "provider_paused",
+    severity: "critical",
+    dedupe_key: key,
+    title: "provider_paused",
+    detail: { params: { provider: deps.provider.id, reason }, since: deps.now().toISOString() } as NonNullable<Json>,
+  });
+}
+
+async function resolveBreakerAlert(deps: MessagingDeps) {
+  await deps.db
+    .from("alerts")
+    .update({ status: "resolved", resolved_at: deps.now().toISOString() })
+    .eq("dedupe_key", `provider_paused:${deps.provider.id}`)
+    .neq("status", "resolved");
+}
+
+/**
+ * Sends inside the sending window, in small claimed batches, until the queue
+ * is empty, maxPerTick is reached or the time budget is used up, so a host
+ * time limit never cuts a large batch off mid-send. The circuit breaker
+ * stops sending when the gateway fails and probes with one message after
+ * the pause (spec §24).
+ */
+async function dispatch(deps: MessagingDeps, out: TickResult) {
+  const { db, provider } = deps;
+  if (!isWithinSendingWindow(deps.now())) return;
+  const { data: settings } = await db.from("platform_settings").select("provider_paused_until").maybeSingle();
+  let state = breakerState(
+    settings?.provider_paused_until ? new Date(settings.provider_paused_until) : null,
+    deps.now(),
+  );
+  out.breaker = state;
+  if (state === "open") return;
+
+  const elapsed = deps.elapsedMs ?? (() => performance.now());
+  const started = elapsed();
+  const budget = deps.sendBudgetMs ?? SEND_BUDGET_MS;
+  let handled = 0;
+  while (handled < deps.maxPerTick && elapsed() - started < budget) {
+    const size = state === "probe" ? 1 : Math.min(deps.claimBatch ?? CLAIM_BATCH, deps.maxPerTick - handled);
+    const { data: claimed, error } = await db.rpc("claim_messages", { p_limit: size, p_now: deps.now().toISOString() });
+    if (error) throw new Error(`claim failed: ${error.code}`);
+    const rows = claimed ?? [];
+    if (rows.length === 0) break;
+    handled += rows.length;
+    const batch = await sendBatch(deps, rows, out);
+    if (batch.attempts === 0) continue;
+
+    const { data: totals } = await db.rpc("record_provider_attempts", {
+      p_provider: provider.id,
+      p_now: deps.now().toISOString(),
+      p_attempts: batch.attempts,
+      p_failures: batch.gatewayFailures,
+    });
+    if (state === "probe") {
+      if (batch.gatewayFailures > 0) {
+        await setBreaker(deps, pausedUntil(deps.now()), "probe_failed");
+        await openBreakerAlert(deps, "probe_failed");
+        out.breaker = "open";
+        return;
+      }
+      // The gateway answered: close the breaker and continue normally.
+      await setBreaker(deps, null, null);
+      await resolveBreakerAlert(deps);
+      state = "closed";
+      out.breaker = "closed";
+      continue;
+    }
+    const w = totals?.[0] ?? { attempts: 0, failures: 0 };
+    if (shouldTrip(w)) {
+      const reason = `${w.failures}/${w.attempts} failed in ${BREAKER.windowMinutes} min`;
+      await setBreaker(deps, pausedUntil(deps.now()), reason);
+      await openBreakerAlert(deps, reason);
+      out.breaker = "open";
+      out.breakerTripped = true;
+      return;
+    }
   }
 }
 

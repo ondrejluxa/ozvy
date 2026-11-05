@@ -131,6 +131,31 @@ export async function setKillSwitchAction(input: { paused: boolean; reason?: str
   });
 }
 
+/**
+ * Ends the circuit breaker's pause early (spec §24): the next tick sends one
+ * probe message; success resumes sending, failure pauses again.
+ */
+export async function resetBreakerAction(): Promise<ActionResult<null>> {
+  return run(async () => {
+    const ctx = await requireContext({ permission: "admin.access" });
+    const supabase = await createSupabaseServerClient();
+    const { error } = await supabase
+      .from("platform_settings")
+      .update({ provider_paused_until: new Date().toISOString() })
+      .eq("id", true)
+      .not("provider_paused_until", "is", null);
+    if (error) throw new Error(`breaker reset failed: ${error.code}`);
+    await audit({
+      action: "system.provider_breaker_reset",
+      actorType: "admin",
+      actorUserId: ctx.userId,
+      entityType: "platform",
+    });
+    refresh();
+    return null;
+  });
+}
+
 /** Runs one messaging tick now (locally the tick has no cron; Inngest also accepts the event). */
 export async function runQueueNowAction(): Promise<ActionResult<null>> {
   return run(async () => {

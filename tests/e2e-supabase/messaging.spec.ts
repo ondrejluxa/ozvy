@@ -327,6 +327,23 @@ test.describe.serial("messaging: snapshot, dispatch, pause, follow-ups, kill swi
       .eq("address_hash", suppressionHash(b.to_address, pepper))
       .single();
     expect(keyword!.reason).toBe("keyword");
+    // Once applied, the reply's number and text are not kept (ADR-017). Processing runs
+    // after the response, so wait until the event is marked processed.
+    const latestInbound = async () =>
+      (
+        await service
+          .from("message_events")
+          .select("payload, processed_at")
+          .eq("provider_id", "mock")
+          .eq("type", "inbound")
+          .order("received_at", { ascending: false })
+          .limit(1)
+          .maybeSingle()
+      ).data;
+    await expect.poll(async () => (await latestInbound())?.processed_at ?? null).not.toBeNull();
+    const inbound = await latestInbound();
+    expect(JSON.stringify(inbound!.payload)).not.toContain(b.to_address.slice(1));
+    expect(inbound!.payload).not.toHaveProperty("_text");
     await expect
       .poll(async () => (await service.from("messages").select("status").eq("id", c.id).single()).data!.status)
       .toBe("undelivered");

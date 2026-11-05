@@ -13,7 +13,7 @@ export async function GET(
   const { companyId, importId } = await params;
   if (env.DATA_SOURCE !== "supabase") return new NextResponse(null, { status: 404 });
   try {
-    await requireContext({ permission: "imports.run", companyId });
+    await requireContext({ permission: "imports.run", companyId }, { read: true });
   } catch (err) {
     if (err instanceof AuthError) return new NextResponse(null, { status: err.reason === "forbidden" ? 403 : 401 });
     throw err;

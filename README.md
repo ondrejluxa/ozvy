@@ -60,7 +60,9 @@ in the order of spec §40. The demo stays available as `DATA_SOURCE=demo`
 
 Phase 1 is code-complete. What still needs the owner (production accounts, a real SMS test on
 the staging whitelist, the first production backup and restore drill, legal documents) is
-listed in [docs/definition-of-done.md](docs/definition-of-done.md). Operations:
+listed in [docs/definition-of-done.md](docs/definition-of-done.md). Fixes from the Phase 1 review
+(MFA in the database, recipient pagination, gateway circuit breaker, …):
+[ADR-017](docs/decisions/ADR-017-review-fixes.md). Operations:
 [docs/runbooks/](docs/runbooks/README.md).
 
 ### Running against local Supabase

@@ -21,7 +21,10 @@ export async function run<T>(fn: () => T | Promise<T>): Promise<ActionResult<T>>
     return ok(await fn());
   } catch (err) {
     if (err instanceof DomainError) return fail(err.code);
-    if (err instanceof AuthError) return fail(err.reason === "forbidden" ? "forbidden" : "unauthenticated");
+    if (err instanceof AuthError) {
+      if (err.reason === "support_view_read_only") return fail("support_view_read_only");
+      return fail(err.reason === "forbidden" ? "forbidden" : "unauthenticated");
+    }
     if (err instanceof z.ZodError) return fail("validation");
     console.error("[action] unexpected error", err instanceof Error ? err.message : err);
     return fail("internal");

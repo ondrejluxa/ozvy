@@ -12,8 +12,9 @@ export function messagingDeps(): MessagingDeps {
     provider: getSmsProvider(),
     now: () => new Date(),
     ratePerSecond: env.SMS_RATE_PER_SECOND,
-    // One tick per minute: send for at most ~50 s at the provider rate.
-    maxPerTick: env.SMS_RATE_PER_SECOND * 50,
+    // One tick per minute: at most ~40 s of sending at the provider rate; the
+    // dispatcher also stops at its time budget (SEND_BUDGET_MS) whatever the latency.
+    maxPerTick: env.SMS_RATE_PER_SECOND * 40,
     optOutBase: env.OPT_OUT_BASE_URL,
     suppressionPepper: env.SUPPRESSION_PEPPER ?? "",
     whitelist: {

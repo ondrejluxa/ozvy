@@ -9,3 +9,6 @@ docs/spec.md
 supabase/.temp
 supabase/.branches
 supabase/seed/fixtures
+
+# Append-only log written by pnpm db:restore-drill (rows are added unformatted).
+docs/runbooks/restore-drill-log.md

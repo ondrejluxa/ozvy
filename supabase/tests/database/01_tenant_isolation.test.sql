@@ -167,7 +167,7 @@ declare
   deleted int;
   insert_state text := null;
 begin
-  perform set_config('request.jwt.claims', json_build_object('sub', uid, 'role', 'authenticated')::text, true);
+  perform set_config('request.jwt.claims', json_build_object('sub', uid, 'role', 'authenticated', 'aal', 'aal2')::text, true);
   set local role authenticated;
 
   execute format('select count(*) from public.%I where %I = $1', tbl, key_col) into visible using b;

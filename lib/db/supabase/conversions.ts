@@ -113,39 +113,26 @@ export interface CampaignResults {
 
 /** Results of one campaign; holdout returns are shown next to, never inside, recovered revenue. */
 export async function campaignResults(companyId: string, campaignId: string): Promise<CampaignResults> {
+  // Aggregated in SQL: summing rows here would stop at the API limit of 1,000 (ADR-017).
   const supabase = await createSupabaseServerClient();
-  const count = (holdout: boolean) =>
-    supabase
-      .from("campaign_enrollments")
-      .select("id", { count: "exact", head: true })
-      .eq("company_id", companyId)
-      .eq("campaign_id", campaignId)
-      .eq("is_holdout", holdout)
-      .then((r) => r.count ?? 0);
-  const [treated, holdout, conversions] = await Promise.all([
-    count(false),
-    count(true),
-    supabase
-      .from("conversions")
-      .select("stage, is_holdout, revenue_minor")
-      .eq("company_id", companyId)
-      .eq("campaign_id", campaignId)
-      .limit(10_000),
-  ]);
-  const rows = conversions.data ?? [];
-  const completed = rows.filter((c) => c.stage === "completed" && !c.is_holdout);
-  const holdoutCompleted = rows.filter((c) => c.stage === "completed" && c.is_holdout).length;
-  const revenueMinor = completed.reduce((sum, c) => sum + Number(c.revenue_minor ?? 0), 0);
+  const { data, error } = await supabase.rpc("campaign_summaries", { p_company_id: companyId });
+  if (error) throw new Error(`campaign results failed: ${error.code}`);
+  const c = (data ?? []).find((row) => row.id === campaignId);
+  const treated = c?.contacted ?? 0;
+  const holdout = c?.holdout ?? 0;
+  const completed = c?.completed ?? 0;
+  const holdoutCompleted = c?.holdout_completed ?? 0;
+  const revenueMinor = Number(c?.revenue_minor ?? 0);
   return {
     treated,
     holdout,
-    booked: rows.filter((c) => c.stage === "booked" && !c.is_holdout).length,
-    completed: completed.length,
+    booked: c?.booked ?? 0,
+    completed,
     holdoutCompleted,
     revenueMinor,
     comparison: holdoutComparison({
       treatedCount: treated,
-      treatedCompleted: completed.length,
+      treatedCompleted: completed,
       treatedRevenueMinor: revenueMinor,
       holdoutCount: holdout,
       holdoutCompleted,

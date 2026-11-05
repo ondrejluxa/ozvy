@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "../db/types.gen";
-import { isOptOutKeyword, suppressionHash } from "../domain/messaging/opt-out";
+import { isOptOutKeyword, stripEventPayload, suppressionHash } from "../domain/messaging/opt-out";
 import type { ProviderEvent } from "../providers/sms/types";
 
 /**
@@ -81,7 +81,8 @@ async function messageByToken(db: Db, token: string) {
     .select("id, company_id, to_address, opted_out_at, companies(name, settings)")
     .eq("opt_out_token", token)
     .maybeSingle();
-  return data;
+  // After 24 months the number is redacted (retention): the link no longer resolves.
+  return data && data.to_address !== "[redacted]" ? data : null;
 }
 
 /** What the opt-out page shows: the shop's name only. */
@@ -217,7 +218,13 @@ export async function processEvents(db: Db, opts: { pepper: string; now: Date; l
 
     await db
       .from("message_events")
-      .update({ processed_at: opts.now.toISOString(), company_id: companyId, message_id: messageId })
+      // The sender's number and reply text are not kept once the event is applied.
+      .update({
+        processed_at: opts.now.toISOString(),
+        company_id: companyId,
+        message_id: messageId,
+        payload: stripEventPayload(payload) as NonNullable<Json>,
+      })
       .eq("id", e.id);
   }
   return out;

@@ -68,6 +68,8 @@ export async function getCampaignDelivery(companyId: string, campaignId: string)
 
 export interface SystemOverview {
   killSwitch: { paused: boolean; reason: string | null; at: string | null };
+  /** SMS gateway circuit breaker (spec §24): paused until, and why. */
+  breaker: { pausedUntil: string | null; reason: string | null };
   queue: {
     queued: number;
     sending: number;
@@ -88,7 +90,10 @@ export interface SystemOverview {
 export async function getSystemOverview(): Promise<SystemOverview> {
   const supabase = await createSupabaseServerClient();
   const [settings, health, review] = await Promise.all([
-    supabase.from("platform_settings").select("sending_paused, sending_paused_reason, sending_paused_at").maybeSingle(),
+    supabase
+      .from("platform_settings")
+      .select("sending_paused, sending_paused_reason, sending_paused_at, provider_paused_until, provider_pause_reason")
+      .maybeSingle(),
     supabase.rpc("messaging_queue_health", {}),
     supabase
       .from("messages")
@@ -116,6 +121,10 @@ export async function getSystemOverview(): Promise<SystemOverview> {
       paused: settings.data?.sending_paused ?? false,
       reason: settings.data?.sending_paused_reason ?? null,
       at: settings.data?.sending_paused_at ?? null,
+    },
+    breaker: {
+      pausedUntil: settings.data?.provider_paused_until ?? null,
+      reason: settings.data?.provider_pause_reason ?? null,
     },
     queue: {
       queued: h?.queued ?? 0,

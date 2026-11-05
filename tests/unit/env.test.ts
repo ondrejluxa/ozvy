@@ -9,6 +9,12 @@ const supabase = {
   SUPABASE_SERVICE_ROLE_KEY: "service",
   SUPPRESSION_PEPPER: PEPPER,
 };
+/** Fake but non-placeholder addresses, as staging and production need. */
+const deployed = {
+  NEXT_PUBLIC_APP_URL: "https://app.navrat-test.cz",
+  OPT_OUT_BASE_URL: "nvrt-test.cz/o",
+  EMAIL_FROM: "Návrat <no-reply@navrat-test.cz>",
+};
 
 function issues(raw: Record<string, string | undefined>): string[] {
   try {
@@ -58,7 +64,8 @@ describe("parseEnv", () => {
     };
     expect(issues({ ...real, APP_ENV: "staging" }).join()).toMatch(/SMS_TEST_WHITELIST/);
     expect(
-      parseEnv({ ...real, APP_ENV: "staging", SMS_TEST_WHITELIST: "+420777000111, +420777000222" }).SMS_TEST_WHITELIST,
+      parseEnv({ ...real, ...deployed, APP_ENV: "staging", SMS_TEST_WHITELIST: "+420777000111, +420777000222" })
+        .SMS_TEST_WHITELIST,
     ).toEqual(["+420777000111", "+420777000222"]);
     expect(issues({ ...real, SMS_TEST_WHITELIST: "777000111" }).join()).toMatch(/E\.164/);
   });
@@ -87,6 +94,7 @@ describe("parseEnv", () => {
   it("accepts a complete production configuration", () => {
     const env = parseEnv({
       ...supabase,
+      ...deployed,
       APP_ENV: "production",
       SMS_PROVIDER: "bulkgate",
       SMS_PROVIDER_API_KEY: "k",
@@ -100,6 +108,25 @@ describe("parseEnv", () => {
       SMTP_URL: "smtp://mail.example.com:587",
     });
     expect(env.DEMO_MODE).toBe(false);
+  });
+
+  it("refuses development addresses outside local (links in SMS and e-mails)", () => {
+    const found = issues({ APP_ENV: "staging" }).join(" ");
+    expect(found).toMatch(/NEXT_PUBLIC_APP_URL/);
+    expect(found).toMatch(/OPT_OUT_BASE_URL/);
+    expect(found).toMatch(/EMAIL_FROM/);
+    for (const bad of [
+      { NEXT_PUBLIC_APP_URL: "http://app.navrat-test.cz" },
+      { NEXT_PUBLIC_APP_URL: "https://localhost:3000" },
+      { NEXT_PUBLIC_APP_URL: "https://demo.example.com" },
+      { OPT_OUT_BASE_URL: "https://nvrt-test.cz/o" },
+      { OPT_OUT_BASE_URL: "example.cz/o" },
+      { OPT_OUT_BASE_URL: "localhost:3001/o" },
+    ]) {
+      expect(issues({ ...deployed, ...bad, APP_ENV: "staging" }).join(), JSON.stringify(bad)).not.toBe("");
+    }
+    expect(issues({ ...deployed, APP_ENV: "staging" })).toEqual([]);
+    expect(issues({ APP_ENV: "local" })).toEqual([]);
   });
 
   it("requires credentials for a real AI provider", () => {

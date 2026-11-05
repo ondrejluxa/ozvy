@@ -36,3 +36,14 @@ export function secretsEqual(given: string | null, expected: string | undefined)
   const b = Buffer.from(expected);
   return a.length === b.length && timingSafeEqual(a, b);
 }
+
+/** Fields of a gateway callback that are safe to keep after processing. */
+const EVENT_KEEP = new Set(["status", "smsID", "sms_id", "channel", "price", "date", "type", "source", "_messageId"]);
+
+/**
+ * After an event is processed, only delivery metadata stays: the sender's
+ * number and the text of a reply are removed (spec §21 data minimisation).
+ */
+export function stripEventPayload(payload: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(payload).filter(([k]) => EVENT_KEEP.has(k)));
+}

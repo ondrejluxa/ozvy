@@ -3,7 +3,14 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getCompanyBasics } from "../db/queries";
 import { env } from "../env";
-import { resolveAccess, type AccessDenial, type AccessRequest, type MembershipInfo, type SessionInfo } from "./access";
+import {
+  resolveAccess,
+  supportViewBlocks,
+  type AccessDenial,
+  type AccessRequest,
+  type MembershipInfo,
+  type SessionInfo,
+} from "./access";
 import { getSessionInfo } from "./session";
 
 /**
@@ -41,12 +48,21 @@ const DEMO_CONTEXT: AuthContext = {
   membership: null,
 };
 
-/** For server actions: throws AuthError, which actions turn into a typed failure. */
-export async function requireContext(request: AccessRequest): Promise<AuthContext> {
+/**
+ * For server actions: throws AuthError, which actions turn into a typed
+ * failure. Writes are refused while the operator's support view is open;
+ * pass `read: true` for read-only callers (pages, downloads).
+ */
+export async function requireContext(
+  request: AccessRequest,
+  opts: { read?: boolean; allowInSupportView?: boolean } = {},
+): Promise<AuthContext> {
   if (env.DATA_SOURCE === "demo") return DEMO_CONTEXT;
   const session = await getSessionInfo();
   const result = resolveAccess(session, request);
   if (!result.ok) throw new AuthError(result.reason);
+  const supportViewActive = Boolean((await cookies()).get(SUPPORT_VIEW_COOKIE)?.value);
+  if (supportViewBlocks(session, supportViewActive, opts)) throw new AuthError("support_view_read_only");
   return {
     mode: "supabase",
     isPlatformAdmin: result.isPlatformAdmin,
@@ -59,7 +75,7 @@ export async function requireContext(request: AccessRequest): Promise<AuthContex
 /** For layouts and pages: redirects instead of throwing. */
 export async function requirePageContext(request: AccessRequest, currentPath: string): Promise<AuthContext> {
   try {
-    return await requireContext(request);
+    return await requireContext(request, { read: true });
   } catch (err) {
     if (!(err instanceof AuthError)) throw err;
     switch (err.reason) {

@@ -24,6 +24,8 @@ function actionHref(a: AlertRow): string {
     case "awaiting_approval":
     case "low_conversion":
       return `${base}/campaigns/${a.campaignId}`;
+    case "provider_paused":
+      return "/admin/system";
     case "import_needs_review":
       return `${base}/imports/${a.params.importId}`;
     case "sms_failure_rate":
@@ -80,7 +82,7 @@ export async function AttentionRequired({
               <div className="min-w-0">
                 <p className="text-sm font-medium text-ink">{t(`${a.type}.title`, params)}</p>
                 <p className="mt-0.5 text-[12px] text-muted">
-                  {showCompany && (
+                  {showCompany && a.companyName && (
                     <>
                       <CompanyName name={a.companyName} /> ·{" "}
                     </>

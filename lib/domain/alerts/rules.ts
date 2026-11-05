@@ -11,6 +11,7 @@ export type AlertType =
   | "campaign_failed"
   | "sms_failure_rate"
   | "import_needs_review"
+  | "provider_paused"
   | "awaiting_approval"
   | "no_campaign_running"
   | "low_conversion"

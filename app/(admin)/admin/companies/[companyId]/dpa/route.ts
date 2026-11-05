@@ -15,7 +15,7 @@ export async function GET(_request: Request, { params }: RouteContext<"/admin/co
   if (env.DATA_SOURCE !== "supabase") return new NextResponse(null, { status: 404 });
   let userId: string | null = null;
   try {
-    userId = (await requireContext({ permission: "admin.access", companyId })).userId;
+    userId = (await requireContext({ permission: "admin.access", companyId }, { read: true })).userId;
   } catch (err) {
     if (err instanceof AuthError) return new NextResponse(null, { status: err.reason === "forbidden" ? 403 : 401 });
     throw err;

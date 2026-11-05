@@ -147,6 +147,29 @@ const schema = z
     if (env.APP_ENV === "production" && env.JOB_RUNNER !== "inngest") {
       fail("JOB_RUNNER", "Production runs background jobs on Inngest.");
     }
+    // Real links leave the system in SMS and e-mails: staging and production
+    // must not fall back to the development defaults.
+    if (env.APP_ENV !== "local") {
+      const host = (url: string) =>
+        url
+          .replace(/^https?:\/\//, "")
+          .split(/[/:]/)[0]
+          .toLowerCase();
+      const placeholder = (h: string) =>
+        h === "localhost" || h === "127.0.0.1" || h.endsWith(".local") || /(^|\.)example\.(cz|com)$/.test(h);
+      if (!env.NEXT_PUBLIC_APP_URL.startsWith("https://") || placeholder(host(env.NEXT_PUBLIC_APP_URL))) {
+        fail("NEXT_PUBLIC_APP_URL", "NEXT_PUBLIC_APP_URL must be the real https:// address of the app outside local.");
+      }
+      if (/^https?:\/\//.test(env.OPT_OUT_BASE_URL) || placeholder(host(env.OPT_OUT_BASE_URL))) {
+        fail(
+          "OPT_OUT_BASE_URL",
+          "OPT_OUT_BASE_URL must be the real short opt-out domain + /o (no scheme) outside local.",
+        );
+      }
+      if (/@example\.(cz|com)>?$/.test(env.EMAIL_FROM)) {
+        fail("EMAIL_FROM", "EMAIL_FROM must be a real sender address outside local.");
+      }
+    }
     if (env.APP_ENV === "production" && !env.SENTRY_DSN) {
       fail("SENTRY_DSN", "Production reports errors to Sentry (PII scrubbed).");
     }

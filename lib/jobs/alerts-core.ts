@@ -99,7 +99,14 @@ export async function runHealthCheck(db: Db, now: Date): Promise<HealthCheckResu
     );
     if (e) throw new Error(`alerts insert failed: ${e.code}`);
   }
-  const gone = (open ?? []).filter((a) => !currentKeys.has(a.dedupe_key)).map((a) => a.id);
+  // The gateway breaker alert is opened by the dispatcher and stays open until
+  // the breaker closes (a successful probe or the operator's reset).
+  const { data: platform } = await db.from("platform_settings").select("provider_paused_until").maybeSingle();
+  const breakerOpen = Boolean(platform?.provider_paused_until);
+  const gone = (open ?? [])
+    .filter((a) => !currentKeys.has(a.dedupe_key))
+    .filter((a) => !(breakerOpen && a.dedupe_key.startsWith("provider_paused:")))
+    .map((a) => a.id);
   if (gone.length) {
     await db.from("alerts").update({ status: "resolved", resolved_at: now.toISOString() }).in("id", gone);
   }

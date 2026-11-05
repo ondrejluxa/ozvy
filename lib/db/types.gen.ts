@@ -1220,6 +1220,9 @@ export type Database = {
         Row: {
           id: boolean;
           last_health_check_at: string | null;
+          provider_pause_reason: string | null;
+          provider_paused_at: string | null;
+          provider_paused_until: string | null;
           sending_paused: boolean;
           sending_paused_at: string | null;
           sending_paused_by: string | null;
@@ -1229,6 +1232,9 @@ export type Database = {
         Insert: {
           id?: boolean;
           last_health_check_at?: string | null;
+          provider_pause_reason?: string | null;
+          provider_paused_at?: string | null;
+          provider_paused_until?: string | null;
           sending_paused?: boolean;
           sending_paused_at?: string | null;
           sending_paused_by?: string | null;
@@ -1238,6 +1244,9 @@ export type Database = {
         Update: {
           id?: boolean;
           last_health_check_at?: string | null;
+          provider_pause_reason?: string | null;
+          provider_paused_at?: string | null;
+          provider_paused_until?: string | null;
           sending_paused?: boolean;
           sending_paused_at?: string | null;
           sending_paused_by?: string | null;
@@ -1267,6 +1276,27 @@ export type Database = {
           locale?: string;
           updated_at?: string;
           user_id?: string;
+        };
+        Relationships: [];
+      };
+      provider_attempts: {
+        Row: {
+          attempts: number;
+          failures: number;
+          minute: string;
+          provider_id: string;
+        };
+        Insert: {
+          attempts?: number;
+          failures?: number;
+          minute: string;
+          provider_id: string;
+        };
+        Update: {
+          attempts?: number;
+          failures?: number;
+          minute?: string;
+          provider_id?: string;
         };
         Relationships: [];
       };
@@ -1723,6 +1753,13 @@ export type Database = {
           isOneToOne: true;
           isSetofReturn: false;
         };
+      };
+      record_provider_attempts: {
+        Args: { p_attempts: number; p_failures: number; p_now: string; p_provider: string };
+        Returns: {
+          attempts: number;
+          failures: number;
+        }[];
       };
       run_retention: { Args: { p_now: string }; Returns: Json };
       segment_audience: {

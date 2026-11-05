@@ -2,7 +2,9 @@ import { getTranslations } from "next-intl/server";
 import { ProductBrand } from "@/components/shell/brand";
 import { MobileNav, Sidebar, type NavItem } from "@/components/shell/nav";
 import { UserMenu } from "@/components/shell/user-menu";
+import { endSupportViewAction } from "@/lib/actions/support-view";
 import { requirePageContext } from "@/lib/auth/context";
+import { supportViewCompany } from "@/lib/auth/support-view";
 import { env } from "@/lib/env";
 
 /**
@@ -12,6 +14,9 @@ import { env } from "@/lib/env";
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const ctx = await requirePageContext({ permission: "admin.access" }, "/admin");
   const t = await getTranslations("nav");
+  const tView = await getTranslations("supportView");
+  // While a support view is open every write is refused (ADR-017); say so here too.
+  const support = env.DATA_SOURCE === "supabase" ? await supportViewCompany() : null;
   const tMeta = await getTranslations("meta");
   const items: NavItem[] = [
     { href: "/admin", label: t("admin.overview"), icon: "overview", exact: true },
@@ -34,6 +39,19 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       <Sidebar items={items} brand={brand} footer={footer} />
       <div className="min-w-0 flex-1">
         <MobileNav items={items} brand={brand} footer={footer} />
+        {support && (
+          <div
+            className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-b border-warn-line bg-warn-soft px-4 py-2 text-[13px] text-warn"
+            data-testid="support-view-admin-banner"
+          >
+            <span>{tView("adminBanner", { company: support.companyName })}</span>
+            <form action={endSupportViewAction}>
+              <button type="submit" className="font-semibold underline underline-offset-2 hover:no-underline">
+                {tView("exit")}
+              </button>
+            </form>
+          </div>
+        )}
         <main className="mx-auto w-full max-w-6xl px-4 pb-48 pt-6 sm:px-6 lg:px-8 lg:pt-8">{children}</main>
       </div>
     </div>

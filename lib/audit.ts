@@ -49,7 +49,8 @@ export type AuditAction =
   | "conversion.updated"
   | "conversion.reverted"
   | "admin.support_view_started"
-  | "admin.support_view_ended";
+  | "admin.support_view_ended"
+  | "system.provider_breaker_reset";
 
 export interface AuditEntry {
   action: AuditAction;
