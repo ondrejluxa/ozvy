@@ -55,13 +55,15 @@ const schema = z
     DEV_ALLOW_REAL_LOOKING_DATA: z.enum(["true", "false"]).default("false"),
 
     // Messaging
-    SMS_PROVIDER: z.string().trim().min(1).default("mock"),
+    SMS_PROVIDER: z.enum(["mock", "bulkgate"]).default("mock"),
     SMS_PROVIDER_API_KEY: optional,
     SMS_PROVIDER_API_SECRET: optional,
     SMS_WEBHOOK_SECRET: optional,
     SMS_TEST_WHITELIST: e164List,
     // Provider rate limit for the dispatcher (spec §16, e.g. 10 messages per second).
     SMS_RATE_PER_SECOND: z.coerce.number().int().min(1).max(100).default(10),
+    // Our CZK price per SMS segment for cost figures (BulkGate reports credits).
+    SMS_PRICE_PER_SEGMENT_MINOR: z.coerce.number().int().min(1).max(1000).default(90),
     // Transactional email (invites, password resets, approvals). "smtp" = local Mailpit in development.
     EMAIL_PROVIDER: z.enum(["mock", "smtp"]).default("mock"),
     SMTP_URL: optional,
@@ -121,8 +123,10 @@ const schema = z
       }
       if (!env.SMS_PROVIDER_API_KEY)
         fail("SMS_PROVIDER_API_KEY", "SMS_PROVIDER_API_KEY is required for a real SMS provider.");
-      if (!env.SMS_WEBHOOK_SECRET)
-        fail("SMS_WEBHOOK_SECRET", "SMS_WEBHOOK_SECRET is required for a real SMS provider.");
+      if (!env.SMS_PROVIDER_API_SECRET)
+        fail("SMS_PROVIDER_API_SECRET", "SMS_PROVIDER_API_SECRET is required for a real SMS provider.");
+      if (!env.SMS_WEBHOOK_SECRET || env.SMS_WEBHOOK_SECRET.length < 32)
+        fail("SMS_WEBHOOK_SECRET", "SMS_WEBHOOK_SECRET (32+ characters) is required for a real SMS provider.");
     }
     if (env.APP_ENV === "production" && env.SMS_PROVIDER === "mock") {
       fail("SMS_PROVIDER", "Production cannot use the mock SMS provider.");

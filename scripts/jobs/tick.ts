@@ -30,6 +30,7 @@ runMessagingTick({
   ratePerSecond: 50,
   maxPerTick: 5000,
   optOutBase: process.env.OPT_OUT_BASE_URL || "example.cz/o",
+  suppressionPepper: process.env.SUPPRESSION_PEPPER ?? "",
   whitelist: { realProvider: false, production: false, numbers: [] },
   sleep: async () => {},
 })

@@ -50,12 +50,25 @@ describe("parseEnv", () => {
   });
 
   it("refuses a real SMS provider outside production without a whitelist", () => {
-    const real = { SMS_PROVIDER: "gosms", SMS_PROVIDER_API_KEY: "k", SMS_WEBHOOK_SECRET: "s" };
+    const real = {
+      SMS_PROVIDER: "bulkgate",
+      SMS_PROVIDER_API_KEY: "k",
+      SMS_PROVIDER_API_SECRET: "t",
+      SMS_WEBHOOK_SECRET: "w".repeat(32),
+    };
     expect(issues({ ...real, APP_ENV: "staging" }).join()).toMatch(/SMS_TEST_WHITELIST/);
     expect(
       parseEnv({ ...real, APP_ENV: "staging", SMS_TEST_WHITELIST: "+420777000111, +420777000222" }).SMS_TEST_WHITELIST,
     ).toEqual(["+420777000111", "+420777000222"]);
     expect(issues({ ...real, SMS_TEST_WHITELIST: "777000111" }).join()).toMatch(/E\.164/);
+  });
+
+  it("knows only supported SMS providers and needs full BulkGate credentials", () => {
+    expect(issues({ SMS_PROVIDER: "gosms" }).join()).toMatch(/SMS_PROVIDER/);
+    const partial = { SMS_PROVIDER: "bulkgate", APP_ENV: "production", SMS_PROVIDER_API_KEY: "k" };
+    const found = issues({ ...partial, SMS_WEBHOOK_SECRET: "short" }).join(" ");
+    expect(found).toMatch(/SMS_PROVIDER_API_SECRET/);
+    expect(found).toMatch(/SMS_WEBHOOK_SECRET/);
   });
 
   it("requires real providers and real data in production", () => {
@@ -75,9 +88,10 @@ describe("parseEnv", () => {
     const env = parseEnv({
       ...supabase,
       APP_ENV: "production",
-      SMS_PROVIDER: "gosms",
+      SMS_PROVIDER: "bulkgate",
       SMS_PROVIDER_API_KEY: "k",
-      SMS_WEBHOOK_SECRET: "s",
+      SMS_PROVIDER_API_SECRET: "t",
+      SMS_WEBHOOK_SECRET: "w".repeat(32),
       INNGEST_EVENT_KEY: "e",
       INNGEST_SIGNING_KEY: "s",
       JOB_RUNNER: "inngest",

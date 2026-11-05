@@ -3,7 +3,7 @@ import { Inngest } from "inngest";
 import { runCommitImport, runParseImport, runValidateImport } from "./imports";
 import { runLifecycleRecompute, runNightlyLifecycle } from "./lifecycle";
 import type { JobEvent } from "./runner";
-import { runMessaging } from "./messaging";
+import { runMessaging, runProviderEvents } from "./messaging";
 import { runVocativeRefresh } from "./vocatives";
 
 /**
@@ -81,6 +81,17 @@ export const messagingTick = inngest.createFunction(
   async ({ step }) => step.run("tick", () => runMessaging()),
 );
 
+/** Gateway callbacks stored by the webhook route, applied off the request path. */
+export const messagingEvents = inngest.createFunction(
+  {
+    id: "messaging-events",
+    retries: 3,
+    concurrency: { limit: 1 },
+    triggers: [{ event: "messaging/events.requested" }],
+  },
+  async ({ step }) => step.run("process", () => runProviderEvents()),
+);
+
 export const functions = [
   importParse,
   importValidate,
@@ -89,4 +100,5 @@ export const functions = [
   lifecycleRecompute,
   vocativesRefresh,
   messagingTick,
+  messagingEvents,
 ];

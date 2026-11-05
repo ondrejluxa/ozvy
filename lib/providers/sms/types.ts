@@ -1,6 +1,6 @@
 /**
- * Messaging provider interface (spec §16). The dispatcher depends only on
- * this interface; a real Czech gateway is one more adapter file in Phase 1.
+ * Messaging provider interface (spec §16). The dispatcher and the webhook
+ * route depend only on this interface; each gateway is one adapter file.
  */
 
 export interface OutboundMessage {
@@ -21,15 +21,28 @@ export type SendResult =
 
 export type DeliveryEvent = { providerMessageId: string; status: "delivered" | "undelivered"; at: Date };
 
+/** One provider callback, normalised. `providerEventId` deduplicates retried webhooks. */
+export type ProviderEvent =
+  | {
+      kind: "delivery";
+      providerEventId: string;
+      providerMessageId: string;
+      status: "delivered" | "undelivered";
+      payload: Record<string, unknown>;
+    }
+  | { kind: "inbound"; providerEventId: string; from: string; text: string; payload: Record<string, unknown> }
+  | { kind: "other"; providerEventId: string; payload: Record<string, unknown> };
+
 export interface MessagingProvider {
   readonly id: string;
   readonly channel: "sms";
   readonly capabilities: { deliveryReports: boolean; inbound: boolean; alphanumericSender: boolean; unicode: boolean };
   send(msg: OutboundMessage): Promise<SendResult>;
-  /**
-   * Phase 0 stand-in for DLR webhooks: the mock reports delivery outcomes on
-   * demand. Real adapters implement parseWebhook/verifyWebhook in Phase 1.
-   */
+  /** Signature / shared secret / allowlist check for callbacks (spec §17). */
+  verifyWebhook?(req: Request): Promise<boolean>;
+  /** DLRs and inbound messages from a verified callback. */
+  parseWebhook?(req: Request): Promise<ProviderEvent[]>;
+  /** The mock reports delivery outcomes on demand instead of calling back. */
   pollDeliveryReports?(providerMessageIds: string[]): Promise<DeliveryEvent[]>;
   /** Remaining credit in SMS segments, when the provider reports one (pre-send check 4). */
   getBalanceSegments?(): Promise<number>;

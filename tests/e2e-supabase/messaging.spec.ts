@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "../../lib/db/types.gen";
+import { suppressionHash } from "../../lib/domain/messaging/opt-out";
 import { nextSendingSlot } from "../../lib/domain/messaging/sending-window";
 import { runMessagingTick } from "../../lib/jobs/messaging-core";
 import { createMockSmsProvider } from "../../lib/providers/sms/mock";
@@ -24,6 +25,10 @@ const usedSteps = new Set<number>();
 let totpSecret = "";
 let companyId = "";
 let campaignId = "";
+const startedAt = new Date().toISOString();
+/** Seeded customers this run opts out; restored afterwards so other suites see the seed. */
+const optedOut: string[] = [];
+const extraCustomers: string[] = [];
 
 const db = createClient<Database>(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false },
@@ -37,6 +42,7 @@ function tick(now: Date) {
     ratePerSecond: 100,
     maxPerTick: 5000,
     optOutBase: "example.cz/o",
+    suppressionPepper: env.SUPPRESSION_PEPPER ?? "",
     whitelist: { realProvider: false, production: false, numbers: [] },
     sleep: async () => {},
   });
@@ -92,6 +98,12 @@ test.describe.serial("messaging: snapshot, dispatch, pause, follow-ups, kill swi
       .eq("id", true);
     // Deleting the campaign removes its enrollments and messages (and the contact history).
     await service.from("campaigns").delete().eq("name", campaignName);
+    if (extraCustomers.length) await service.from("customers").delete().in("id", extraCustomers);
+    await service.from("suppression_list").delete().eq("company_id", companyId).gte("created_at", startedAt);
+    if (optedOut.length) {
+      await service.from("customers").update({ lifecycle_status: "inactive" }).in("id", optedOut);
+      await service.rpc("recompute_lifecycle", { p_company_id: companyId, p_customer_ids: optedOut });
+    }
     await cleanup(users, []);
   });
 
@@ -220,7 +232,7 @@ test.describe.serial("messaging: snapshot, dispatch, pause, follow-ups, kill swi
       .from("messages")
       .select("id")
       .eq("campaign_id", campaignId)
-      .eq("status", "sent")
+      .in("status", ["sent", "delivered"])
       .eq("step_number", 1)
       .limit(1)
       .single();
@@ -247,5 +259,115 @@ test.describe.serial("messaging: snapshot, dispatch, pause, follow-ups, kill swi
       expect.arrayContaining(["campaign.started", "campaign.paused", "campaign.resumed"]),
     );
     expect(audits!.find((a) => a.action === "campaign.started")!.actor_type).toBe("system");
+  });
+
+  test("opt-out link, STOP reply, delivery reports, suppression of the number at send time", async ({
+    browser,
+    request,
+  }) => {
+    test.setTimeout(180_000);
+    const pepper = env.SUPPRESSION_PEPPER ?? "";
+    const secret = env.SMS_WEBHOOK_SECRET ?? "";
+    const { data: msgs } = await service
+      .from("messages")
+      .select("id, opt_out_token, to_address, customer_id, enrollment_id, provider_message_id")
+      .eq("campaign_id", campaignId)
+      .eq("step_number", 0)
+      .in("status", ["sent", "delivered"])
+      .order("id")
+      .limit(3);
+    const [a, b, c] = msgs!;
+    optedOut.push(a.customer_id!, b.customer_id!);
+    const customer = async (id: string) =>
+      (await service.from("customers").select("lifecycle_status, eligibility_reason").eq("id", id).single()).data!;
+
+    // Opening the link changes nothing; the button opts the number out for this shop.
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.goto(`/o/${a.opt_out_token}`);
+    await expect(page.getByText("Dvořák").first()).toBeVisible();
+    expect((await customer(a.customer_id!)).lifecycle_status).not.toBe("opted_out");
+    await page.getByRole("button", { name: "Odhlásit se" }).click();
+    await expect(page.getByTestId("opt-out-done")).toBeVisible();
+    expect(await customer(a.customer_id!)).toEqual({ lifecycle_status: "opted_out", eligibility_reason: "opted_out" });
+    const { data: enrollment } = await service
+      .from("campaign_enrollments")
+      .select("stage, stopped_reason")
+      .eq("id", a.enrollment_id!)
+      .single();
+    expect(enrollment).toEqual({ stage: "opted_out", stopped_reason: "opted_out" });
+    const { data: entry } = await service
+      .from("suppression_list")
+      .select("reason")
+      .eq("company_id", companyId)
+      .eq("address_hash", suppressionHash(a.to_address, pepper))
+      .single();
+    expect(entry!.reason).toBe("opt_out_link");
+    // Coming back shows the done state; an unknown token is a plain 404.
+    await page.goto(`/o/${a.opt_out_token}`);
+    await expect(page.getByTestId("opt-out-done")).toBeVisible();
+    expect((await page.goto("/o/Zz9Zz9Zz"))!.status()).toBe(404);
+    await context.close();
+
+    // Gateway callbacks: wrong secret refused; a STOP reply and a negative DLR applied.
+    expect((await request.post("/api/webhooks/sms/mock?secret=wrong", { data: { events: [] } })).status()).toBe(401);
+    const callback = {
+      events: [
+        { type: "inbound", from: b.to_address.slice(1), text: "Odhlásit" },
+        { type: "undelivered", messageId: c.provider_message_id },
+      ],
+    };
+    const url = `/api/webhooks/sms/mock?secret=${secret}`;
+    expect((await request.post(url, { data: callback })).status()).toBe(200);
+    await expect.poll(async () => (await customer(b.customer_id!)).lifecycle_status).toBe("opted_out");
+    const { data: keyword } = await service
+      .from("suppression_list")
+      .select("reason")
+      .eq("company_id", companyId)
+      .eq("address_hash", suppressionHash(b.to_address, pepper))
+      .single();
+    expect(keyword!.reason).toBe("keyword");
+    await expect
+      .poll(async () => (await service.from("messages").select("status").eq("id", c.id).single()).data!.status)
+      .toBe("undelivered");
+    // A retried callback is stored once.
+    expect((await request.post(url, { data: callback })).status()).toBe(200);
+    const { count } = await service
+      .from("message_events")
+      .select("id", { count: "exact", head: true })
+      .eq("provider_id", "mock")
+      .eq("provider_event_id", `${c.provider_message_id}:undelivered`);
+    expect(count).toBe(1);
+
+    // The number stays suppressed for this shop even on a new customer record (e.g. a re-import).
+    const { data: twin } = await service
+      .from("customers")
+      .insert({
+        company_id: companyId,
+        first_name: "Nový",
+        last_name: "Záznam",
+        phone_e164: a.to_address,
+        phone_type: "mobile",
+        legal_basis: "existing_customer",
+        last_visit_at: "2026-01-15",
+      })
+      .select("id")
+      .single();
+    extraCustomers.push(twin!.id);
+    const { data: queued } = await service
+      .from("messages")
+      .insert({
+        company_id: companyId,
+        customer_id: twin!.id,
+        to_address: a.to_address,
+        body_rendered: "Test {{servis}}",
+        idempotency_key: `e2e-suppressed-${run}`,
+        opt_out_token: `Sup${run.slice(-5).padStart(5, "x")}`.replace(/[^A-Za-z0-9]/g, "x").slice(0, 8),
+      })
+      .select("id")
+      .single();
+    await tick(nextSendingSlot(new Date(Date.now() + 60_000)));
+    const { data: stopped } = await service.from("messages").select("status, error_code").eq("id", queued!.id).single();
+    expect(stopped).toEqual({ status: "cancelled", error_code: "suppressed" });
   });
 });

@@ -50,6 +50,8 @@ const lines = [
   `SEED_USER_PASSWORD=${keep("SEED_USER_PASSWORD") ?? `Navrat${randomInt(1000, 9999)}${randomBytes(5).toString("hex")}`}`,
   "JOB_RUNNER=inline",
   "SMS_PROVIDER=mock",
+  // Shared secret in the gateway callback URL (also the mock webhook in tests).
+  `SMS_WEBHOOK_SECRET=${keep("SMS_WEBHOOK_SECRET") ?? randomBytes(24).toString("hex")}`,
   "AI_PROVIDER=mock",
   "",
 ];

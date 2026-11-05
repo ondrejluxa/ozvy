@@ -16,9 +16,11 @@ import {
 } from "../domain/messaging/dispatch";
 import { renderTemplate, type RecipientRenderData, type ShopRenderData } from "../domain/messaging/render";
 import { isWithinSendingWindow } from "../domain/messaging/sending-window";
+import { suppressionHash } from "../domain/messaging/opt-out";
 import { countSmsSegments } from "../domain/messaging/sms-segments";
 import { PRESET_BY_KEY, WORKSHOP, isPresetKey } from "../domain/segments/presets";
 import type { MessagingProvider } from "../providers/sms/types";
+import { expireMessages, processEvents, storeEvents } from "./opt-out-core";
 
 /**
  * The messaging tick (spec §12, §16, §40.12), run every minute by Inngest
@@ -45,6 +47,8 @@ export interface MessagingDeps {
   ratePerSecond: number;
   maxPerTick: number;
   optOutBase: string;
+  /** SUPPRESSION_PEPPER: suppression entries are HMAC hashes of the number. */
+  suppressionPepper: string;
   whitelist: { realProvider: boolean; production: boolean; numbers: string[] };
   sleep?: (ms: number) => Promise<void>;
 }
@@ -62,6 +66,93 @@ export interface TickResult {
   failedMessages: number;
   review: number;
   advanced: { campaignId: string; status: string }[];
+  delivered: number;
+  undelivered: number;
+  optOuts: number;
+  expired: number;
+}
+
+// ---------- suppression ----------
+
+async function suppressedHashes(
+  db: Db,
+  items: { companyId: string; address: string }[],
+  pepper: string,
+): Promise<Set<string>> {
+  const byCompany = new Map<string, Set<string>>();
+  for (const i of items) {
+    const set = byCompany.get(i.companyId) ?? new Set<string>();
+    set.add(suppressionHash(i.address, pepper));
+    byCompany.set(i.companyId, set);
+  }
+  const found = new Set<string>();
+  for (const [companyId, hashes] of byCompany) {
+    // 64-character hashes travel in the URL: keep each request well under URL limits.
+    for (const part of chunks([...hashes], 50)) {
+      const { data, error } = await db
+        .from("suppression_list")
+        .select("address_hash")
+        .eq("company_id", companyId)
+        .eq("channel", "sms")
+        .in("address_hash", part);
+      if (error) throw new Error(`suppression check failed: ${error.code ?? error.message}`);
+      for (const row of data ?? []) found.add(`${companyId}:${row.address_hash}`);
+    }
+  }
+  return found;
+}
+
+async function withoutSuppressed<T extends { phone_e164: string | null }>(
+  db: Db,
+  companyId: string,
+  rows: T[],
+  pepper: string,
+): Promise<T[]> {
+  const withPhone = rows.filter((r) => r.phone_e164);
+  const found = await suppressedHashes(
+    db,
+    withPhone.map((r) => ({ companyId, address: r.phone_e164! })),
+    pepper,
+  );
+  if (found.size === 0) return rows;
+  return rows.filter((r) => !r.phone_e164 || !found.has(`${companyId}:${suppressionHash(r.phone_e164, pepper)}`));
+}
+
+// ---------- delivery reports and inbound ----------
+
+async function applyProviderEvents(deps: MessagingDeps, out: TickResult) {
+  const { db, provider } = deps;
+  const now = deps.now();
+  // The mock has no callbacks: poll it for sent messages and store its reports like webhooks.
+  if (provider.pollDeliveryReports) {
+    const { data: sent } = await db
+      .from("messages")
+      .select("provider_message_id")
+      .eq("provider_id", provider.id)
+      .eq("status", "sent")
+      .not("provider_message_id", "is", null)
+      .limit(2000);
+    const ids = (sent ?? []).map((m) => m.provider_message_id!);
+    if (ids.length) {
+      const reports = await provider.pollDeliveryReports(ids);
+      await storeEvents(
+        db,
+        provider.id,
+        reports.map((r) => ({
+          kind: "delivery" as const,
+          providerEventId: `${r.providerMessageId}:${r.status}`,
+          providerMessageId: r.providerMessageId,
+          status: r.status,
+          payload: { source: "poll" },
+        })),
+      );
+    }
+  }
+  const events = await processEvents(db, { pepper: deps.suppressionPepper, now });
+  out.delivered += events.delivered;
+  out.undelivered += events.undelivered;
+  out.optOuts += events.optOuts;
+  if (provider.capabilities.deliveryReports) out.expired += await expireMessages(db, provider.id, now);
 }
 
 const CHUNK = 500;
@@ -219,7 +310,13 @@ async function startCampaign(deps: MessagingDeps, companyId: string, campaignId:
     .rpc("campaign_audience", { p_company_id: companyId, p_campaign_id: campaignId, p_today: toDateOnly(now) })
     .range(0, 49_999);
   if (error) throw new Error(`campaign audience failed: ${error.code}`);
-  const all = (audience ?? []) as (AudienceRow & { vehicle_id: string | null })[];
+  // Numbers on the shop's suppression list never enter the snapshot (spec §16).
+  const all = await withoutSuppressed(
+    db,
+    companyId,
+    (audience ?? []) as (AudienceRow & { vehicle_id: string | null })[],
+    deps.suppressionPepper,
+  );
   if (steps.length === 0 || steps[0].step_number !== 0) return fail("render_failed");
 
   const holdout = selectHoldout(
@@ -364,6 +461,19 @@ async function startDueCampaigns(deps: MessagingDeps, out: TickResult) {
       await startCampaign(deps, c.company_id, c.id, out);
     } catch (err) {
       console.error("[messaging] campaign start failed", c.id, err instanceof Error ? err.message : "");
+      // Nothing written yet: hand the campaign back to the operator now instead of after 15 minutes.
+      const { count } = await deps.db
+        .from("campaign_enrollments")
+        .select("id", { count: "exact", head: true })
+        .eq("company_id", c.company_id)
+        .eq("campaign_id", c.id);
+      if (!count) {
+        const failed = await setCampaignStatus(deps.db, c.company_id, c.id, "sending", {
+          status: "failed",
+          status_reason: "start_interrupted",
+        });
+        if (failed) out.failed.push({ campaignId: c.id, reason: "start_interrupted" });
+      }
     }
   }
 }
@@ -463,9 +573,21 @@ async function dispatch(deps: MessagingDeps, out: TickResult) {
     if (e) console.error("[messaging] message update failed", id, e.code);
   };
 
+  // Suppression re-checked right before sending (spec §42 rule 4).
+  const suppressed = await suppressedHashes(
+    db,
+    rows.map((r) => ({ companyId: r.company_id, address: r.to_address })),
+    deps.suppressionPepper,
+  );
+
   for (const m of rows) {
-    if (m.stop_reason) {
-      await update(m.id, { status: "cancelled", error_code: m.stop_reason });
+    const stop =
+      m.stop_reason ??
+      (suppressed.has(`${m.company_id}:${suppressionHash(m.to_address, deps.suppressionPepper)}`)
+        ? "suppressed"
+        : null);
+    if (stop) {
+      await update(m.id, { status: "cancelled", error_code: stop });
       out.cancelled++;
       continue;
     }
@@ -624,9 +746,15 @@ export async function runMessagingTick(deps: MessagingDeps): Promise<TickResult>
     failedMessages: 0,
     review: 0,
     advanced: [],
+    delivered: 0,
+    undelivered: 0,
+    optOuts: 0,
+    expired: 0,
   };
   const { data: flagged } = await deps.db.rpc("flag_stuck_messages", { p_now: deps.now().toISOString() });
   out.flagged = flagged ?? 0;
+  // Delivery reports and STOP replies are applied even while sending is stopped.
+  await applyProviderEvents(deps, out);
   const { data: platform } = await deps.db.from("platform_settings").select("sending_paused").maybeSingle();
   if (platform?.sending_paused) {
     out.killSwitch = true;

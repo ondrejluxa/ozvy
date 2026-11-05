@@ -1,6 +1,7 @@
 import { hashString } from "../../domain/campaigns/estimates";
 import { countSmsSegments } from "../../domain/messaging/sms-segments";
-import type { DeliveryEvent, MessagingProvider, OutboundMessage, SendResult } from "./types";
+import { secretsEqual, toE164 } from "../../domain/messaging/opt-out";
+import type { DeliveryEvent, MessagingProvider, OutboundMessage, ProviderEvent, SendResult } from "./types";
 
 /**
  * Mock SMS provider (spec §16): simulates latency, ~2 % send failures and
@@ -14,7 +15,7 @@ export const PRICE_PER_SEGMENT_MINOR = 90; // 0,90 Kč
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const roll = (key: string, salt: string) => (hashString(`${salt}:${key}`) % 10_000) / 10_000;
 
-export function createMockSmsProvider(opts: { latencyMs?: number } = {}): MessagingProvider {
+export function createMockSmsProvider(opts: { latencyMs?: number; webhookSecret?: string } = {}): MessagingProvider {
   const latency = opts.latencyMs ?? 8;
   const accepted = new Map<string, string>(); // providerMessageId → idempotencyKey
 
@@ -37,6 +38,39 @@ export function createMockSmsProvider(opts: { latencyMs?: number } = {}): Messag
         segments,
         cost: { amountMinor: segments * PRICE_PER_SEGMENT_MINOR, currency: "CZK" },
       };
+    },
+
+    // Local stand-in for a gateway callback: POST /api/webhooks/sms/mock?secret=…
+    // { events: [{ type: "delivered" | "undelivered", messageId } | { type: "inbound", from, text }] }
+    async verifyWebhook(req: Request): Promise<boolean> {
+      return secretsEqual(new URL(req.url).searchParams.get("secret"), opts.webhookSecret);
+    },
+
+    async parseWebhook(req: Request): Promise<ProviderEvent[]> {
+      const json = (await req.json()) as { events?: Record<string, unknown>[] };
+      return (json.events ?? []).map((e, i): ProviderEvent => {
+        if (e.type === "inbound") {
+          const from = toE164(String(e.from ?? "")) ?? "";
+          const text = String(e.text ?? "");
+          return {
+            kind: "inbound",
+            providerEventId: String(e.id ?? `in:${from}:${text}:${i}`),
+            from,
+            text,
+            payload: e,
+          };
+        }
+        if ((e.type === "delivered" || e.type === "undelivered") && e.messageId) {
+          return {
+            kind: "delivery",
+            providerEventId: String(e.id ?? `${e.messageId}:${e.type}`),
+            providerMessageId: String(e.messageId),
+            status: e.type,
+            payload: e,
+          };
+        }
+        return { kind: "other", providerEventId: String(e.id ?? `other:${i}`), payload: e };
+      });
     },
 
     async pollDeliveryReports(ids: string[]): Promise<DeliveryEvent[]> {

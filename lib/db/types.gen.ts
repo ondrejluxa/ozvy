@@ -753,6 +753,57 @@ export type Database = {
           },
         ];
       };
+      message_events: {
+        Row: {
+          company_id: string | null;
+          id: number;
+          message_id: string | null;
+          payload: NonNullable<Json>;
+          processed_at: string | null;
+          provider_event_id: string;
+          provider_id: string;
+          received_at: string;
+          type: string;
+        };
+        Insert: {
+          company_id?: string | null;
+          id?: never;
+          message_id?: string | null;
+          payload: NonNullable<Json>;
+          processed_at?: string | null;
+          provider_event_id: string;
+          provider_id: string;
+          received_at?: string;
+          type: string;
+        };
+        Update: {
+          company_id?: string | null;
+          id?: never;
+          message_id?: string | null;
+          payload?: NonNullable<Json>;
+          processed_at?: string | null;
+          provider_event_id?: string;
+          provider_id?: string;
+          received_at?: string;
+          type?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "message_events_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "message_events_message_id_company_id_fkey";
+            columns: ["message_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "messages";
+            referencedColumns: ["id", "company_id"];
+          },
+        ];
+      };
       messages: {
         Row: {
           attempts: number;
@@ -772,6 +823,7 @@ export type Database = {
           idempotency_key: string;
           next_attempt_at: string | null;
           opt_out_token: string;
+          opted_out_at: string | null;
           provider_id: string | null;
           provider_message_id: string | null;
           queued_at: string;
@@ -802,6 +854,7 @@ export type Database = {
           idempotency_key: string;
           next_attempt_at?: string | null;
           opt_out_token: string;
+          opted_out_at?: string | null;
           provider_id?: string | null;
           provider_message_id?: string | null;
           queued_at?: string;
@@ -832,6 +885,7 @@ export type Database = {
           idempotency_key?: string;
           next_attempt_at?: string | null;
           opt_out_token?: string;
+          opted_out_at?: string | null;
           provider_id?: string | null;
           provider_message_id?: string | null;
           queued_at?: string;
@@ -1070,6 +1124,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "service_category_mappings_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      suppression_list: {
+        Row: {
+          address_hash: string;
+          channel: string;
+          company_id: string;
+          created_at: string;
+          id: string;
+          reason: string;
+        };
+        Insert: {
+          address_hash: string;
+          channel?: string;
+          company_id: string;
+          created_at?: string;
+          id?: string;
+          reason: string;
+        };
+        Update: {
+          address_hash?: string;
+          channel?: string;
+          company_id?: string;
+          created_at?: string;
+          id?: string;
+          reason?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "suppression_list_company_id_fkey";
             columns: ["company_id"];
             isOneToOne: false;
             referencedRelation: "companies";

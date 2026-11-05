@@ -6,8 +6,9 @@ import { formatCZK, formatInt } from "@/lib/domain/money";
 
 const COLUMNS: { key: string; statuses: MessageStatus[] }[] = [
   { key: "queued", statuses: ["queued", "sending"] },
-  { key: "sent", statuses: ["sent", "delivered"] },
-  { key: "failed", statuses: ["failed", "undelivered", "expired"] },
+  { key: "sent", statuses: ["sent", "expired"] },
+  { key: "delivered", statuses: ["delivered"] },
+  { key: "failed", statuses: ["failed", "undelivered"] },
   { key: "cancelled", statuses: ["cancelled"] },
   { key: "review", statuses: ["needs_review"] },
 ];

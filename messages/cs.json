@@ -1361,7 +1361,8 @@
       "sent": "Odesláno",
       "failed": "Nedoručeno",
       "cancelled": "Zastaveno",
-      "review": "Ke kontrole"
+      "review": "Ke kontrole",
+      "delivered": "Doručeno"
     },
     "followup": "Připomínka {n}",
     "holdoutNote": "Kontrolní skupina nedostane žádnou zprávu. Slouží k porovnání, kolik zákazníků by se vrátilo i bez kampaně.",
@@ -1417,5 +1418,12 @@
     "markSent": "Odešla",
     "markFailed": "Neodešla",
     "resolvedToast": "Výsledek uložen."
+  },
+  "optOut": {
+    "title": "Odhlásit se ze zpráv",
+    "text": "Nechcete už dostávat SMS od servisu {shop}? Jedním kliknutím se odhlásíte.",
+    "button": "Odhlásit se",
+    "doneTitle": "Jste odhlášeni",
+    "doneText": "Od servisu {shop} vám už žádné SMS nepřijdou."
   }
 }
