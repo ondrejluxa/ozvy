@@ -126,6 +126,7 @@ export function CompanyProfileForm({ companyId, defaults }: { companyId?: string
           required
           hint={t("hints.average_job_value_czk")}
         />
+        <Field name="subscription_czk" {...f} inputMode="numeric" hint={t("hints.subscription_czk")} />
         <Field name="default_sender_name" {...f} maxLength={11} hint={t("hints.default_sender_name")} />
         <Field
           name="opening_hours"

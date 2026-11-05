@@ -104,6 +104,7 @@ export function profileDefaults(c: CompanyRecord): Record<string, string> {
     email: c.email ?? "",
     website: c.website ?? "",
     average_job_value_czk: String(Math.round(c.average_job_value_minor / 100)),
+    subscription_czk: c.subscription_price_minor ? String(Math.round(c.subscription_price_minor / 100)) : "",
     default_sender_name: c.default_sender_name ?? "",
     opening_hours: typeof hours?.note === "string" ? hours.note : "",
     status: c.status,

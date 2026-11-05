@@ -67,6 +67,13 @@ const profileSchema = z.object({
     .trim()
     .transform((s) => Number(s.replace(/\s/g, "").replace(",", ".")))
     .refine((n) => Number.isInteger(n) && n >= 100 && n <= 200_000, "invalid_job_value"),
+  // Manual plan price (spec §20), for ROI; empty = not set yet.
+  subscription_czk: z
+    .string()
+    .trim()
+    .optional()
+    .transform((s) => (s ? Number(s.replace(/\s/g, "").replace(",", ".")) : 0))
+    .refine((n) => Number.isInteger(n) && n >= 0 && n <= 100_000, "invalid_subscription"),
   default_sender_name: optionalText(20).refine((s) => s === null || isValidSenderName(s), "invalid_sender"),
   opening_hours: optionalText(200),
   requires_client_approval: z.boolean(),
@@ -89,6 +96,7 @@ export interface CompanyProfileValues {
   email: string | null;
   website: string | null;
   average_job_value_minor: number;
+  subscription_price_minor: number;
   default_sender_name: string | null;
   opening_hours: { note: string } | Record<string, never>;
   requires_client_approval: boolean;
@@ -108,12 +116,13 @@ export function parseCompanyProfile(input: CompanyProfileInput): ProfileResult {
     }
     return { success: false, fieldErrors };
   }
-  const { average_job_value_czk, opening_hours, ...rest } = parsed.data;
+  const { average_job_value_czk, subscription_czk, opening_hours, ...rest } = parsed.data;
   return {
     success: true,
     values: {
       ...rest,
       average_job_value_minor: average_job_value_czk * 100,
+      subscription_price_minor: subscription_czk * 100,
       opening_hours: opening_hours ? { note: opening_hours } : {},
     },
   };

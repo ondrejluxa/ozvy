@@ -25,6 +25,9 @@ describe("isRealDataReady", () => {
       "/app/customers",
       `/app/customers/${ID}`,
       `/admin/companies/${ID}/customers/${ID}`,
+      `/admin/companies/${ID}/vocatives`,
+      "/admin/system",
+      "/app/results",
     ]) {
       expect(isRealDataReady(path), path).toBe(true);
     }
@@ -36,7 +39,7 @@ describe("isRealDataReady", () => {
 
       "/admin/companies/not-a-uuid",
       "/admin/companies/new/settings",
-      "/app/results",
+      "/app/resultsx",
       `/admin/companies/${ID}/campaigns/${ID}/recipients`,
 
       "/app/customersx",

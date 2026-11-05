@@ -27,7 +27,8 @@
     "db:test:local": "tsx scripts/db/pglite-test.ts",
     "db:types": "supabase gen types typescript --local --schema public > lib/db/types.gen.ts && prettier --write lib/db/types.gen.ts",
     "jobs:nightly": "tsx --env-file=.env.supabase.local scripts/jobs/nightly.ts",
-    "jobs:tick": "tsx --env-file=.env.supabase.local scripts/jobs/tick.ts"
+    "jobs:tick": "tsx --env-file=.env.supabase.local scripts/jobs/tick.ts",
+    "jobs:health": "tsx --env-file=.env.supabase.local scripts/jobs/health.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "4.0.96",

@@ -10,6 +10,7 @@ export type AlertSeverity = "critical" | "high" | "medium" | "low" | "info";
 export type AlertType =
   | "campaign_failed"
   | "sms_failure_rate"
+  | "import_needs_review"
   | "awaiting_approval"
   | "no_campaign_running"
   | "low_conversion"
@@ -28,6 +29,14 @@ export interface AlertCampaignInput {
   completedConversions: number;
 }
 
+export interface AlertImportInput {
+  id: string;
+  status: string;
+  updatedAt: Date;
+  rows: number;
+  invalid: number;
+}
+
 export interface AlertInput {
   companyId: string;
   companyStatus: string;
@@ -39,6 +48,8 @@ export interface AlertInput {
   /** ROI of the previous two full months, most recent first. */
   roiPreviousMonths: [number | null, number | null];
   topOpportunity: { presetKey: string; expectedRevenueMinor: number; eligible: number } | null;
+  /** Imports waiting for review, or recently committed ones (spec §10 "Import needs review"). */
+  imports?: AlertImportInput[];
   now: Date;
 }
 
@@ -97,6 +108,20 @@ export function evaluateAlerts(input: AlertInput): Alert[] {
         campaignId: c.id,
         createdAt: addDays(c.sentAt, 45),
         params: { rate: c.completedConversions / c.sentCount },
+      });
+    }
+  }
+
+  for (const i of input.imports ?? []) {
+    const invalidRate = i.rows > 0 ? i.invalid / i.rows : 0;
+    if (i.status === "needs_review" || invalidRate > 0.1) {
+      alerts.push({
+        key: `import_needs_review:${i.id}`,
+        type: "import_needs_review",
+        severity: "high",
+        companyId,
+        createdAt: i.updatedAt,
+        params: { importId: i.id, rate: invalidRate },
       });
     }
   }

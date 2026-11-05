@@ -82,6 +82,9 @@ insert into public.message_events (company_id, provider_id, provider_event_id, t
 insert into public.conversions (company_id, enrollment_id, campaign_id, customer_id, stage, source, booked_at) values
   ('aaaaaaaa-0000-0000-0000-000000000000', 'aaaaaaaa-0000-0000-0000-00000000ee01', 'aaaaaaaa-0000-0000-0000-00000000ca01', 'aaaaaaaa-0000-0000-0000-00000000c001', 'booked', 'manual_unverified', now()),
   ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ee01', 'bbbbbbbb-0000-0000-0000-00000000ca01', 'bbbbbbbb-0000-0000-0000-00000000c001', 'booked', 'manual_unverified', now());
+insert into public.alerts (company_id, type, severity, dedupe_key, title) values
+  ('aaaaaaaa-0000-0000-0000-000000000000', 'campaign_failed', 'critical', 'iso-a', 'campaign_failed'),
+  ('bbbbbbbb-0000-0000-0000-000000000000', 'campaign_failed', 'critical', 'iso-b', 'campaign_failed');
 insert into public.name_vocatives (company_id, surname, vocative, gender, confidence, source) values
   ('aaaaaaaa-0000-0000-0000-000000000000', 'Novák', 'Nováku', 'm', 0.95, 'rule'),
   ('bbbbbbbb-0000-0000-0000-000000000000', 'Novák', 'Nováku', 'm', 0.95, 'rule');
@@ -140,6 +143,8 @@ insert into tests.tenant_tables values
       values ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ee01', 'bbbbbbbb-0000-0000-0000-00000000ca01', 'bbbbbbbb-0000-0000-0000-00000000c001', 'booked', 'manual_unverified')$$),
   ('company_monthly_stats', 'company_id', $$insert into public.company_monthly_stats (company_id, month)
       values ('bbbbbbbb-0000-0000-0000-000000000000', '2020-01-01')$$),
+  ('alerts', 'company_id', $$insert into public.alerts (company_id, type, severity, dedupe_key, title)
+      values ('bbbbbbbb-0000-0000-0000-000000000000', 'x', 'low', 'iso-rogue', 'x')$$),
   ('campaign_steps', 'company_id', $$insert into public.campaign_steps (company_id, campaign_id, step_number, body_template)
       values ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ca01', 1, 'x')$$);
 

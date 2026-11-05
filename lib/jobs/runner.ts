@@ -19,7 +19,8 @@ export type JobEvent =
   | { name: "lifecycle/recompute.requested"; data: { companyId: string } }
   | { name: "vocatives/refresh.requested"; data: { companyId: string; userId: string | null } }
   | { name: "messaging/tick.requested"; data: Record<string, never> }
-  | { name: "messaging/events.requested"; data: Record<string, never> };
+  | { name: "messaging/events.requested"; data: Record<string, never> }
+  | { name: "health/check.requested"; data: Record<string, never> };
 
 export async function enqueue(event: JobEvent): Promise<void> {
   if (env.JOB_RUNNER === "inngest") {
@@ -31,6 +32,7 @@ export async function enqueue(event: JobEvent): Promise<void> {
   const lifecycle = await import("./lifecycle");
   const vocatives = await import("./vocatives");
   const messaging = await import("./messaging");
+  const health = await import("./health");
   after(async () => {
     try {
       if (event.name === "import/parse.requested") await jobs.runParseImport(event.data);
@@ -39,7 +41,8 @@ export async function enqueue(event: JobEvent): Promise<void> {
       else if (event.name === "lifecycle/recompute.requested") await lifecycle.runLifecycleRecompute(event.data);
       else if (event.name === "vocatives/refresh.requested") await vocatives.runVocativeRefresh(event.data);
       else if (event.name === "messaging/tick.requested") await messaging.runMessaging();
-      else await messaging.runProviderEvents();
+      else if (event.name === "messaging/events.requested") await messaging.runProviderEvents();
+      else await health.runHealthCheckJob();
     } catch (err) {
       console.error("[jobs] inline job failed", event.name, err instanceof Error ? err.message : "");
     }

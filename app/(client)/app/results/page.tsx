@@ -6,8 +6,12 @@ import { KpiCard } from "@/components/common/kpi-card";
 import { PageHeader, SectionTitle } from "@/components/shell/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
+import { RealResultsView } from "@/components/dashboard/real-client";
+import { requireClientCompany } from "@/lib/auth/client-company";
 import { getSupportView } from "@/lib/auth/context";
 import { getResults } from "@/lib/db/queries";
+import { getRealResults } from "@/lib/db/supabase/dashboard";
+import { env } from "@/lib/env";
 import { formatMonthLong } from "@/lib/domain/dates";
 import { formatCZK, formatInt, formatPercent, formatROI } from "@/lib/domain/money";
 
@@ -18,6 +22,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Výsledky (spec §8): revenue by month, campaign and segment, plus the pooled holdout comparison. */
 export default async function ResultsPage() {
+  if (env.DATA_SOURCE === "supabase") {
+    const { membership } = await requireClientCompany("/app/results");
+    const real = await getRealResults(membership.companyId);
+    if (!real) redirect("/forbidden");
+    return <RealResultsView data={real} />;
+  }
   const view = await getSupportView();
   if (!view) redirect("/admin");
   const data = getResults(view.companyId);

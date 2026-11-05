@@ -3,6 +3,7 @@ import { Inngest } from "inngest";
 import { runCommitImport, runParseImport, runValidateImport } from "./imports";
 import { runLifecycleRecompute, runNightlyLifecycle, runNightlyStatsJob } from "./lifecycle";
 import type { JobEvent } from "./runner";
+import { runDailyDigestJob, runHealthCheckJob } from "./health";
 import { runMessaging, runProviderEvents } from "./messaging";
 import { runVocativeRefresh } from "./vocatives";
 
@@ -98,6 +99,23 @@ export const messagingEvents = inngest.createFunction(
   async ({ step }) => step.run("process", () => runProviderEvents()),
 );
 
+/** Attention Required: every 15 minutes, or on the operator's request (spec §10). */
+export const healthCheck = inngest.createFunction(
+  {
+    id: "health-check",
+    retries: 1,
+    concurrency: { limit: 1 },
+    triggers: [{ cron: "*/15 * * * *" }, { event: "health/check.requested" }],
+  },
+  async ({ step }) => step.run("evaluate", () => runHealthCheckJob()),
+);
+
+/** Operator digest, 06:00 Prague (spec §25). */
+export const dailyDigest = inngest.createFunction(
+  { id: "daily-digest", retries: 2, triggers: [{ cron: "TZ=Europe/Prague 0 6 * * *" }] },
+  async ({ step }) => step.run("digest", () => runDailyDigestJob()),
+);
+
 export const functions = [
   importParse,
   importValidate,
@@ -108,4 +126,6 @@ export const functions = [
   vocativesRefresh,
   messagingTick,
   messagingEvents,
+  healthCheck,
+  dailyDigest,
 ];

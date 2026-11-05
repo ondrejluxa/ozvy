@@ -55,7 +55,8 @@ in the order of spec §40. The demo stays available as `DATA_SOURCE=demo`
 | 12. Messaging: snapshot + holdout, outbox, dispatcher, pre-send checks, follow-ups, kill switch       | done ([ADR-012](docs/decisions/ADR-012-messaging.md))       |
 | 13. Opt-out page, suppression, DLR/inbound webhooks, BulkGate adapter                                 | done ([ADR-013](docs/decisions/ADR-013-optout-dlr.md))      |
 | 14. Conversions: pipeline buttons, attribution rules, monthly stats, closing windows                  | done ([ADR-014](docs/decisions/ADR-014-conversions.md))     |
-| 15. Dashboards                                                                                        | next                                                        |
+| 15. Dashboards: client Přehled/Výsledky, admin overview, Attention Required, digest                   | done ([ADR-015](docs/decisions/ADR-015-dashboards.md))      |
+| 16. Hardening                                                                                         | next                                                        |
 
 ### Running against local Supabase
 

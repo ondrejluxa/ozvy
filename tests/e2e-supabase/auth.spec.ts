@@ -130,6 +130,8 @@ test.describe.serial("auth on real Supabase", () => {
     await page.getByRole("button", { name: "Ověřit" }).click();
     await expect(page).toHaveURL(/\/admin$/);
 
+    // The overview shows clients by health; inviting happens on the clients list.
+    await page.goto("/admin/companies");
     const row = page.locator("tr", { hasText: companyA });
     await row.getByRole("button", { name: "Pozvat uživatele" }).click();
     await page.getByRole("dialog").getByLabel("E-mail").fill(invitedEmail);

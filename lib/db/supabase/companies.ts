@@ -65,7 +65,7 @@ export const getCompanyDetail = cache(async (companyId: string): Promise<Company
   const { data: c, error } = await supabase
     .from("companies")
     .select(
-      "id, name, ico, address_line, postal_code, city, contact_person, phone, email, average_job_value_minor, default_sender_name, requires_client_approval, sending_enabled, status, dpa_signed_at",
+      "id, name, ico, address_line, postal_code, city, contact_person, phone, email, average_job_value_minor, subscription_price_minor, default_sender_name, requires_client_approval, sending_enabled, status, dpa_signed_at",
     )
     .eq("id", companyId)
     .maybeSingle();

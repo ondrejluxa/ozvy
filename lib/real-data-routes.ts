@@ -16,6 +16,7 @@ const READY: RegExp[] = [
   /^\/app$/,
   new RegExp(`^/app/customers(/${UUID})?$`, "i"),
   new RegExp(`^/app/campaigns(/${UUID})?$`, "i"),
+  /^\/app\/results$/,
 ];
 
 export function isRealDataReady(path: string): boolean {

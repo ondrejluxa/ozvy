@@ -6,12 +6,14 @@ import { CampaignStatusBadge } from "@/components/common/badges";
 import { KpiCard } from "@/components/common/kpi-card";
 import { OpportunityCard } from "@/components/common/opportunity-card";
 import { DemoTag } from "@/components/demo/demo-labels";
+import { RealClientDashboardView } from "@/components/dashboard/real-client";
 import { RevenueChart } from "@/components/dashboard/revenue-chart";
 import { SectionTitle } from "@/components/shell/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireClientCompany } from "@/lib/auth/client-company";
 import { getSupportView } from "@/lib/auth/context";
 import { getClientDashboard } from "@/lib/db/queries";
+import { getRealClientDashboard } from "@/lib/db/supabase/dashboard";
 import { env, isDemo } from "@/lib/env";
 import { formatDate, formatMonthLong, formatMonthShort } from "@/lib/domain/dates";
 import { formatCZK, formatInt, formatPercent, formatROI } from "@/lib/domain/money";
@@ -186,18 +188,10 @@ export default async function ClientDashboardPage() {
   );
 }
 
-/**
- * DATA_SOURCE=supabase: the shop's own home. Results appear here once the
- * first campaign has been sent (dashboards slice, spec §40.15).
- */
+/** DATA_SOURCE=supabase: the shop's own results (spec §9, §40.15). */
 async function RealClientHome() {
-  const { session, membership } = await requireClientCompany("/app");
-  const t = await getTranslations("realData.clientHome");
-  return (
-    <section className="rounded-xl border border-line bg-surface px-5 py-6 sm:px-8 sm:py-8">
-      <h1 className="text-[22px] font-semibold tracking-tight text-ink">{membership.companyName}</h1>
-      <p className="mt-2 text-sm text-ink-2">{t("welcome", { name: session.fullName ?? session.email ?? "" })}</p>
-      <p className="mt-1 text-sm text-muted">{t("empty")}</p>
-    </section>
-  );
+  const { membership } = await requireClientCompany("/app");
+  const data = await getRealClientDashboard(membership.companyId);
+  if (!data) redirect("/forbidden");
+  return <RealClientDashboardView data={data} />;
 }

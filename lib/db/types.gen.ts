@@ -66,6 +66,59 @@ export type Database = {
           },
         ];
       };
+      alerts: {
+        Row: {
+          acknowledged_at: string | null;
+          acknowledged_by: string | null;
+          company_id: string | null;
+          created_at: string;
+          dedupe_key: string;
+          detail: NonNullable<Json>;
+          id: string;
+          resolved_at: string | null;
+          severity: string;
+          status: string;
+          title: string;
+          type: string;
+        };
+        Insert: {
+          acknowledged_at?: string | null;
+          acknowledged_by?: string | null;
+          company_id?: string | null;
+          created_at?: string;
+          dedupe_key: string;
+          detail?: NonNullable<Json>;
+          id?: string;
+          resolved_at?: string | null;
+          severity: string;
+          status?: string;
+          title: string;
+          type: string;
+        };
+        Update: {
+          acknowledged_at?: string | null;
+          acknowledged_by?: string | null;
+          company_id?: string | null;
+          created_at?: string;
+          dedupe_key?: string;
+          detail?: NonNullable<Json>;
+          id?: string;
+          resolved_at?: string | null;
+          severity?: string;
+          status?: string;
+          title?: string;
+          type?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "alerts_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       audit_logs: {
         Row: {
           action: string;
@@ -364,6 +417,7 @@ export type Database = {
           service_mode: Database["public"]["Enums"]["service_mode"];
           settings: NonNullable<Json>;
           status: string;
+          subscription_price_minor: number;
           timezone: string;
           updated_at: string;
           website: string | null;
@@ -395,6 +449,7 @@ export type Database = {
           service_mode?: Database["public"]["Enums"]["service_mode"];
           settings?: NonNullable<Json>;
           status?: string;
+          subscription_price_minor?: number;
           timezone?: string;
           updated_at?: string;
           website?: string | null;
@@ -426,6 +481,7 @@ export type Database = {
           service_mode?: Database["public"]["Enums"]["service_mode"];
           settings?: NonNullable<Json>;
           status?: string;
+          subscription_price_minor?: number;
           timezone?: string;
           updated_at?: string;
           website?: string | null;
@@ -1157,6 +1213,7 @@ export type Database = {
       platform_settings: {
         Row: {
           id: boolean;
+          last_health_check_at: string | null;
           sending_paused: boolean;
           sending_paused_at: string | null;
           sending_paused_by: string | null;
@@ -1165,6 +1222,7 @@ export type Database = {
         };
         Insert: {
           id?: boolean;
+          last_health_check_at?: string | null;
           sending_paused?: boolean;
           sending_paused_at?: string | null;
           sending_paused_by?: string | null;
@@ -1173,6 +1231,7 @@ export type Database = {
         };
         Update: {
           id?: boolean;
+          last_health_check_at?: string | null;
           sending_paused?: boolean;
           sending_paused_at?: string | null;
           sending_paused_by?: string | null;
@@ -1440,6 +1499,19 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      alert_inputs: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          campaigns: Json;
+          company_created_at: string;
+          company_id: string;
+          company_status: string;
+          delivered_recent: number;
+          imports: Json;
+          last_send_at: string;
+          undelivered_recent: number;
+        }[];
+      };
       campaign_audience: {
         Args: { p_campaign_id: string; p_company_id: string; p_today: string };
         Returns: {
@@ -1462,6 +1534,25 @@ export type Database = {
           segments: number;
           status: Database["public"]["Enums"]["message_status"];
           step_number: number;
+        }[];
+      };
+      campaign_summaries: {
+        Args: { p_company_id: string };
+        Returns: {
+          attribution_window_days: number;
+          booked: number;
+          completed: number;
+          contacted: number;
+          holdout: number;
+          holdout_completed: number;
+          id: string;
+          name: string;
+          revenue_minor: number;
+          scheduled_at: string;
+          segment_preset: string;
+          sms_cost_minor: number;
+          started_at: string;
+          status: Database["public"]["Enums"]["campaign_status"];
         }[];
       };
       claim_messages: {

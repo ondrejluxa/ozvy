@@ -24,6 +24,8 @@ function actionHref(a: AlertRow): string {
     case "awaiting_approval":
     case "low_conversion":
       return `${base}/campaigns/${a.campaignId}`;
+    case "import_needs_review":
+      return `${base}/imports/${a.params.importId}`;
     case "sms_failure_rate":
       return `${base}/campaigns`;
     case "no_campaign_running":

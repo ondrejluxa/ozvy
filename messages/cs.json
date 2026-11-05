@@ -171,32 +171,48 @@
     "count": "{count, plural, one {# upozornění} few {# upozornění} other {# upozornění}}",
     "campaign_failed": {
       "title": "Kampaň „{campaign}“ selhala nebo má víc než 5 % chyb",
-      "action": "Otevřít kampaň"
+      "action": "Otevřít kampaň",
+      "digest": "Kampaň selhala nebo má víc než 5 % chyb"
     },
     "sms_failure_rate": {
       "title": "Doručitelnost SMS klesla na {rate}",
-      "action": "Zobrazit zprávy"
+      "action": "Zobrazit zprávy",
+      "digest": "Doručitelnost SMS pod 90 %"
     },
     "awaiting_approval": {
       "title": "Kampaň „{campaign}“ čeká na schválení klientem {days, plural, one {# den} few {# dny} other {# dní}}",
-      "action": "Připomenout klientovi"
+      "action": "Připomenout klientovi",
+      "digest": "Kampaň čeká na schválení déle než 48 hodin"
     },
     "no_campaign_running": {
       "title": "Žádná kampaň {days, plural, one {# den} few {# dny} other {# dní}}",
-      "action": "Otevřít příležitosti"
+      "action": "Otevřít příležitosti",
+      "digest": "Žádná kampaň 35 dní"
     },
     "low_conversion": {
       "title": "Kampaň „{campaign}“ má po 45 dnech jen {rate} dokončených návratů",
-      "action": "Projít kampaň"
+      "action": "Projít kampaň",
+      "digest": "Nízký počet návratů po 45 dnech"
     },
     "roi_below_1": {
       "title": "Návratnost pod 1× dva měsíce po sobě",
-      "action": "Domluvit schůzku"
+      "action": "Domluvit schůzku",
+      "digest": "Návratnost pod 1× dva měsíce po sobě"
     },
     "large_opportunity": {
       "title": "Nevyužitá příležitost: {preset} · {eligible} zákazníků · ~ {expected}",
-      "action": "Vytvořit kampaň"
-    }
+      "action": "Vytvořit kampaň",
+      "digest": "Nevyužitá příležitost"
+    },
+    "import_needs_review": {
+      "title": "Import čeká na kontrolu nebo má víc než 10 % chybných řádků",
+      "action": "Otevřít import",
+      "digest": "Import čeká na kontrolu"
+    },
+    "checkNow": "Zkontrolovat teď",
+    "checkQueued": "Kontrola běží.",
+    "lastCheck": "Poslední kontrola {time}",
+    "neverChecked": "Kontrola ještě neproběhla"
   },
   "admin": {
     "overview": {
@@ -673,7 +689,8 @@
     "treatedRate": "Oslovení: vrátilo se",
     "holdoutRate": "Kontrolní skupina: vrátilo se",
     "incremental": "Přírůstkové tržby díky kampaním",
-    "insufficient": "Nedostatek dat pro porovnání (kontrolní skupina má {count} zákazníků)."
+    "insufficient": "Nedostatek dat pro porovnání (kontrolní skupina má {count} zákazníků).",
+    "customSegment": "Vlastní segment"
   },
   "guide": {
     "title": "Průvodce ukázkou",
@@ -958,7 +975,8 @@
       "expected_conversion_percent": "Očekávaná úspěšnost (%)",
       "gross_margin_percent": "Hrubá marže (%)",
       "message_shop_name": "Název servisu ve zprávách",
-      "personalized_greeting": "Oslovovat zákazníky příjmením"
+      "personalized_greeting": "Oslovovat zákazníky příjmením",
+      "subscription_czk": "Měsíční předplatné (Kč)"
     },
     "hints": {
       "ico": "8 číslic, ověřujeme kontrolní číslici.",
@@ -973,7 +991,8 @@
       "expected_conversion_percent": "Výchozí 6 %. Konzervativní odhad pro plánování.",
       "gross_margin_percent": "Nepovinné. Umožní ukázat návratnost ze zisku.",
       "message_shop_name": "Nepovinné. Jinak název servisu.",
-      "personalized_greeting": "„Dobrý den, pane Nováku,“ jen u schválených oslovení, ostatní dostanou „Dobrý den,“. Ve výchozím stavu vypnuto."
+      "personalized_greeting": "„Dobrý den, pane Nováku,“ jen u schválených oslovení, ostatní dostanou „Dobrý den,“. Ve výchozím stavu vypnuto.",
+      "subscription_czk": "Cena podle smlouvy, bez DPH. Slouží k výpočtu návratnosti."
     },
     "errors": {
       "required": "Vyplňte toto pole.",
@@ -995,7 +1014,8 @@
       "dpa_missing": "Vyberte podepsanou smlouvu (PDF).",
       "dpa_too_large": "Soubor je větší než 10 MB.",
       "dpa_not_pdf": "Soubor není PDF.",
-      "dpa_confirm_required": "Potvrďte, že je smlouva podepsaná."
+      "dpa_confirm_required": "Potvrďte, že je smlouva podepsaná.",
+      "invalid_subscription": "Zadejte celé číslo od 0 do 100 000 Kč."
     },
     "dpa": {
       "title": "Zpracovatelská smlouva",
@@ -1468,5 +1488,21 @@
     "prev": "← Předchozí",
     "next": "Další →",
     "page": "Strana {page} z {pages}"
+  },
+  "realClients": {
+    "health": {
+      "green": "V pořádku",
+      "amber": "Ke sledování",
+      "red": "Vyžaduje pozornost"
+    },
+    "columns": {
+      "company": "Klient",
+      "mrr": "Předplatné",
+      "revenue": "Vrácené tržby (měsíc)",
+      "roi": "Návratnost",
+      "lastCampaign": "Poslední kampaň",
+      "alerts": "Upozornění"
+    },
+    "none": "—"
   }
 }

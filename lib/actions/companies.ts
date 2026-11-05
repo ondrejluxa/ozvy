@@ -46,6 +46,7 @@ const PROFILE_FIELDS = [
   "email",
   "website",
   "average_job_value_czk",
+  "subscription_czk",
   "default_sender_name",
   "opening_hours",
   "status",
