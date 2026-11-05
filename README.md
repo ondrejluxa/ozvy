@@ -54,7 +54,8 @@ in the order of spec §40. The demo stays available as `DATA_SOURCE=demo`
 | 11. AI templates: provider wrapper, prompt v1, validator + retry, generation log, vocatives + review  | done ([ADR-011](docs/decisions/ADR-011-ai.md))              |
 | 12. Messaging: snapshot + holdout, outbox, dispatcher, pre-send checks, follow-ups, kill switch       | done ([ADR-012](docs/decisions/ADR-012-messaging.md))       |
 | 13. Opt-out page, suppression, DLR/inbound webhooks, BulkGate adapter                                 | done ([ADR-013](docs/decisions/ADR-013-optout-dlr.md))      |
-| 14. Conversions                                                                                       | next                                                        |
+| 14. Conversions: pipeline buttons, attribution rules, monthly stats, closing windows                  | done ([ADR-014](docs/decisions/ADR-014-conversions.md))     |
+| 15. Dashboards                                                                                        | next                                                        |
 
 ### Running against local Supabase
 

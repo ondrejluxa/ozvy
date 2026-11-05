@@ -382,7 +382,8 @@
         "save_failed": "Uložení se nepodařilo. Zkuste to znovu.",
         "not_found": "Zákazník nebyl nalezen."
       }
-    }
+    },
+    "holdout": "Kontrolní skupina"
   },
   "conversion": {
     "booked": "Objednal se",
@@ -400,7 +401,13 @@
     "bookedToast": "{customer} se objednal",
     "highValue": "Částka nad 200 000 Kč – zkontrolujte ji prosím.",
     "viewClient": "Zobrazit klientský pohled",
-    "invalidAmount": "Zadejte částku větší než 0 Kč."
+    "invalidAmount": "Zadejte částku větší než 0 Kč.",
+    "savedReal": "Uloženo · {amount} započteno do vrácených tržeb",
+    "revert": "Vrátit zpět",
+    "revertYes": "Ano, vrátit",
+    "revertedToast": "Výsledek vrácen zpět.",
+    "date": "Datum zakázky",
+    "windowHint": "Návrat se počítá do {date} (okno kampaně)."
   },
   "segments": {
     "title": "Segmenty",
@@ -753,7 +760,13 @@
     "campaign_segment_unavailable": "Segment teď není dostupný.",
     "campaign_comment_required": "Napište, co upravit.",
     "ai_invalid_output": "AI nenapsala zprávu, která by prošla kontrolou. Zkuste to znovu, nebo zprávu napište ručně.",
-    "ai_unavailable": "Služba AI teď neodpovídá. Zkuste to za chvíli, nebo zprávu napište ručně."
+    "ai_unavailable": "Služba AI teď neodpovídá. Zkuste to za chvíli, nebo zprávu napište ručně.",
+    "conversion_not_found": "Záznam nenalezen. Obnovte stránku.",
+    "conversion_not_contacted": "Zákazníkovi ještě nebyla odeslána žádná zpráva.",
+    "conversion_outside_window": "Datum je mimo okno kampaně, návrat se do ní nepočítá.",
+    "conversion_newer_campaign": "Zákazníka mezitím oslovila novější kampaň. Návrat zapište u ní.",
+    "conversion_wrong_stage": "Tento krok teď nejde. Obnovte stránku.",
+    "conversion_revenue_required": "Zadejte částku zakázky."
   },
   "common": {
     "perMonth": "{value} / měsíc",
@@ -1425,5 +1438,35 @@
     "button": "Odhlásit se",
     "doneTitle": "Jste odhlášeni",
     "doneText": "Od servisu {shop} vám už žádné SMS nepřijdou."
+  },
+  "campaignResults": {
+    "title": "Výsledky",
+    "facts": {
+      "revenue": "Vrácené tržby",
+      "completed": "Dokončené zakázky",
+      "booked": "Objednáno",
+      "rate": "Míra návratu"
+    },
+    "comparison": "Kontrolní skupina bez SMS se vrátila v {holdoutRate} případů ({holdout} zákazníků). Odhad tržeb navíc díky kampani: {incremental}.",
+    "insufficient": "Nedostatek dat pro porovnání s kontrolní skupinou (má {count} zákazníků, potřeba je alespoň 30).",
+    "recipients": "Příjemci",
+    "filters": {
+      "all": "Všichni",
+      "contacted": "Osloveni",
+      "booked": "Objednaní",
+      "completed": "Dokončeno",
+      "lost": "Nevrátili se",
+      "holdout": "Kontrolní skupina"
+    },
+    "columns": {
+      "customer": "Zákazník",
+      "stage": "Stav",
+      "revenue": "Tržba"
+    },
+    "holdoutBadge": "Kontrolní",
+    "empty": "V tomto filtru nikdo není.",
+    "prev": "← Předchozí",
+    "next": "Další →",
+    "page": "Strana {page} z {pages}"
   }
 }

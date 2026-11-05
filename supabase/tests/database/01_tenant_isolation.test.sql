@@ -79,6 +79,9 @@ insert into public.suppression_list (company_id, address_hash, reason) values
 insert into public.message_events (company_id, provider_id, provider_event_id, type, payload) values
   ('aaaaaaaa-0000-0000-0000-000000000000', 'mock', 'ev-a', 'other', '{}'),
   ('bbbbbbbb-0000-0000-0000-000000000000', 'mock', 'ev-b', 'other', '{}');
+insert into public.conversions (company_id, enrollment_id, campaign_id, customer_id, stage, source, booked_at) values
+  ('aaaaaaaa-0000-0000-0000-000000000000', 'aaaaaaaa-0000-0000-0000-00000000ee01', 'aaaaaaaa-0000-0000-0000-00000000ca01', 'aaaaaaaa-0000-0000-0000-00000000c001', 'booked', 'manual_unverified', now()),
+  ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ee01', 'bbbbbbbb-0000-0000-0000-00000000ca01', 'bbbbbbbb-0000-0000-0000-00000000c001', 'booked', 'manual_unverified', now());
 insert into public.name_vocatives (company_id, surname, vocative, gender, confidence, source) values
   ('aaaaaaaa-0000-0000-0000-000000000000', 'Novák', 'Nováku', 'm', 0.95, 'rule'),
   ('bbbbbbbb-0000-0000-0000-000000000000', 'Novák', 'Nováku', 'm', 0.95, 'rule');
@@ -133,6 +136,10 @@ insert into tests.tenant_tables values
       values ('bbbbbbbb-0000-0000-0000-000000000000', 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc', 'manual')$$),
   ('message_events', 'company_id', $$insert into public.message_events (company_id, provider_id, provider_event_id, type, payload)
       values ('bbbbbbbb-0000-0000-0000-000000000000', 'mock', 'ev-rogue', 'other', '{}')$$),
+  ('conversions', 'company_id', $$insert into public.conversions (company_id, enrollment_id, campaign_id, customer_id, stage, source)
+      values ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ee01', 'bbbbbbbb-0000-0000-0000-00000000ca01', 'bbbbbbbb-0000-0000-0000-00000000c001', 'booked', 'manual_unverified')$$),
+  ('company_monthly_stats', 'company_id', $$insert into public.company_monthly_stats (company_id, month)
+      values ('bbbbbbbb-0000-0000-0000-000000000000', '2020-01-01')$$),
   ('campaign_steps', 'company_id', $$insert into public.campaign_steps (company_id, campaign_id, step_number, body_template)
       values ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ca01', 1, 'x')$$);
 

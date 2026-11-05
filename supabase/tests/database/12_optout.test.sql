@@ -80,8 +80,10 @@ select throws_ok(
 select tests.logout();
 
 select tests.login('00000000-0000-0000-0000-0000000012ff');
-select is((select count(*)::int from public.suppression_list), 2, 'the operator reads the suppression list');
-select is((select count(*)::int from public.message_events), 2, 'the operator reads provider events');
+select is((select count(*)::int from public.suppression_list where address_hash = repeat('1', 64)), 2,
+  'the operator reads the suppression list');
+select is((select count(*)::int from public.message_events where provider_event_id = 'sms1:1'), 2,
+  'the operator reads provider events');
 with d as (delete from public.suppression_list returning 1)
   select is(count(*)::int, 0, 'nobody deletes suppression entries through the API') from d;
 select tests.logout();

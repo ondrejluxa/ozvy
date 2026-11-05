@@ -432,6 +432,159 @@ export type Database = {
         };
         Relationships: [];
       };
+      company_monthly_stats: {
+        Row: {
+          booked_count: number;
+          company_id: string;
+          completed_count: number;
+          computed_at: string;
+          holdout_stats: NonNullable<Json>;
+          messages_sent: number;
+          month: string;
+          recovered_revenue_minor: number;
+          sms_cost_minor: number;
+          sms_segments: number;
+        };
+        Insert: {
+          booked_count?: number;
+          company_id: string;
+          completed_count?: number;
+          computed_at?: string;
+          holdout_stats?: NonNullable<Json>;
+          messages_sent?: number;
+          month: string;
+          recovered_revenue_minor?: number;
+          sms_cost_minor?: number;
+          sms_segments?: number;
+        };
+        Update: {
+          booked_count?: number;
+          company_id?: string;
+          completed_count?: number;
+          computed_at?: string;
+          holdout_stats?: NonNullable<Json>;
+          messages_sent?: number;
+          month?: string;
+          recovered_revenue_minor?: number;
+          sms_cost_minor?: number;
+          sms_segments?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "company_monthly_stats_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      conversions: {
+        Row: {
+          booked_at: string | null;
+          campaign_id: string;
+          company_id: string;
+          completed_at: string | null;
+          confirmed_at: string | null;
+          confirmed_by: string | null;
+          created_at: string;
+          customer_id: string;
+          enrollment_id: string;
+          id: string;
+          is_holdout: boolean;
+          notes: string | null;
+          revenue_minor: number | null;
+          source: Database["public"]["Enums"]["conversion_source"];
+          stage: Database["public"]["Enums"]["conversion_stage"];
+          updated_at: string;
+          vehicle_id: string | null;
+          visit_id: string | null;
+        };
+        Insert: {
+          booked_at?: string | null;
+          campaign_id: string;
+          company_id: string;
+          completed_at?: string | null;
+          confirmed_at?: string | null;
+          confirmed_by?: string | null;
+          created_at?: string;
+          customer_id: string;
+          enrollment_id: string;
+          id?: string;
+          is_holdout?: boolean;
+          notes?: string | null;
+          revenue_minor?: number | null;
+          source: Database["public"]["Enums"]["conversion_source"];
+          stage: Database["public"]["Enums"]["conversion_stage"];
+          updated_at?: string;
+          vehicle_id?: string | null;
+          visit_id?: string | null;
+        };
+        Update: {
+          booked_at?: string | null;
+          campaign_id?: string;
+          company_id?: string;
+          completed_at?: string | null;
+          confirmed_at?: string | null;
+          confirmed_by?: string | null;
+          created_at?: string;
+          customer_id?: string;
+          enrollment_id?: string;
+          id?: string;
+          is_holdout?: boolean;
+          notes?: string | null;
+          revenue_minor?: number | null;
+          source?: Database["public"]["Enums"]["conversion_source"];
+          stage?: Database["public"]["Enums"]["conversion_stage"];
+          updated_at?: string;
+          vehicle_id?: string | null;
+          visit_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "conversions_campaign_id_company_id_fkey";
+            columns: ["campaign_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "campaigns";
+            referencedColumns: ["id", "company_id"];
+          },
+          {
+            foreignKeyName: "conversions_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "conversions_customer_id_company_id_fkey";
+            columns: ["customer_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id", "company_id"];
+          },
+          {
+            foreignKeyName: "conversions_enrollment_id_company_id_fkey";
+            columns: ["enrollment_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "campaign_enrollments";
+            referencedColumns: ["id", "company_id"];
+          },
+          {
+            foreignKeyName: "conversions_vehicle_id_company_id_fkey";
+            columns: ["vehicle_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "vehicles";
+            referencedColumns: ["id", "company_id"];
+          },
+          {
+            foreignKeyName: "conversions_visit_id_company_id_fkey";
+            columns: ["visit_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "visits";
+            referencedColumns: ["id", "company_id"];
+          },
+        ];
+      };
       customers: {
         Row: {
           company_id: string;
@@ -1326,6 +1479,7 @@ export type Database = {
           to_address: string;
         }[];
       };
+      close_attribution_windows: { Args: { p_now: string }; Returns: number };
       commit_import_batch: {
         Args: { p_batch: number; p_company_id: string; p_import_id: string; p_payload: Json };
         Returns: Json;
@@ -1413,6 +1567,44 @@ export type Database = {
         Args: { p_company_id: string; p_customer_ids?: string[]; p_today?: string };
         Returns: number;
       };
+      recompute_monthly_stats: { Args: { p_company_id: string; p_from: string; p_to: string }; Returns: number };
+      record_conversion: {
+        Args: {
+          p_action: string;
+          p_at: string;
+          p_company_id: string;
+          p_enrollment_id: string;
+          p_notes?: string;
+          p_revenue_minor?: number;
+          p_user?: string;
+        };
+        Returns: {
+          booked_at: string | null;
+          campaign_id: string;
+          company_id: string;
+          completed_at: string | null;
+          confirmed_at: string | null;
+          confirmed_by: string | null;
+          created_at: string;
+          customer_id: string;
+          enrollment_id: string;
+          id: string;
+          is_holdout: boolean;
+          notes: string | null;
+          revenue_minor: number | null;
+          source: Database["public"]["Enums"]["conversion_source"];
+          stage: Database["public"]["Enums"]["conversion_stage"];
+          updated_at: string;
+          vehicle_id: string | null;
+          visit_id: string | null;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "conversions";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       segment_audience: {
         Args: { p_company_id: string; p_preset_key?: string; p_rules: Json; p_today?: string };
         Returns: {
@@ -1467,6 +1659,7 @@ export type Database = {
         | "cancelled"
         | "failed";
       company_role: "shop_owner" | "shop_manager";
+      conversion_source: "manual_confirmed" | "import_matched" | "manual_unverified";
       conversion_stage: "contacted" | "replied" | "booked" | "completed" | "lost" | "opted_out";
       legal_basis: "consent" | "existing_customer" | "unknown";
       lifecycle_status: "active" | "at_risk" | "inactive" | "reactivated" | "opted_out";
@@ -1610,6 +1803,7 @@ export const Constants = {
         "failed",
       ],
       company_role: ["shop_owner", "shop_manager"],
+      conversion_source: ["manual_confirmed", "import_matched", "manual_unverified"],
       conversion_stage: ["contacted", "replied", "booked", "completed", "lost", "opted_out"],
       legal_basis: ["consent", "existing_customer", "unknown"],
       lifecycle_status: ["active", "at_risk", "inactive", "reactivated", "opted_out"],

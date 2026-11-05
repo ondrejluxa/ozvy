@@ -13,6 +13,7 @@ const FILTERS: RecipientFilter[] = ["all", "booked", "completed", "holdout", "fa
 
 export default async function ClientCampaignPage(props: PageProps<"/app/campaigns/[campaignId]">) {
   const { campaignId } = await props.params;
+  const sp = await props.searchParams;
 
   if (env.DATA_SOURCE === "supabase") {
     // Mobile-friendly approval page (spec §6 F4); the company comes from the membership.
@@ -32,13 +33,18 @@ export default async function ClientCampaignPage(props: PageProps<"/app/campaign
           }),
           canPause: can({ isPlatformAdmin: session.isPlatformAdmin, ...membership }, "campaigns.pause"),
         }}
+        recipients={{
+          filter: typeof sp.stav === "string" ? sp.stav : undefined,
+          page: typeof sp.strana === "string" ? sp.strana : undefined,
+          canMark: can({ isPlatformAdmin: session.isPlatformAdmin, ...membership }, "conversions.mark"),
+          customerHref: "/app/customers",
+        }}
       />
     );
   }
 
   const view = await getSupportView();
   if (!view) redirect("/admin");
-  const sp = await props.searchParams;
   const filter = FILTERS.find((f) => f === sp.filter) ?? "all";
   const q = typeof sp.q === "string" ? sp.q.slice(0, 80) : undefined;
   const data = getCampaignDetail(view.companyId, campaignId, { filter, q, page: Number(sp.page) || 1 });

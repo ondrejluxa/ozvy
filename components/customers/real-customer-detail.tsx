@@ -1,11 +1,13 @@
 import { Car } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { LifecycleBadge } from "@/components/common/badges";
+import { ConversionButtons } from "@/components/conversions/conversion-buttons";
 import { ContactEditDialog } from "@/components/customers/contact-edit-dialog";
 import { VisitTimeline } from "@/components/customers/customer-detail";
 import { PageHeader } from "@/components/shell/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { customerEnrollments } from "@/lib/db/supabase/conversions";
 import type { RealCustomerDetail as Detail } from "@/lib/db/supabase/customers";
 import { formatDate } from "@/lib/domain/dates";
 import { formatCZK, formatInt } from "@/lib/domain/money";
@@ -14,22 +16,26 @@ import { formatPhone } from "@/lib/domain/phone";
 /**
  * One screen per customer on real data (spec §8 "Zákazník – detail"):
  * contact and eligibility, vehicles with their visit timeline, notes.
- * Campaign history and the conversion pipeline join with slices 10 and 14.
+ * Campaign history with the conversion pipeline buttons (spec §14).
  */
 export async function RealCustomerDetail({
   data,
   backHref,
   canEdit,
+  canMark,
 }: {
   data: Detail;
   backHref: string;
   canEdit: boolean;
+  canMark: boolean;
 }) {
   const t = await getTranslations("customer");
   const tLegal = await getTranslations("legalBasis");
   const tPhone = await getTranslations("phoneType");
   const tExcl = await getTranslations("exclusions");
   const c = data.customer;
+  const [enrollments, tStage] = await Promise.all([customerEnrollments(c.companyId, c.id), getTranslations("stage")]);
+  const now = new Date().toISOString();
 
   return (
     <>
@@ -114,9 +120,46 @@ export async function RealCustomerDetail({
             <CardHeader>
               <CardTitle>{t("campaigns")}</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted">{t("noCampaigns")}</p>
-            </CardContent>
+            {enrollments.length === 0 ? (
+              <CardContent>
+                <p className="text-sm text-muted">{t("noCampaigns")}</p>
+              </CardContent>
+            ) : (
+              <ul className="divide-y divide-line border-t border-line">
+                {enrollments.map((e) => (
+                  <li
+                    key={e.id}
+                    className="flex flex-wrap items-center gap-3 px-5 py-3"
+                    data-testid="customer-enrollment"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium text-ink">{e.campaignName}</div>
+                      <div className="text-[12px] text-muted">
+                        {e.firstSentAt ? formatDate(e.firstSentAt) : "—"}
+                        {e.vehicle && <> · {e.vehicle}</>}
+                        {e.revenueMinor !== null && <> · {formatCZK(e.revenueMinor)}</>}
+                      </div>
+                    </div>
+                    {e.isHoldout && <Badge tone="info">{t("holdout")}</Badge>}
+                    <Badge tone={e.stage === "completed" ? "accent" : "neutral"} data-testid="enrollment-stage">
+                      {tStage(e.stage)}
+                    </Badge>
+                    {canMark && (
+                      <ConversionButtons
+                        companyId={c.companyId}
+                        enrollment={e}
+                        customerName={c.name}
+                        campaignName={e.campaignName}
+                        revenueMinor={e.revenueMinor}
+                        completedAt={e.completedAt}
+                        now={now}
+                        compact
+                      />
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
           </Card>
         </div>
 

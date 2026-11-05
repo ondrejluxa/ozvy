@@ -18,7 +18,10 @@ export default async function ClientCustomerPage(props: PageProps<"/app/customer
     const canEdit = await requireContext({ permission: "customers.edit_contact", companyId: membership.companyId })
       .then(() => true)
       .catch(() => false);
-    return <RealCustomerDetail data={data} backHref="/app/customers" canEdit={canEdit} />;
+    const canMark = await requireContext({ permission: "conversions.mark", companyId: membership.companyId })
+      .then(() => true)
+      .catch(() => false);
+    return <RealCustomerDetail data={data} backHref="/app/customers" canEdit={canEdit} canMark={canMark} />;
   }
 
   const view = await getSupportView();

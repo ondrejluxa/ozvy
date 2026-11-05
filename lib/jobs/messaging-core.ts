@@ -21,6 +21,7 @@ import { countSmsSegments } from "../domain/messaging/sms-segments";
 import { PRESET_BY_KEY, WORKSHOP, isPresetKey } from "../domain/segments/presets";
 import type { MessagingProvider } from "../providers/sms/types";
 import { expireMessages, processEvents, storeEvents } from "./opt-out-core";
+import { closeWindows, recomputeStats } from "./stats-core";
 
 /**
  * The messaging tick (spec §12, §16, §40.12), run every minute by Inngest
@@ -70,6 +71,7 @@ export interface TickResult {
   undelivered: number;
   optOuts: number;
   expired: number;
+  windowsClosed: number;
 }
 
 // ---------- suppression ----------
@@ -750,6 +752,7 @@ export async function runMessagingTick(deps: MessagingDeps): Promise<TickResult>
     undelivered: 0,
     optOuts: 0,
     expired: 0,
+    windowsClosed: 0,
   };
   const { data: flagged } = await deps.db.rpc("flag_stuck_messages", { p_now: deps.now().toISOString() });
   out.flagged = flagged ?? 0;
@@ -764,5 +767,12 @@ export async function runMessagingTick(deps: MessagingDeps): Promise<TickResult>
   await queueFollowups(deps, out);
   await dispatch(deps, out);
   await advanceCampaigns(deps, out);
+  // Windows that closed become "lost"; this month's stats follow the sends (spec §14).
+  out.windowsClosed = await closeWindows(deps.db, deps.now());
+  const { data: running } = await deps.db
+    .from("campaigns")
+    .select("company_id")
+    .in("status", ["sending", "active", "paused"]);
+  await recomputeStats(deps.db, [...new Set((running ?? []).map((c) => c.company_id))], deps.now());
   return out;
 }

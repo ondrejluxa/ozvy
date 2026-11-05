@@ -31,6 +31,12 @@ export default async function AdminCampaignPage(props: Props) {
         campaignId={campaignId}
         basePath={`${base}/campaigns`}
         viewer={{ kind: "operator" }}
+        recipients={{
+          filter: typeof sp.stav === "string" ? sp.stav : undefined,
+          page: typeof sp.strana === "string" ? sp.strana : undefined,
+          canMark: true,
+          customerHref: `${base}/customers`,
+        }}
       />
     );
   }

@@ -1,7 +1,7 @@
 import "server-only";
 import { Inngest } from "inngest";
 import { runCommitImport, runParseImport, runValidateImport } from "./imports";
-import { runLifecycleRecompute, runNightlyLifecycle } from "./lifecycle";
+import { runLifecycleRecompute, runNightlyLifecycle, runNightlyStatsJob } from "./lifecycle";
 import type { JobEvent } from "./runner";
 import { runMessaging, runProviderEvents } from "./messaging";
 import { runVocativeRefresh } from "./vocatives";
@@ -41,6 +41,12 @@ export const importCommit = inngest.createFunction(
 export const lifecycleNightly = inngest.createFunction(
   { id: "lifecycle-nightly", retries: 1, triggers: [{ cron: "TZ=Europe/Prague 0 3 * * *" }] },
   async ({ step }) => step.run("recompute-all", () => runNightlyLifecycle()),
+);
+
+/** Attribution windows and company_monthly_stats, 03:30 Prague time, after the lifecycle recompute. */
+export const statsNightly = inngest.createFunction(
+  { id: "stats-nightly", retries: 2, triggers: [{ cron: "TZ=Europe/Prague 30 3 * * *" }] },
+  async ({ step }) => step.run("windows-and-stats", () => runNightlyStatsJob()),
 );
 
 /** One company, after its thresholds changed or on the operator's request. */
@@ -98,6 +104,7 @@ export const functions = [
   importCommit,
   lifecycleNightly,
   lifecycleRecompute,
+  statsNightly,
   vocativesRefresh,
   messagingTick,
   messagingEvents,

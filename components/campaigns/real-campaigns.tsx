@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { CampaignStatusBadge } from "@/components/common/badges";
+import { CampaignRecipients } from "@/components/campaigns/campaign-recipients";
 import { DeliveryPanel } from "@/components/campaigns/delivery-panel";
 import { ApprovalPanel, OperatorCampaignActions, OwnerPauseButton } from "@/components/campaigns/real-campaign-actions";
 import { PageHeader } from "@/components/shell/page-header";
@@ -8,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
 import { getCampaign, listCampaigns, previewRecipients } from "@/lib/db/supabase/campaigns";
 import { getCompanyRecord } from "@/lib/db/supabase/companies";
+import { RECIPIENT_FILTERS } from "@/lib/db/supabase/conversions";
 import { resolveCompanySettings } from "@/lib/domain/company-settings";
 import { statusGroup } from "@/lib/domain/campaigns/status";
 import { formatDateTime } from "@/lib/domain/dates";
@@ -90,11 +92,14 @@ export async function RealCampaignDetail({
   campaignId,
   basePath,
   viewer,
+  recipients,
 }: {
   companyId: string;
   campaignId: string;
   basePath: string;
   viewer: { kind: "operator" } | { kind: "client"; canDecide: boolean; canPause: boolean };
+  /** Recipient list state from the URL (?stav=&strana=) and who may mark returns. */
+  recipients?: { filter: string | undefined; page: string | undefined; canMark: boolean; customerHref: string };
 }) {
   const t = await getTranslations("campaignDetail");
   const tc = await getTranslations("campaignBuilder");
@@ -177,6 +182,17 @@ export async function RealCampaignDetail({
         </Card>
 
         {SENT_STATUSES.includes(campaign.status) && <DeliveryPanel companyId={companyId} campaignId={campaignId} />}
+        {SENT_STATUSES.includes(campaign.status) && recipients && (
+          <CampaignRecipients
+            companyId={companyId}
+            campaignId={campaignId}
+            pagePath={`${basePath}/${campaignId}`}
+            customerHref={recipients.customerHref}
+            filter={RECIPIENT_FILTERS.find((f) => f === recipients.filter) ?? "all"}
+            page={Math.max(1, Number(recipients.page) || 1)}
+            canMark={recipients.canMark}
+          />
+        )}
 
         {steps.map((s) => {
           const rendered = sample

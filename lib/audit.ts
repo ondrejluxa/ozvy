@@ -43,7 +43,11 @@ export type AuditAction =
   | "campaign.resumed"
   | "campaign.returned_to_draft"
   | "system.kill_switch_changed"
-  | "message.review_resolved";
+  | "message.review_resolved"
+  | "conversion.booked"
+  | "conversion.completed"
+  | "conversion.updated"
+  | "conversion.reverted";
 
 export interface AuditEntry {
   action: AuditAction;

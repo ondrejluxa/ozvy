@@ -26,7 +26,7 @@ export default async function AdminCustomerPage(
     await requirePageContext({ permission: "admin.access" }, `${base}/customers/${customerId}`);
     const data = await getRealCustomerDetail(companyId, customerId);
     if (!data) notFound();
-    return <RealCustomerDetail data={data} backHref={`${base}/customers`} canEdit />;
+    return <RealCustomerDetail data={data} backHref={`${base}/customers`} canEdit canMark />;
   }
   const data = getCustomerDetail(companyId, customerId);
   if (!data) notFound();
