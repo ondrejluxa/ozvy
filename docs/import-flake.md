@@ -58,10 +58,9 @@ production use Inngest:
 
 1. Staging and production run `JOB_RUNNER=inngest` (production refuses `inline`). Check on
    staging that an import moves through every step (pilot checklist, "Before you start").
-2. Nothing alerts on an import that stays in `parsing`, `validating` or `committing`. The
-   operator sees it on the import page. For the pilot, the operator runs the imports and
-   watches them. A health-check alert for imports stuck more than 30 minutes would be a small
-   Phase 1 hardening item. Not built: it changes behaviour, and the cause is not proven.
+2. An import that stays in `parsing`, `validating` or `committing` for more than 30 minutes
+   now raises the `import_stuck` alert in Attention Required (ADR-018). It does not retry by
+   itself; the operator opens the import and restarts the step.
 
 ## If it happens again
 

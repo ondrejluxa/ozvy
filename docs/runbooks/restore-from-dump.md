@@ -51,9 +51,31 @@ In production, do the same against a new Supabase project:
    ```
 
 5. **Re-apply erasures:** any deletion done after the dump time must be repeated before going
-   live: data subject requests, `customer.opted_out` suppressions (the suppression list is in
-   the dump, but later opt-outs are not) and the retention run (`pnpm jobs:retention` /
-   Inngest).
+   live (spec §21, ADR-018):
+   - **Erasure requests:** every completed erasure is in `data_subject_requests` with the
+     customer's UUID in `subject_reference`.
+     - Take the list from the old project if it is still readable. Otherwise use the audit log
+       export, or the operator's own notes for requests completed after the dump.
+     - In the SQL editor of the restored project (as `postgres`), for each one:
+
+       ```sql
+       -- one row per completed erasure; app.erase_customers redacts messages,
+       -- deletes raw import rows and the customer (no-op if already gone)
+       select app.erase_customers('<company_id>'::uuid, array['<customer uuid>'::uuid]);
+       ```
+
+     - The requests completed before the dump re-apply themselves with:
+
+       ```sql
+       select r.company_id, app.erase_customers(r.company_id, array[r.subject_reference::uuid])
+       from public.data_subject_requests r
+       where r.type = 'erasure' and r.status = 'completed'
+         and exists (select 1 from public.customers c where c.id = r.subject_reference::uuid);
+       ```
+
+   - **Opt-outs:** `customer.opted_out` suppressions. The suppression list is in the dump, but
+     later opt-outs are not; replay them from the gateway's STOP replies or the old project.
+   - **Retention:** run the nightly retention (`pnpm jobs:retention` / Inngest).
 6. **Verify:**
    1. `supabase test db`;
    2. row counts against the dump;

@@ -219,9 +219,9 @@ missing or invalid. Values are placeholders; never commit real ones.
 
 **Not set in staging or production:** `DEMO_MODE` (derived), `DEV_ALLOW_REAL_LOOKING_DATA`
 (refused in production), `SEED_USER_PASSWORD` (local seed only; the seed refuses non-local
-URLs). The schema also accepts `SUPABASE_DB_URL`, `EMAIL_PROVIDER_API_KEY`,
-`UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`, but nothing reads them: rate limits
-live in Postgres.
+URLs). The spec's `SUPABASE_DB_URL`, `EMAIL_PROVIDER_API_KEY` and `UPSTASH_REDIS_*` are not used
+(ADR-018): rate limits live in Postgres, e-mail goes through `SMTP_URL`, and backups use
+`BACKUP_DATABASE_URL`.
 
 **GitHub environment secrets** for backups (`.github/workflows/backup.yml`):
 `BACKUP_DATABASE_URL`, `BACKUP_AGE_RECIPIENT`, `BACKUP_S3_BUCKET`, `BACKUP_S3_ENDPOINT`,

@@ -1,4 +1,4 @@
-# Definition of Done (spec §41): status after Phase 1, slice 16
+# Definition of Done (spec §41): status after Phase 1 and ADR-018
 
 Evidence is a test that runs in CI or locally (`pnpm check`, `pnpm db:test`,
 `pnpm test:e2e`, `pnpm test:e2e:supabase`), unless marked otherwise. **Open** items need the
@@ -23,18 +23,18 @@ owner: accounts, production credentials, legal work.
 
 ## Safety and quality
 
-| Requirement                                                                       | Status      | Evidence                                                                                                                                                                                                                           |
-| --------------------------------------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| RLS tests for every table; no cross-shop access via UI, actions or direct queries | ✅          | `01_tenant_isolation.test.sql` (harness covers every `company_id` table; CI fails on a table without enabled + forced RLS), `auth.spec.ts`, `customers.spec.ts`                                                                    |
-| A dispatcher killed mid-send causes zero duplicates                               | ✅          | `dispatcher-crash.spec.ts`, `11_messaging.test.sql`                                                                                                                                                                                |
-| Never outside the sending window or on Czech holidays                             | ✅          | `messaging.test.ts` (window, Easter, fixed holidays), `dispatch.test.ts`; the dispatcher and starts check the window                                                                                                               |
-| Non-production reaches the real gateway only for whitelisted numbers              | ✅          | `env.test.ts` (boot check), `dispatch.test.ts` (`addressAllowed`), dispatcher cancels with `not_whitelisted`                                                                                                                       |
-| Audit entries for spec §23 actions; audit rows cannot be updated or deleted       | ✅ / partly | Append-only guard in `02_permissions_integrity.test.sql` and `15_hardening.test.sql`. Entries are asserted for campaigns, conversions, imports, support view, kill switch and opt-out; not every §23 action has its own assertion. |
-| Support view read-only, with banner and logged reason                             | ✅          | `hardening.spec.ts`                                                                                                                                                                                                                |
-| No phones or e-mails in Sentry, logs or AI requests                               | ✅          | `hardening.test.ts` (scrubber), Sentry `dataCollection` off, logs print IDs and codes only, `ai.test.ts` (masking)                                                                                                                 |
-| Nightly independent backup and one restore drill                                  | Partly      | `backup.yml` ready (needs secrets); local drill PASS in `runbooks/restore-drill-log.md`. **Open:** production backup and the first production drill.                                                                               |
-| Typecheck, lint, unit, DB, integration and E2E green in CI                        | Locally ✅  | `.github/workflows/ci.yml` runs all of them; **open:** the first run on GitHub (nothing has been pushed).                                                                                                                          |
-| Signed DPA template, sub-processor list, legal review                             | **Open**    | Owner and lawyer.                                                                                                                                                                                                                  |
+| Requirement                                                                       | Status   | Evidence                                                                                                                                                                                                                                                                                                                                     |
+| --------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| RLS tests for every table; no cross-shop access via UI, actions or direct queries | ✅       | `01_tenant_isolation.test.sql` (harness covers every `company_id` table; CI fails on a table without enabled + forced RLS), `auth.spec.ts`, `customers.spec.ts`                                                                                                                                                                              |
+| A dispatcher killed mid-send causes zero duplicates                               | ✅       | `dispatcher-crash.spec.ts`, `11_messaging.test.sql`                                                                                                                                                                                                                                                                                          |
+| Never outside the sending window or on Czech holidays                             | ✅       | `messaging.test.ts` (window, Easter, fixed holidays), `dispatch.test.ts`; the dispatcher and starts check the window                                                                                                                                                                                                                         |
+| Non-production reaches the real gateway only for whitelisted numbers              | ✅       | `env.test.ts` (boot check), `dispatch.test.ts` (`addressAllowed`), dispatcher cancels with `not_whitelisted`                                                                                                                                                                                                                                 |
+| Audit entries for spec §23 actions; audit rows cannot be updated or deleted       | ✅       | Append-only guard in `02_permissions_integrity.test.sql` and `15_hardening.test.sql`. Entries are asserted for campaigns, conversions, imports, support view, kill switch, opt-out, users, data subject requests, exports, erasures and company views (`settings-privacy.spec.ts`); two §23 actions are not applicable in Phase 1 (ADR-018). |
+| Support view read-only, with banner and logged reason                             | ✅       | `hardening.spec.ts`                                                                                                                                                                                                                                                                                                                          |
+| No phones or e-mails in Sentry, logs or AI requests                               | ✅       | `hardening.test.ts` (scrubber), Sentry `dataCollection` off, logs print IDs and codes only, `ai.test.ts` (masking)                                                                                                                                                                                                                           |
+| Nightly independent backup and one restore drill                                  | Partly   | `backup.yml` ready (needs secrets); local drill PASS in `runbooks/restore-drill-log.md`. **Open:** production backup and the first production drill.                                                                                                                                                                                         |
+| Typecheck, lint, unit, DB, integration and E2E green in CI                        | ✅       | `.github/workflows/ci.yml` runs all of them; green on GitHub since the repository was pushed.                                                                                                                                                                                                                                                |
+| Signed DPA template, sub-processor list, legal review                             | **Open** | Owner and lawyer.                                                                                                                                                                                                                                                                                                                            |
 
 ## Phase 1 review (ADR-017)
 
@@ -52,22 +52,29 @@ The review before the first pilot found and fixed these. Each has a regression t
 | Demo actions callable on real data                                                                 | ✅ fixed | `action-guards.test.ts`                                                     |
 | SMS gateway circuit breaker (spec §24) missing                                                     | ✅ built | `review-fixes.spec.ts` (trip, alert, pause, probe, recovery, no duplicates) |
 
-The review also found gaps against the spec that are not built yet. They are listed in the
-pilot checklist of the review report:
+The review also found gaps against the spec. ADR-018 closed every one that needs no external
+service:
 
-- **§23 audit actions:** 12 of 35 are never written: `user.role_changed`, `user.removed`,
-  `customer.deleted`, `customer.exported`, `conversion.confirmed_bulk`,
-  `admin.company_viewed`, `admin.write_mode_enabled`, `dsr.created`, `dsr.completed`. Some
-  others are written under other names (`campaign.started` / `completed`,
-  `conversion.booked` / `completed` / `updated` / `reverted`). Most belong to features that do
-  not exist yet. The "Audit entries for spec §23 actions" row above is therefore **partial**.
-- **Missing features:**
-  - data subject requests: customer export and erasure, the `data_subject_requests` log;
-  - the client "Nastavení" page (users, data and privacy, DPA download);
-  - user role change and removal;
-  - an audit log viewer;
-  - the operator's all-campaigns list.
-- **Smaller differences:**
-  - login lockout after 10 failures, not the spec's 5;
-  - the customer-retention flag never fires on imported customers (their records are new), and
-    shops have no screen to object.
+| Gap                                                                                      | Status           | Evidence                                                                                        |
+| ---------------------------------------------------------------------------------------- | ---------------- | ----------------------------------------------------------------------------------------------- |
+| Data subject requests: export, erasure, the `data_subject_requests` log, alert at day 20 | ✅ built         | `17_settings_dsr.test.sql`, `privacy.test.ts`, `settings-privacy.spec.ts`, `dashboards.test.ts` |
+| Client "Nastavení" (profile, users, data and privacy, DPA download, history)             | ✅ built         | `settings-privacy.spec.ts` (owner, manager, 390 px)                                             |
+| User role change and removal; last owner kept; no membership bypass                      | ✅ built         | `users.test.ts`, `17_settings_dsr.test.sql`, `settings-privacy.spec.ts`                         |
+| Audit log viewer (company tab, system log, owner history; filter by event and date)      | ✅ built         | `audit-filters.test.ts`, `settings-privacy.spec.ts`                                             |
+| Operator's all-campaigns list                                                            | ✅ built         | `settings-privacy.spec.ts`, `real-data-routes.test.ts`                                          |
+| Retention flag for imported customers and the shop's objection                           | ✅ fixed         | `17_settings_dsr.test.sql`, `settings-privacy.spec.ts`                                          |
+| Login lockout after 5 failures (was 10)                                                  | ✅ fixed         | `hardening.test.ts`, `hardening.spec.ts`                                                        |
+| Alert for imports stuck in processing                                                    | ✅ built         | `dashboards.test.ts`, `settings-privacy.spec.ts`                                                |
+| §23 audit actions                                                                        | ✅ / 2 by design | See below                                                                                       |
+
+**§23 audit actions:** every action in the spec is written, with these exceptions:
+
+- `admin.write_mode_enabled`: support view stays read-only; there is no write mode to log.
+- `conversion.confirmed_bulk`: bulk confirmation belongs to visit re-import matching (Phase 2).
+
+Names now follow §23 (`campaign.send_started`, `campaign.send_completed`,
+`conversion.marked`, `conversion.revenue_changed`). `conversion.reverted`,
+`customer.retention_kept`, `user.invitation_revoked` and the auth events are extras.
+
+**Still open:** the client "Oznámení" tab (Phase 2, with the monthly results e-mail), and a PDF
+summary of the access export (the JSON export is complete; ADR-018).
