@@ -7,8 +7,12 @@ import { createHash } from "node:crypto";
  */
 
 export const RATE_LIMITS = {
-  /** Failed sign-ins per IP and per e-mail. */
-  login: { limit: 10, windowSeconds: 15 * 60 },
+  /**
+   * Failed sign-ins (spec §22): 5 per e-mail in 15 minutes, then locked for the
+   * rest of the window. Per IP a looser 20, so one office behind a shared
+   * address is not locked out by a colleague, while password spraying is.
+   */
+  login: { limit: 5, windowSeconds: 15 * 60, ipLimit: 20 },
   /** Password reset requests per IP and per e-mail. */
   passwordReset: { limit: 5, windowSeconds: 60 * 60 },
   /** Invitation acceptance attempts per IP. */

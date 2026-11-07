@@ -256,9 +256,9 @@ test.describe.serial("messaging: snapshot, dispatch, pause, follow-ups, kill swi
       .eq("entity_id", campaignId)
       .order("id");
     expect(audits!.map((a) => a.action)).toEqual(
-      expect.arrayContaining(["campaign.started", "campaign.paused", "campaign.resumed"]),
+      expect.arrayContaining(["campaign.send_started", "campaign.paused", "campaign.resumed"]),
     );
-    expect(audits!.find((a) => a.action === "campaign.started")!.actor_type).toBe("system");
+    expect(audits!.find((a) => a.action === "campaign.send_started")!.actor_type).toBe("system");
   });
 
   test("opt-out link, STOP reply, delivery reports, suppression of the number at send time", async ({

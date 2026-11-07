@@ -42,7 +42,6 @@ const lines = [
   `NEXT_PUBLIC_SUPABASE_URL=${apiUrl}`,
   `NEXT_PUBLIC_SUPABASE_ANON_KEY=${values.ANON_KEY}`,
   `SUPABASE_SERVICE_ROLE_KEY=${values.SERVICE_ROLE_KEY}`,
-  `SUPABASE_DB_URL=${values.DB_URL}`,
   "EMAIL_PROVIDER=smtp",
   "SMTP_URL=smtp://127.0.0.1:54325",
   `SUPPRESSION_PEPPER=${keep("SUPPRESSION_PEPPER") ?? randomBytes(32).toString("base64")}`,

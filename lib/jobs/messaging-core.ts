@@ -449,7 +449,7 @@ async function startCampaign(deps: MessagingDeps, companyId: string, campaignId:
     .eq("company_id", companyId)
     .eq("id", campaignId);
 
-  await systemAudit(db, companyId, "campaign.started", campaignId, {
+  await systemAudit(db, companyId, "campaign.send_started", campaignId, {
     recipients: all.length,
     holdout: holdout.size,
     messages: messages.length,
@@ -855,7 +855,7 @@ async function advanceCampaigns(deps: MessagingDeps, out: TickResult) {
       ...(next === "completed" ? { completed_at: now.toISOString() } : {}),
     });
     if (ok) {
-      if (next === "completed") await systemAudit(db, c.company_id, "campaign.completed", c.id);
+      if (next === "completed") await systemAudit(db, c.company_id, "campaign.send_completed", c.id);
       out.advanced.push({ campaignId: c.id, status: next });
     }
   }

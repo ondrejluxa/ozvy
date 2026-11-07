@@ -10,7 +10,7 @@ import {
 import { eligibilityReason, type ExclusionReason } from "../domain/contact-rules/audience";
 import { daysBetween, fromDateOnly, monthKey, monthsBetween, shiftMonthKey, toDateOnly } from "../domain/dates";
 import { formatPhone, normalizeSearch } from "../domain/phone";
-import { PRESET_BY_KEY, isPresetKey, type PresetKey } from "../domain/segments/presets";
+import { isPresetKey, type PresetKey } from "../domain/segments/presets";
 import { PRICE_PER_SEGMENT_MINOR } from "../providers/sms/mock";
 import { companyIndex, type CompanyIndex } from "./company-index";
 import { presetAudience } from "./derived";
@@ -704,8 +704,4 @@ export function getResults(companyId: string) {
       .filter((m) => SENT_OR_LATER.includes(m.status))
       .reduce((s, m) => s + (m.cost_minor ?? 0), 0),
   };
-}
-
-export function presetValueCategories(key: string): ServiceCategory[] {
-  return isPresetKey(key) ? PRESET_BY_KEY[key].valueCategories : ["regular_service"];
 }

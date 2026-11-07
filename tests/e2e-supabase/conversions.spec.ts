@@ -173,10 +173,12 @@ test.describe.serial("conversions", () => {
     expect(Number(stats!.recovered_revenue_minor)).toBeGreaterThanOrEqual(480_000);
     const { data: audits } = await service
       .from("audit_logs")
-      .select("action")
+      .select("action, metadata")
       .eq("entity_id", treated.enrollment)
       .order("id");
-    expect(audits!.map((a) => a.action)).toEqual(["conversion.booked", "conversion.completed"]);
+    expect(audits!.map((a) => a.action)).toEqual(["conversion.marked", "conversion.marked"]);
+    // Spec §23: booking and completion are "marked", told apart by the stage.
+    expect(audits!.map((a) => (a.metadata as { stage?: string }).stage)).toEqual(["booked", "completed"]);
   });
 
   test("owner: edits the job value and reverts on the customer page", async ({ page }) => {

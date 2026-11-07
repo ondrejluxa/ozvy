@@ -67,12 +67,12 @@ test.describe.serial("hardening", () => {
     expect(Object.keys(body).sort()).toEqual(["db", "dbMs", "status"]);
   });
 
-  test("ten failed sign-ins lock the address for 15 minutes, even with the right password", async ({ page }) => {
+  test("five failed sign-ins lock the address for 15 minutes, even with the right password", async ({ page }) => {
     test.setTimeout(120_000);
     const victim = email("limit");
     users.push(await createUser(victim, "Zamčený Účet"));
     await page.goto("/login");
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
       await page.getByLabel("E-mail").fill(victim);
       await page.getByLabel("Heslo", { exact: true }).fill(`spatne-heslo-${i}`);
       // Wait for each attempt to finish: the error text stays visible between attempts.

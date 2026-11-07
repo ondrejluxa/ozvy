@@ -10,7 +10,6 @@ const AVG_MONTH_DAYS = 30.4375;
 
 const dateFmt = new Intl.DateTimeFormat("cs-CZ", { timeZone: TZ, day: "numeric", month: "numeric", year: "numeric" });
 const timeFmt = new Intl.DateTimeFormat("cs-CZ", { timeZone: TZ, hour: "2-digit", minute: "2-digit" });
-const shortDateFmt = new Intl.DateTimeFormat("cs-CZ", { timeZone: TZ, day: "numeric", month: "numeric" });
 const monthShortFmt = new Intl.DateTimeFormat("cs-CZ", { timeZone: TZ, month: "short" });
 const monthLongFmt = new Intl.DateTimeFormat("cs-CZ", { timeZone: TZ, month: "long", year: "numeric" });
 const partsFmt = new Intl.DateTimeFormat("en-CA", {
@@ -138,7 +137,6 @@ export function fromDateOnly(s: string): Date {
 }
 
 export const formatDate = (d: DateInput) => dateFmt.format(toDate(d));
-export const formatShortDate = (d: DateInput) => shortDateFmt.format(toDate(d));
 export const formatTime = (d: DateInput) => timeFmt.format(toDate(d));
 export const formatDateTime = (d: DateInput) => `${formatDate(d)} ${formatTime(d)}`;
 

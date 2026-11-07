@@ -18,7 +18,8 @@ export async function allowRate(
   opts: { increment?: boolean } = {},
 ): Promise<boolean> {
   if (env.DATA_SOURCE !== "supabase") return true;
-  const { limit, windowSeconds } = RATE_LIMITS[scope];
+  const config: { limit: number; windowSeconds: number; ipLimit?: number } = RATE_LIMITS[scope];
+  const { limit, windowSeconds } = config;
   const db = createServiceClient();
   const counted = Object.entries(subjects).filter(
     ([kind, subject]) => kind !== "ip" || (env.APP_ENV !== "local" && subject !== "unknown"),
@@ -27,7 +28,7 @@ export async function allowRate(
     counted.map(async ([kind, subject]) => {
       const { data, error } = await db.rpc("hit_rate_limit", {
         p_key: rateLimitKey(scope, kind, subject),
-        p_limit: limit,
+        p_limit: kind === "ip" ? (config.ipLimit ?? limit) : limit,
         p_window_seconds: windowSeconds,
         p_increment: opts.increment ?? true,
       });

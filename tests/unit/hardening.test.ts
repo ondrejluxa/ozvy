@@ -39,6 +39,10 @@ describe("rate limits (spec §22)", () => {
     expect(RATE_LIMITS.ai).toEqual({ limit: 30, windowSeconds: 3600 });
   });
 
+  it("locks an e-mail after 5 failed sign-ins in 15 minutes; a shared IP gets 20", () => {
+    expect(RATE_LIMITS.login).toEqual({ limit: 5, windowSeconds: 900, ipLimit: 20 });
+  });
+
   it("keys never contain the raw IP or e-mail and are case-insensitive", () => {
     const key = rateLimitKey("login", "email", "Jana@Example.cz");
     expect(key).toMatch(/^login:email:[0-9a-f]{32}$/);

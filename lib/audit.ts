@@ -20,12 +20,18 @@ export type AuditAction =
   | "user.invitation_accepted"
   | "user.role_changed"
   | "user.removed"
+  | "user.invitation_revoked"
   | "company.created"
   | "company.settings_changed"
   | "company.dpa_confirmed"
   | "company.sending_enabled"
   | "company.document_downloaded"
   | "customer.updated"
+  | "customer.deleted"
+  | "customer.exported"
+  | "customer.retention_kept"
+  | "dsr.created"
+  | "dsr.completed"
   | "import.uploaded"
   | "import.committed"
   | "import.failed"
@@ -44,12 +50,12 @@ export type AuditAction =
   | "campaign.returned_to_draft"
   | "system.kill_switch_changed"
   | "message.review_resolved"
-  | "conversion.booked"
-  | "conversion.completed"
-  | "conversion.updated"
+  | "conversion.marked"
+  | "conversion.revenue_changed"
   | "conversion.reverted"
   | "admin.support_view_started"
   | "admin.support_view_ended"
+  | "admin.company_viewed"
   | "system.provider_breaker_reset";
 
 export interface AuditEntry {
@@ -87,4 +93,38 @@ export async function audit(entry: AuditEntry): Promise<void> {
       user_agent: userAgent,
     });
   if (error) console.error("[audit] write failed", entry.action, error.code);
+}
+
+/**
+ * admin.company_viewed once per sign-in and company (spec §20): written the
+ * first time the operator opens a shop's pages after their latest sign-in.
+ */
+export async function auditCompanyViewed(actorUserId: string, companyId: string): Promise<void> {
+  if (env.DATA_SOURCE !== "supabase") return;
+  const db = createServiceClient();
+  const { data: login } = await db
+    .from("audit_logs")
+    .select("created_at")
+    .eq("action", "auth.login")
+    .eq("actor_user_id", actorUserId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const since = login?.created_at ?? new Date(Date.now() - 12 * 3_600_000).toISOString();
+  const { count, error } = await db
+    .from("audit_logs")
+    .select("id", { count: "exact", head: true })
+    .eq("action", "admin.company_viewed")
+    .eq("actor_user_id", actorUserId)
+    .eq("company_id", companyId)
+    .gte("created_at", since);
+  if (error || (count ?? 0) > 0) return;
+  await audit({
+    action: "admin.company_viewed",
+    actorType: "admin",
+    actorUserId,
+    companyId,
+    entityType: "company",
+    entityId: companyId,
+  });
 }

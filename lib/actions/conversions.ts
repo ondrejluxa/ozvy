@@ -16,10 +16,12 @@ import { run, type ActionResult } from "./result";
  * action checks the permission, calls it with the service role and audits.
  */
 
+// Spec §23 names: booking and completion are "marked" (stage in metadata);
+// a changed job value is "revenue_changed" with the old and new value.
 const AUDIT: Record<string, AuditAction> = {
-  book: "conversion.booked",
-  complete: "conversion.completed",
-  edit: "conversion.updated",
+  book: "conversion.marked",
+  complete: "conversion.marked",
+  edit: "conversion.revenue_changed",
   revert: "conversion.reverted",
 };
 
@@ -49,6 +51,17 @@ export async function recordConversionAction(input: {
       throw new DomainError("conversion_revenue_required");
     }
     const ctx = await requireContext({ permission: "conversions.mark", companyId: data.companyId });
+    const previousRevenue =
+      data.action === "edit"
+        ? ((
+            await createServiceClient()
+              .from("conversions")
+              .select("revenue_minor")
+              .eq("company_id", data.companyId)
+              .eq("enrollment_id", data.enrollmentId)
+              .maybeSingle()
+          ).data?.revenue_minor ?? null)
+        : null;
     const { data: row, error } = await createServiceClient().rpc("record_conversion", {
       p_company_id: data.companyId,
       p_enrollment_id: data.enrollmentId,
@@ -70,7 +83,9 @@ export async function recordConversionAction(input: {
       entityType: "campaign_enrollment",
       entityId: data.enrollmentId,
       metadata: {
+        stage: data.action === "book" ? "booked" : data.action === "complete" ? "completed" : (row?.stage ?? null),
         revenue_minor: data.revenueMinor ?? null,
+        ...(data.action === "edit" ? { old_revenue_minor: previousRevenue } : {}),
         holdout: row?.is_holdout ?? null,
       },
     });

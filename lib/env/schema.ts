@@ -44,7 +44,6 @@ const schema = z
     NEXT_PUBLIC_SUPABASE_URL: optional,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: optional,
     SUPABASE_SERVICE_ROLE_KEY: optional,
-    SUPABASE_DB_URL: optional,
 
     // Jobs
     INNGEST_EVENT_KEY: optional,
@@ -67,7 +66,6 @@ const schema = z
     // Transactional email (invites, password resets, approvals). "smtp" = local Mailpit in development.
     EMAIL_PROVIDER: z.enum(["mock", "smtp"]).default("mock"),
     SMTP_URL: optional,
-    EMAIL_PROVIDER_API_KEY: optional,
     EMAIL_FROM: z.string().default("Návrat <no-reply@example.com>"),
 
     // AI
@@ -77,8 +75,6 @@ const schema = z
 
     // Security
     SUPPRESSION_PEPPER: optional,
-    UPSTASH_REDIS_REST_URL: optional,
-    UPSTASH_REDIS_REST_TOKEN: optional,
 
     // Monitoring
     SENTRY_DSN: optional,

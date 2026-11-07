@@ -9,7 +9,7 @@ import { PRESET_BY_KEY, type PresetKey } from "../domain/segments/presets";
 import { env } from "../env";
 import { getSmsProvider } from "../providers/sms";
 import { recomputeCustomer } from "./aggregates";
-import { companyIndex, hashAddress, type CompanyIndex } from "./company-index";
+import { companyIndex, type CompanyIndex } from "./company-index";
 import { presetAudience } from "./derived";
 import { getDb, markChanged, resetDb } from "./store";
 import type { Campaign, CampaignEnrollment, CampaignStep, Conversion, Message, ServiceCategory, Visit } from "./types";
@@ -405,21 +405,4 @@ function newConversion(e: CampaignEnrollment, stage: "booked" | "completed", now
 
 export function resetDemoData() {
   resetDb();
-}
-
-/** Used by the opt-out flow in Phase 1; kept here so suppression has one writer. */
-export function suppressPhone(companyId: string, phoneE164: string) {
-  const db = getDb();
-  mustIndex(companyId);
-  const hash = hashAddress(phoneE164);
-  if (db.suppression_list.some((s) => s.company_id === companyId && s.address_hash === hash)) return;
-  db.suppression_list.push({
-    id: randomUUID(),
-    company_id: companyId,
-    channel: "sms",
-    address_hash: hash,
-    reason: "manual",
-    created_at: new Date().toISOString(),
-  });
-  commit();
 }
