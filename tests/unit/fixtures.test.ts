@@ -19,6 +19,24 @@ describe("import fixtures", () => {
     expect(manifest).toEqual(JSON.parse(JSON.stringify(generated)));
   });
 
+  it("are the same bytes in every time zone (Windows in Prague, CI in UTC)", () => {
+    const original = process.env.TZ;
+    try {
+      for (const tz of ["UTC", "Europe/Prague", "America/Los_Angeles", "Pacific/Auckland"]) {
+        process.env.TZ = tz;
+        // Guard: the zone switch really took effect in this worker.
+        expect(new Date(Date.UTC(2026, 6, 1)).getTimezoneOffset(), tz).toBe(
+          { UTC: 0, "Europe/Prague": -120, "America/Los_Angeles": 420, "Pacific/Auckland": -720 }[tz],
+        );
+        for (const file of buildFixtures().files)
+          expect(read(file.name).equals(file.bytes), `${file.name} in ${tz}`).toBe(true);
+      }
+    } finally {
+      if (original === undefined) delete process.env.TZ;
+      else process.env.TZ = original;
+    }
+  });
+
   it("Windows-1250 CSV: not UTF-8, semicolons, dd.mm.yyyy dates, '4 700 Kč' prices", () => {
     const m = entry("dvorak-export-cp1250.csv");
     const bytes = read(m.file);
@@ -47,6 +65,9 @@ describe("import fixtures", () => {
     expect(rows[0]).toEqual(m.header);
     const data = rows.slice(1, m.dataRows + 1);
     expect(data.every((r) => r[6] instanceof Date)).toBe(true);
+    // Visit dates are whole days: the stored Excel serial has no time-of-day part.
+    const raw = XLSX.utils.sheet_to_json<unknown[]>(XLSX.read(read(m.file)).Sheets[m.dataSheet], { header: 1 });
+    expect(raw.slice(1, m.dataRows + 1).every((r) => Number.isInteger(r[6]))).toBe(true);
     expect(data.filter((r) => typeof r[2] === "number")).toHaveLength(m.numericPhoneCells);
     expect(rows[m.dataRows + 1]).toEqual([]);
     const summary = rows[m.summaryRow.sheetRow - 1];

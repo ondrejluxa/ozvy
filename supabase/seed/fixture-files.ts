@@ -297,6 +297,9 @@ function twoSheetXlsx() {
     [header, ...rows, [], ["Celkem", null, null, null, null, null, null, null, total]],
     {
       cellDates: true,
+      // Dates are UTC midnights; without this SheetJS converts them with the
+      // machine's time zone, so Windows (Prague) and CI (UTC) wrote different files.
+      UTC: true,
       // "/" is the locale date separator in Excel (shown as "." in Czech).
       dateNF: "d/m/yyyy",
     },
