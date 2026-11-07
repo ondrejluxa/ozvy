@@ -156,7 +156,10 @@ Do these in order. Each step needs values from the steps before it.
 ### Opt-out domain
 
 - [ ] Short domain attached to the same Vercel project (it only needs `/o/*`).
-- [ ] `OPT_OUT_BASE_URL` is that domain plus `/o`, without a scheme (e.g. `<short>.cz/o`).
+- [ ] `OPT_OUT_BASE_URL` is the opt-out host plus `/o`, without a scheme: production `<short>.cz/o`;
+      staging its own host, e.g. `staging.<brand>.cz/o` (one hostname can serve only one
+      deployment). Never change the production value later: links in SMS already sent must keep
+      working.
 - [ ] Opening `https://<short>.cz/o/<token>` on a phone shows the shop name and the button.
       Unknown tokens give 404.
 - [ ] The SMS shows the link as a tappable link on Android and iOS (test with your phone).
@@ -191,7 +194,7 @@ missing or invalid. Values are placeholders; never commit real ones.
 | App      | `APP_ENV`                       | `staging`                              | `production`                     | Selects the safety rules.                                                  |
 | App      | `DATA_SOURCE`                   | `supabase`                             | `supabase`                       | **Required** in production.                                                |
 | App      | `NEXT_PUBLIC_APP_URL`           | `https://staging.<brand>.cz`           | `https://app.<brand>.cz`         | **Required**: https, not localhost or example.                             |
-| App      | `OPT_OUT_BASE_URL`              | `<short>.cz/o`                         | `<short>.cz/o`                   | **Required**: real domain, no scheme.                                      |
+| App      | `OPT_OUT_BASE_URL`              | `staging.<brand>.cz/o`                 | `<short>.cz/o`                   | **Required**: real domain, no scheme.                                      |
 | Supabase | `NEXT_PUBLIC_SUPABASE_URL`      | project URL                            | project URL                      | **Required**.                                                              |
 | Supabase | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | anon key                               | anon key                         | **Required**.                                                              |
 | Supabase | `SUPABASE_SERVICE_ROLE_KEY`     | service key                            | service key                      | **Required**; server only.                                                 |
