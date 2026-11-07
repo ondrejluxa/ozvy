@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { OpenClientViewButton } from "@/components/admin/open-client-view-button";
 import { RealCompanyHeader } from "@/components/admin/real-company";
 import { requirePageContext } from "@/lib/auth/context";
+import { auditCompanyViewed } from "@/lib/audit";
 import { CompanyName } from "@/components/demo/demo-labels";
 import { TabsNav } from "@/components/shell/tabs-nav";
 import { getCompanyBasics } from "@/lib/db/queries";
@@ -14,9 +15,10 @@ export default async function CompanyLayout({ children, params }: LayoutProps<"/
   const { companyId } = await params;
   if (env.DATA_SOURCE === "supabase") {
     // Layouts and pages render concurrently: each one checks access itself.
-    await requirePageContext({ permission: "admin.access" }, `/admin/companies/${companyId}`);
+    const ctx = await requirePageContext({ permission: "admin.access" }, `/admin/companies/${companyId}`);
     const company = await getCompanyDetail(companyId);
     if (!company) notFound();
+    if (ctx.userId) await auditCompanyViewed(ctx.userId, companyId);
     return (
       <>
         <RealCompanyHeader company={company} />

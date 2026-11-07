@@ -4,11 +4,13 @@ import { LifecycleBadge } from "@/components/common/badges";
 import { ConversionButtons } from "@/components/conversions/conversion-buttons";
 import { ContactEditDialog } from "@/components/customers/contact-edit-dialog";
 import { VisitTimeline } from "@/components/customers/customer-detail";
+import { OwnerRequestButtons, RecordRequestButton } from "@/components/privacy/dsr-controls";
 import { PageHeader } from "@/components/shell/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { customerEnrollments } from "@/lib/db/supabase/conversions";
 import type { RealCustomerDetail as Detail } from "@/lib/db/supabase/customers";
+import type { DsrRow } from "@/lib/db/supabase/privacy";
 import { formatDate } from "@/lib/domain/dates";
 import { formatCZK, formatInt } from "@/lib/domain/money";
 import { formatPhone } from "@/lib/domain/phone";
@@ -23,16 +25,20 @@ export async function RealCustomerDetail({
   backHref,
   canEdit,
   canMark,
+  privacy,
 }: {
   data: Detail;
   backHref: string;
   canEdit: boolean;
   canMark: boolean;
+  /** Data subject requests (spec §21): the operator records and exports, an owner requests. */
+  privacy?: { mode: "operator" | "owner"; requests: DsrRow[] } | null;
 }) {
   const t = await getTranslations("customer");
   const tLegal = await getTranslations("legalBasis");
   const tPhone = await getTranslations("phoneType");
   const tExcl = await getTranslations("exclusions");
+  const tDsr = await getTranslations("dsr");
   const c = data.customer;
   const [enrollments, tStage] = await Promise.all([customerEnrollments(c.companyId, c.id), getTranslations("stage")]);
   const now = new Date().toISOString();
@@ -230,6 +236,43 @@ export async function RealCustomerDetail({
               </dl>
             </CardContent>
           </Card>
+          {privacy && (
+            <Card data-testid="customer-privacy">
+              <CardHeader>
+                <CardTitle>{tDsr("forCustomer")}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {privacy.requests.length === 0 ? (
+                  <p className="text-sm text-muted">{tDsr("noneForCustomer")}</p>
+                ) : (
+                  <ul className="space-y-1.5 text-sm">
+                    {privacy.requests.map((r) => (
+                      <li key={r.id} className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="text-ink">{tDsr(`types.${r.type}`)}</span>
+                        <span className="text-[13px] text-muted">
+                          {tDsr(`statuses.${r.status}`)} ·{" "}
+                          {formatDate(r.status === "open" ? r.dueAt : (r.completedAt ?? r.dueAt))}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {privacy.mode === "operator" ? (
+                  <div className="flex flex-wrap gap-2">
+                    <RecordRequestButton companyId={c.companyId} customerId={c.id} />
+                    <a
+                      href={`/admin/companies/${c.companyId}/customers/${c.id}/export`}
+                      className="inline-flex h-8 items-center text-[13px] font-medium text-accent underline-offset-4 hover:underline"
+                    >
+                      {tDsr("export")}
+                    </a>
+                  </div>
+                ) : (
+                  <OwnerRequestButtons companyId={c.companyId} customerId={c.id} />
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </>

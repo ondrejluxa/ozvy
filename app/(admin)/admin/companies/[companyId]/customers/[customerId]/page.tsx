@@ -5,6 +5,7 @@ import { RealCustomerDetail } from "@/components/customers/real-customer-detail"
 import { requirePageContext } from "@/lib/auth/context";
 import { getCustomerDetail } from "@/lib/db/queries";
 import { getCustomerDetail as getRealCustomerDetail } from "@/lib/db/supabase/customers";
+import { listDataSubjectRequests } from "@/lib/db/supabase/privacy";
 import { env } from "@/lib/env";
 
 export async function generateMetadata(
@@ -26,7 +27,16 @@ export default async function AdminCustomerPage(
     await requirePageContext({ permission: "admin.access" }, `${base}/customers/${customerId}`);
     const data = await getRealCustomerDetail(companyId, customerId);
     if (!data) notFound();
-    return <RealCustomerDetail data={data} backHref={`${base}/customers`} canEdit canMark />;
+    const requests = await listDataSubjectRequests(companyId, { customerId });
+    return (
+      <RealCustomerDetail
+        data={data}
+        backHref={`${base}/customers`}
+        canEdit
+        canMark
+        privacy={{ mode: "operator", requests }}
+      />
+    );
   }
   const data = getCustomerDetail(companyId, customerId);
   if (!data) notFound();

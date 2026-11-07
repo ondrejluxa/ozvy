@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { ProductBrand } from "@/components/shell/brand";
 import { MobileNav, Sidebar, type NavItem } from "@/components/shell/nav";
+import { SkipLink } from "@/components/shell/skip-link";
 import { UserMenu } from "@/components/shell/user-menu";
 import { endSupportViewAction } from "@/lib/actions/support-view";
 import { requirePageContext } from "@/lib/auth/context";
@@ -36,6 +37,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
 
   return (
     <div className="flex flex-1">
+      <SkipLink />
       <Sidebar items={items} brand={brand} footer={footer} />
       <div className="min-w-0 flex-1">
         <MobileNav items={items} brand={brand} footer={footer} />
@@ -52,7 +54,13 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
             </form>
           </div>
         )}
-        <main className="mx-auto w-full max-w-6xl px-4 pb-48 pt-6 sm:px-6 lg:px-8 lg:pt-8">{children}</main>
+        <main
+          id="obsah"
+          tabIndex={-1}
+          className="mx-auto w-full max-w-6xl focus:outline-none px-4 pb-48 pt-6 sm:px-6 lg:px-8 lg:pt-8"
+        >
+          {children}
+        </main>
       </div>
     </div>
   );

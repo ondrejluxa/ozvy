@@ -26,6 +26,8 @@ const PUBLIC: Record<string, string> = {
 const DELEGATES: Record<string, string> = {
   "real-campaigns.ts:approveCampaignAction": "decide(",
   "real-campaigns.ts:rejectCampaignAction": "decide(",
+  "users.ts:changeMemberRoleAction": "applyChange(",
+  "users.ts:removeMemberAction": "applyChange(",
 };
 
 const dir = join(process.cwd(), "lib", "actions");

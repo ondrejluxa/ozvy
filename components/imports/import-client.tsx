@@ -350,3 +350,30 @@ export function ImportActions({
     </div>
   );
 }
+
+/**
+ * An import stuck in parsing or validating (no update for 30 minutes, alert
+ * import_stuck): nothing has been written to customers yet, so it can be
+ * cancelled and the file uploaded again.
+ */
+export function StuckImportCancel({ companyId, importId }: { companyId: string; importId: string }) {
+  const t = useTranslations("imports");
+  const tErrors = useTranslations("errors");
+  const [pending, startTransition] = useTransition();
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={pending}
+      onClick={() =>
+        startTransition(async () => {
+          const res = await cancelImportAction({ companyId, importId });
+          if (!res.ok) toast.error(tErrors(res.error.code));
+          else toast.success(t("cancelled"));
+        })
+      }
+    >
+      {t("cancel")}
+    </Button>
+  );
+}

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CompanyName } from "@/components/demo/demo-labels";
 import type { AlertRow } from "@/lib/db/queries";
 import type { AlertSeverity } from "@/lib/domain/alerts/rules";
-import { formatRelative, formatTime } from "@/lib/domain/dates";
+import { formatDate, formatRelative, formatTime } from "@/lib/domain/dates";
 import { formatCZK, formatInt, formatPercent, roundEstimateMinor } from "@/lib/domain/money";
 
 const SEVERITY_TONE: Record<AlertSeverity, "danger" | "warn" | "neutral" | "info" | "accent"> = {
@@ -27,7 +27,10 @@ function actionHref(a: AlertRow): string {
     case "provider_paused":
       return "/admin/system";
     case "import_needs_review":
+    case "import_stuck":
       return `${base}/imports/${a.params.importId}`;
+    case "dsr_due":
+      return `${base}/privacy`;
     case "sms_failure_rate":
       return `${base}/campaigns`;
     case "no_campaign_running":
@@ -52,6 +55,7 @@ export async function AttentionRequired({
   const t = await getTranslations("alerts");
   const tSeverity = await getTranslations("severity");
   const tPreset = await getTranslations("presets");
+  const tDsr = await getTranslations("dsr");
 
   if (alerts.length === 0) {
     return (
@@ -72,6 +76,9 @@ export async function AttentionRequired({
           eligible: typeof a.params.eligible === "number" ? formatInt(a.params.eligible) : "",
           expected: typeof a.params.expected === "number" ? formatCZK(roundEstimateMinor(a.params.expected)) : "",
           preset: a.presetKey ? tPreset(`${a.presetKey}.name`) : "",
+          minutes: Number(a.params.minutes ?? 0),
+          requestType: typeof a.params.requestType === "string" ? tDsr(`types.${a.params.requestType}`) : "",
+          dueAt: typeof a.params.dueAt === "string" ? formatDate(a.params.dueAt) : "",
         };
         return (
           <li key={a.key} className="flex flex-col gap-3 px-4 py-3.5 sm:flex-row sm:items-center sm:gap-4">

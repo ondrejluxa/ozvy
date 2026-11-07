@@ -28,6 +28,14 @@ describe("isRealDataReady", () => {
       `/admin/companies/${ID}/vocatives`,
       "/admin/system",
       "/app/results",
+      // ADR-018
+      "/admin/campaigns",
+      "/admin/system/audit",
+      `/admin/companies/${ID}/privacy`,
+      `/admin/companies/${ID}/audit`,
+      `/admin/companies/${ID}/customers/${ID}/export`,
+      "/app/settings",
+      "/app/settings/dpa",
     ]) {
       expect(isRealDataReady(path), path).toBe(true);
     }
@@ -35,8 +43,10 @@ describe("isRealDataReady", () => {
 
   it("keeps demo-store screens behind 'Tato část se připravuje'", () => {
     for (const path of [
-      "/admin/campaigns",
-
+      "/admin/campaigns/x",
+      "/admin/system/audit/x",
+      `/admin/companies/${ID}/customers/export`,
+      "/app/settings/users",
       "/admin/companies/not-a-uuid",
       "/admin/companies/new/settings",
       "/app/resultsx",

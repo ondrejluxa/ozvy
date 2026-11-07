@@ -24,6 +24,7 @@ type CampaignJson = {
   completed: number;
 };
 type ImportJson = { id: string; status: string; updated_at: string; rows: number; invalid: number };
+type DsrJson = { id: string; type: string; created_at: string; due_at: string };
 
 /** Below 50 finished messages the delivery rate is noise. */
 const MIN_FINISHED = 50;
@@ -58,6 +59,12 @@ export async function evaluateAll(db: Db, now: Date): Promise<Alert[]> {
         updatedAt: new Date(i.updated_at),
         rows: i.rows,
         invalid: i.invalid,
+      })),
+      dataSubjectRequests: ((row.dsrs ?? []) as DsrJson[]).map((r) => ({
+        id: r.id,
+        type: r.type,
+        createdAt: new Date(r.created_at),
+        dueAt: r.due_at,
       })),
       now,
     });

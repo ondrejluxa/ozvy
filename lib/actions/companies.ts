@@ -9,7 +9,13 @@ import { audit } from "../audit";
 import { DomainError } from "../db/mutations";
 import { getCompanyRecord, hasCompletedImport } from "../db/supabase/companies";
 import { createSupabaseServerClient } from "../db/supabase/server-client";
-import { changedFields, parseCompanyProfile, type CompanyProfileInput } from "../domain/company-profile";
+import {
+  SHOP_CONTACT_FIELDS,
+  changedFields,
+  parseCompanyProfile,
+  parseShopContact,
+  type CompanyProfileInput,
+} from "../domain/company-profile";
 import {
   DEFAULT_COMPANY_SETTINGS,
   changedSettingKeys,
@@ -296,4 +302,44 @@ export async function setSendingEnabledAction(input: {
     refresh();
     return { enabled: data.enabled };
   });
+}
+
+// ---------- the shop owner's contact details (Nastavení → Profil servisu) ----------
+
+/**
+ * settings.company (spec §20): owners edit contact details and opening hours
+ * of their own shop. Operator-controlled columns are refused by the database
+ * guard as well (app.guard_company_update).
+ */
+export async function updateShopContactAction(_prev: CompanyFormState, form: FormData): Promise<CompanyFormState> {
+  const companyId = companyIdSchema.parse(form.get("companyId"));
+  const ctx = await requireContext({ permission: "settings.company", companyId });
+  const values = Object.fromEntries(
+    SHOP_CONTACT_FIELDS.map((f) => [f, String(form.get(f) ?? "").slice(0, 300)]),
+  ) as Record<(typeof SHOP_CONTACT_FIELDS)[number], string>;
+  const parsed = parseShopContact(values);
+  if (!parsed.success) return { fieldErrors: parsed.fieldErrors, values };
+
+  const before = await getCompanyRecord(companyId);
+  if (!before) return { error: "not_found", values };
+  const fields = changedFields(
+    before as unknown as Record<string, unknown>,
+    parsed.values as unknown as Record<string, unknown>,
+  );
+  if (fields.length === 0) return { done: true, values };
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.from("companies").update(parsed.values).eq("id", companyId);
+  if (error) return { error: "save_failed", values };
+  await audit({
+    action: "company.settings_changed",
+    actorType: ctx.isPlatformAdmin ? "admin" : "user",
+    actorUserId: ctx.userId,
+    companyId,
+    entityType: "company",
+    entityId: companyId,
+    metadata: { section: "contact", fields: fields.join(",") },
+  });
+  refresh();
+  return { done: true, values };
 }

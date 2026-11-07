@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { CompanyProfileForm, CompanySettingsForm, DpaForm, SendingSwitch } from "@/components/admin/company-forms";
 import { InviteUserDialog } from "@/components/admin/invite-user-dialog";
+import { MemberList } from "@/components/settings/members";
 import { profileDefaults, settingsDefaults } from "@/components/admin/real-company";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,7 +28,6 @@ export default async function CompanySettingsPage(props: PageProps<"/admin/compa
   if (!company) notFound();
   const users = await listCompanyUsers(companyId);
   const t = await getTranslations("companyForm");
-  const tRoles = await getTranslations("realData.invite.roles");
   const blocker =
     sendingBlockers({
       dpaSignedAt: company.dpa_signed_at,
@@ -36,7 +36,7 @@ export default async function CompanySettingsPage(props: PageProps<"/admin/compa
     })[0] ?? null;
 
   return (
-    <div className="grid max-w-3xl grid-cols-1 gap-6">
+    <div className="max-w-3xl space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>{t("sending.title")}</CardTitle>
@@ -75,24 +75,13 @@ export default async function CompanySettingsPage(props: PageProps<"/admin/compa
           {users.members.length + users.pending.length === 0 ? (
             <p className="text-sm text-muted">{t("users.empty")}</p>
           ) : (
-            <ul className="divide-y divide-line text-sm" data-testid="company-users">
-              {users.members.map((m) => (
-                <li key={m.userId} className="flex flex-wrap items-center justify-between gap-2 py-2.5 first:pt-0">
-                  <span className="font-medium text-ink">{m.fullName ?? t("users.noName")}</span>
-                  <span className="text-[13px] text-muted">
-                    {tRoles(m.role)} · {t("users.since", { date: formatDate(m.since) })}
-                  </span>
-                </li>
-              ))}
-              {users.pending.map((i) => (
-                <li key={i.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5 first:pt-0">
-                  <span className="break-all text-ink-2">{i.email}</span>
-                  <span className="text-[13px] text-muted">
-                    {tRoles(i.role)} · {t("users.pending", { date: formatDate(i.expiresAt) })}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <MemberList
+              companyId={companyId}
+              members={users.members}
+              pending={users.pending}
+              canManage
+              currentUserId={null}
+            />
           )}
         </CardContent>
       </Card>

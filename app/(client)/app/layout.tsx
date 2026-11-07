@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { ClientBrand } from "@/components/shell/brand";
 import { MobileNav, Sidebar, type NavItem } from "@/components/shell/nav";
+import { SkipLink } from "@/components/shell/skip-link";
 import { UserMenu } from "@/components/shell/user-menu";
 import { requireClientCompany } from "@/lib/auth/client-company";
 import { getSupportView } from "@/lib/auth/context";
@@ -24,15 +25,26 @@ export default async function ClientLayout({ children }: LayoutProps<"/app">) {
     { href: "/app/campaigns", label: t("client.campaigns"), icon: "campaigns" },
     { href: "/app/results", label: t("client.results"), icon: "results" },
   ];
-  const main = <main className="mx-auto w-full max-w-6xl px-4 pb-48 pt-6 sm:px-6 lg:px-8 lg:pt-8">{children}</main>;
+  const main = (
+    <main
+      id="obsah"
+      tabIndex={-1}
+      className="mx-auto w-full max-w-6xl focus:outline-none px-4 pb-48 pt-6 sm:px-6 lg:px-8 lg:pt-8"
+    >
+      {children}
+    </main>
+  );
 
   if (env.DATA_SOURCE === "supabase") {
     const { session, membership } = await requireClientCompany("/app");
+    // Settings exist on real data only; the demo keeps its four items.
+    items.push({ href: "/app/settings", label: t("client.settings"), icon: "settings" });
     const brand = <ClientBrand name={membership.companyName} city={null} />;
     const footer = <UserMenu session={session} companyId={membership.companyId} />;
     const tView = await getTranslations("supportView");
     return (
       <div className="flex flex-1">
+        <SkipLink />
         <Sidebar items={items} brand={brand} footer={footer} />
         <div className="min-w-0 flex-1">
           <MobileNav items={items} brand={brand} footer={footer} />
@@ -67,6 +79,7 @@ export default async function ClientLayout({ children }: LayoutProps<"/app">) {
 
   return (
     <div className="flex flex-1">
+      <SkipLink />
       <Sidebar items={items} brand={brand} />
       <div className="min-w-0 flex-1">
         <MobileNav items={items} brand={brand} />

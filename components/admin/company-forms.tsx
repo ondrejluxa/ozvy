@@ -12,6 +12,7 @@ import {
   setSendingEnabledAction,
   updateCompanyProfileAction,
   updateCompanySettingsAction,
+  updateShopContactAction,
   type CompanyFormState,
 } from "@/lib/actions/companies";
 import { COMPANY_STATUSES } from "@/lib/domain/company-profile";
@@ -269,5 +270,35 @@ export function SendingSwitch({
         {on ? t("turnOff") : t("turnOn")}
       </Button>
     </div>
+  );
+}
+
+// ---------- the shop owner's contact details ----------
+
+/** Nastavení → Profil servisu for a shop owner: contact details and opening hours only. */
+export function ShopContactForm({ companyId, defaults }: { companyId: string; defaults: Values }) {
+  const t = useTranslations("companyForm");
+  const [state, action, pending] = useActionState(updateShopContactAction, {} as CompanyFormState);
+  useSavedToast(state);
+  const f = { state, defaults };
+  return (
+    <form action={action} className="space-y-5" noValidate data-testid="shop-contact-form">
+      <input type="hidden" name="companyId" value={companyId} />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field name="contact_person" {...f} autoComplete="name" />
+        <Field name="phone" {...f} type="tel" autoComplete="tel" />
+        <Field name="email" {...f} type="email" autoComplete="email" />
+        <Field name="website" {...f} />
+        <Field name="address_line" {...f} className="space-y-1.5 sm:col-span-2" autoComplete="street-address" />
+        <Field name="postal_code" {...f} inputMode="numeric" autoComplete="postal-code" />
+        <Field name="city" {...f} />
+        <Field name="opening_hours" {...f} hint={t("hints.opening_hours")} className="space-y-1.5 sm:col-span-2" />
+      </div>
+      {state.error && <p className="text-sm text-danger">{t(`errors.${state.error}`)}</p>}
+      <Button type="submit" disabled={pending}>
+        {pending && <Loader2 className="animate-spin" aria-hidden />}
+        {t("save")}
+      </Button>
+    </form>
   );
 }

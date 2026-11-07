@@ -8,15 +8,18 @@ const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 const READY: RegExp[] = [
   /^\/admin$/,
   /^\/admin\/companies(\/new)?$/,
-  /^\/admin\/system$/,
+  /^\/admin\/system(\/audit)?$/,
+  /^\/admin\/campaigns$/,
   new RegExp(
-    `^/admin/companies/${UUID}(/customers(/${UUID})?|/imports(/${UUID}(/errors)?)?|/campaigns(/new|/${UUID}(/edit)?)?|/segments|/services|/vocatives|/settings|/dpa)?$`,
+    `^/admin/companies/${UUID}(/customers(/${UUID})?|/imports(/${UUID}(/errors)?)?|/campaigns(/new|/${UUID}(/edit)?)?|/segments|/services|/vocatives|/settings|/dpa|/privacy|/audit)?$`,
     "i",
   ),
+  new RegExp(`^/admin/companies/${UUID}/customers/${UUID}/export$`, "i"),
   /^\/app$/,
   new RegExp(`^/app/customers(/${UUID})?$`, "i"),
   new RegExp(`^/app/campaigns(/${UUID})?$`, "i"),
   /^\/app\/results$/,
+  /^\/app\/settings(\/dpa)?$/,
 ];
 
 export function isRealDataReady(path: string): boolean {

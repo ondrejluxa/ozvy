@@ -9,6 +9,7 @@ import {
   MappingForm,
   ReparseControls,
   RowExcludeToggle,
+  StuckImportCancel,
 } from "@/components/imports/import-client";
 import { ImportStatusBadge } from "@/components/imports/import-status";
 import { PageHeader } from "@/components/shell/page-header";
@@ -19,6 +20,7 @@ import { requirePageContext } from "@/lib/auth/context";
 import { getImport, listImportRows, type ImportRowFilter } from "@/lib/db/supabase/imports";
 import { formatDate } from "@/lib/domain/dates";
 import type { ColumnMapping } from "@/lib/domain/imports/mapping";
+import { isImportStuck } from "@/lib/domain/alerts/rules";
 import { WORKING_STATES } from "@/lib/domain/imports/review";
 import type { NormalizedRecord } from "@/lib/domain/imports/validate";
 import { formatInt } from "@/lib/domain/money";
@@ -50,6 +52,8 @@ export default async function ImportPage(props: PageProps<"/admin/companies/[com
     template_applied?: boolean;
   };
   const working = (WORKING_STATES as readonly string[]).includes(imp.status);
+  // No progress for 30 minutes: the job died (alert import_stuck, ADR-018).
+  const stuck = isImportStuck(imp.status, new Date(imp.updated_at), new Date());
   const resumable = imp.status === "failed" && Boolean((imp.progress as { batches_done?: number })?.batches_done);
   const committable = Math.max(0, (counts.valid ?? 0) + (counts.warning ?? 0) - (counts.ambiguous ?? 0));
 
@@ -81,6 +85,15 @@ export default async function ImportPage(props: PageProps<"/admin/companies/[com
             {t(`statuses.${imp.status as "parsing"}`)} · {t("working")}
             <AutoRefresh />
           </CardContent>
+          {stuck && (
+            <CardContent
+              className="flex flex-wrap items-center gap-3 border-t border-line py-4 text-[13px] text-warn"
+              role="status"
+            >
+              <span className="min-w-0 flex-1">{imp.status === "committing" ? t("stuckCommit") : t("stuck")}</span>
+              {imp.status !== "committing" && <StuckImportCancel companyId={companyId} importId={importId} />}
+            </CardContent>
+          )}
         </Card>
       )}
 

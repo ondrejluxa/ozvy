@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 /** Compact data table (40 px rows, spec §10). Wrapped for horizontal scroll on small screens. */
 export function Table({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) {
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="relative w-full overflow-x-auto">
       <table className={cn("w-full border-collapse text-sm", className)} {...props} />
     </div>
   );

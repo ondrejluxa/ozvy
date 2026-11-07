@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/shell/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
 import { getCampaign, listCampaigns, previewRecipients } from "@/lib/db/supabase/campaigns";
-import { getCompanyRecord } from "@/lib/db/supabase/companies";
+import { getCompanyRecord, listVisibleCompanies } from "@/lib/db/supabase/companies";
 import { RECIPIENT_FILTERS } from "@/lib/db/supabase/conversions";
 import { resolveCompanySettings } from "@/lib/domain/company-settings";
 import { statusGroup } from "@/lib/domain/campaigns/status";
@@ -24,13 +24,43 @@ const GROUPS = ["prepared", "active", "finished"] as const;
 const SENT_STATUSES: string[] = ["sending", "active", "paused", "completed", "failed", "cancelled"];
 
 export async function RealCampaignList({ companyId, basePath }: { companyId: string; basePath: string }) {
+  const campaigns = (await listCampaigns(companyId)).map((c) => ({ ...c, href: `${basePath}/${c.id}`, shop: null }));
+  return <CampaignGroups campaigns={campaigns} />;
+}
+
+/**
+ * The operator's all-campaigns view (spec §8 "Kampaně (všechny)"): one query
+ * per shop, each filtered by its company ID, merged and sorted newest first.
+ */
+export async function RealAllCampaignsList() {
+  const companies = await listVisibleCompanies();
+  const perShop = await Promise.all(
+    companies.map(async (company) =>
+      (await listCampaigns(company.id)).map((c) => ({
+        ...c,
+        href: `/admin/companies/${company.id}/campaigns/${c.id}`,
+        shop: { name: company.name, href: `/admin/companies/${company.id}` },
+      })),
+    ),
+  );
+  const campaigns = perShop
+    .flat()
+    .sort((a, b) => (b.scheduledAt ?? b.createdAt).localeCompare(a.scheduledAt ?? a.createdAt));
+  return <CampaignGroups campaigns={campaigns} showShop />;
+}
+
+type ListedCampaign = Awaited<ReturnType<typeof listCampaigns>>[number] & {
+  href: string;
+  shop: { name: string; href: string } | null;
+};
+
+async function CampaignGroups({ campaigns, showShop = false }: { campaigns: ListedCampaign[]; showShop?: boolean }) {
   const t = await getTranslations("campaignList");
   const tPreset = await getTranslations("presets");
-  const campaigns = await listCampaigns(companyId);
   if (campaigns.length === 0) {
     return (
       <p className="rounded-lg border border-dashed border-line-strong px-4 py-10 text-center text-sm text-muted">
-        {t("empty")}
+        {t(showShop ? "emptyAll" : "empty")}
       </p>
     );
   }
@@ -49,6 +79,7 @@ export async function RealCampaignList({ companyId, basePath }: { companyId: str
                 <THead>
                   <TR>
                     <TH>{t("columns.name")}</TH>
+                    {showShop && <TH>{t("columns.shop")}</TH>}
                     <TH>{t("columns.segment")}</TH>
                     <TH>{t("columns.sendAt")}</TH>
                     <TH className="text-right">{t("columns.recipients")}</TH>
@@ -59,10 +90,17 @@ export async function RealCampaignList({ companyId, basePath }: { companyId: str
                   {rows.map((c) => (
                     <TR key={c.id} data-testid="campaign-row">
                       <TD>
-                        <Link href={`${basePath}/${c.id}`} className="font-medium text-ink hover:underline">
+                        <Link href={c.href} className="font-medium text-ink hover:underline">
                           {c.name}
                         </Link>
                       </TD>
+                      {showShop && (
+                        <TD>
+                          <Link href={c.shop!.href} className="text-ink-2 hover:underline">
+                            {c.shop!.name}
+                          </Link>
+                        </TD>
+                      )}
                       <TD className="text-ink-2">
                         {c.presetKey ? tPreset(`${c.presetKey}.name`) : (c.segmentName ?? "—")}
                       </TD>

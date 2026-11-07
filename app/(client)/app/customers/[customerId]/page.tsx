@@ -5,6 +5,7 @@ import { requireClientCompany } from "@/lib/auth/client-company";
 import { getSupportView, requireContext } from "@/lib/auth/context";
 import { getCustomerDetail } from "@/lib/db/queries";
 import { getCustomerDetail as getRealCustomerDetail } from "@/lib/db/supabase/customers";
+import { listDataSubjectRequests } from "@/lib/db/supabase/privacy";
 import { env } from "@/lib/env";
 
 export default async function ClientCustomerPage(props: PageProps<"/app/customers/[customerId]">) {
@@ -27,7 +28,18 @@ export default async function ClientCustomerPage(props: PageProps<"/app/customer
       (await requireContext({ permission: "conversions.mark", companyId: membership.companyId })
         .then(() => true)
         .catch(() => false));
-    return <RealCustomerDetail data={data} backHref="/app/customers" canEdit={canEdit} canMark={canMark} />;
+    // Managed owners request exports and erasures; the operator handles them (spec §20, §21).
+    const canRequest =
+      writable &&
+      (await requireContext({ permission: "customers.export", companyId: membership.companyId })
+        .then(() => true)
+        .catch(() => false));
+    const privacy = canRequest
+      ? { mode: "owner" as const, requests: await listDataSubjectRequests(membership.companyId, { customerId }) }
+      : null;
+    return (
+      <RealCustomerDetail data={data} backHref="/app/customers" canEdit={canEdit} canMark={canMark} privacy={privacy} />
+    );
   }
 
   const view = await getSupportView();

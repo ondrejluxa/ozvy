@@ -132,3 +132,48 @@ export function parseCompanyProfile(input: CompanyProfileInput): ProfileResult {
 export function changedFields<T extends object>(before: T, after: T): (keyof T)[] {
   return (Object.keys(after) as (keyof T)[]).filter((k) => JSON.stringify(before[k]) !== JSON.stringify(after[k]));
 }
+
+/**
+ * What a shop owner edits in Nastavení → Profil servisu: contact details and
+ * opening hours. Name, IČO, DIČ, the SMS sender, prices and rules stay with
+ * the operator (they appear in messages, contracts and forecasts).
+ */
+export const SHOP_CONTACT_FIELDS = [
+  "contact_person",
+  "phone",
+  "email",
+  "website",
+  "address_line",
+  "postal_code",
+  "city",
+  "opening_hours",
+] as const;
+export type ShopContactField = (typeof SHOP_CONTACT_FIELDS)[number];
+
+const contactSchema = profileSchema.pick({
+  contact_person: true,
+  phone: true,
+  email: true,
+  website: true,
+  address_line: true,
+  postal_code: true,
+  city: true,
+  opening_hours: true,
+});
+
+export type ShopContactValues = Omit<z.output<typeof contactSchema>, "opening_hours"> & {
+  opening_hours: { note: string } | Record<string, never>;
+};
+
+export function parseShopContact(
+  input: Record<ShopContactField, string>,
+): { success: true; values: ShopContactValues } | { success: false; fieldErrors: Record<string, string> } {
+  const parsed = contactSchema.safeParse(input);
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of parsed.error.issues) fieldErrors[String(issue.path[0] ?? "form")] ??= issue.message;
+    return { success: false, fieldErrors };
+  }
+  const { opening_hours, ...rest } = parsed.data;
+  return { success: true, values: { ...rest, opening_hours: opening_hours ? { note: opening_hours } : {} } };
+}

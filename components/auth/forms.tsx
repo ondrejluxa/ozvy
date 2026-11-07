@@ -199,7 +199,7 @@ export function MfaEnroll({ next }: { next?: string }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={enrollment.qrCode}
-            alt=""
+            alt={t("qrAlt")}
             width={180}
             height={180}
             className="mx-auto rounded-md border border-line"

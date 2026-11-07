@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { campaignsCount, digestHtml, digestSubject, digestText, type DigestInput } from "@/lib/domain/alerts/digest";
-import { evaluateAlerts, healthFromAlerts } from "@/lib/domain/alerts/rules";
+import { evaluateAlerts, healthFromAlerts, isImportStuck } from "@/lib/domain/alerts/rules";
 import { parseCompanyProfile } from "@/lib/domain/company-profile";
 
 const NOW = new Date("2026-11-05T05:00:00Z");
@@ -36,6 +36,64 @@ describe("import needs review (spec §10)", () => {
 
   it("stays quiet without imports (the demo passes none)", () => {
     expect(evaluateAlerts(base)).toEqual([]);
+  });
+
+  it("tells the import page when to offer a way out", () => {
+    const ago = (m: number) => new Date(NOW.getTime() - m * 60_000);
+    expect(isImportStuck("validating", ago(31), NOW)).toBe(true);
+    expect(isImportStuck("validating", ago(29), NOW)).toBe(false);
+    expect(isImportStuck("mapping", ago(600), NOW)).toBe(false);
+  });
+
+  it("flags an import stuck in processing for more than 30 minutes, not one still moving", () => {
+    const minutesAgo = (m: number) => new Date(NOW.getTime() - m * 60_000);
+    const alerts = evaluateAlerts({
+      ...base,
+      imports: [
+        { id: "parse", status: "parsing", updatedAt: minutesAgo(31), rows: 0, invalid: 0 },
+        { id: "validate", status: "validating", updatedAt: minutesAgo(45), rows: 100, invalid: 50 },
+        { id: "commit", status: "committing", updatedAt: minutesAgo(90), rows: 100, invalid: 0 },
+        { id: "fresh", status: "validating", updatedAt: minutesAgo(29), rows: 100, invalid: 50 },
+        { id: "waiting", status: "mapping", updatedAt: minutesAgo(600), rows: 100, invalid: 0 },
+      ],
+    });
+    expect(alerts.map((a) => a.key)).toEqual(["import_stuck:parse", "import_stuck:validate", "import_stuck:commit"]);
+    expect(alerts[1]).toMatchObject({ type: "import_stuck", severity: "high", params: { minutes: 45 } });
+    // Partial counts of an import still in progress never raise "needs review".
+    expect(alerts.some((a) => a.type === "import_needs_review")).toBe(false);
+  });
+});
+
+describe("data subject requests (spec §21)", () => {
+  const base = {
+    companyId: "c1",
+    companyStatus: "active",
+    companyCreatedAt: NOW,
+    campaigns: [],
+    lastSendAt: null,
+    recentDeliveryRate: null,
+    roiPreviousMonths: [null, null] as [null, null],
+    topOpportunity: null,
+    now: NOW,
+  };
+  const daysAgo = (d: number) => new Date(NOW.getTime() - d * 86_400_000);
+
+  it("warns the operator from day 20 of the 30-day deadline", () => {
+    const alerts = evaluateAlerts({
+      ...base,
+      dataSubjectRequests: [
+        { id: "r19", type: "access", createdAt: daysAgo(19), dueAt: "2026-12-16" },
+        { id: "r20", type: "erasure", createdAt: daysAgo(20), dueAt: "2026-12-15" },
+        { id: "r31", type: "access", createdAt: daysAgo(31), dueAt: "2026-12-04" },
+      ],
+    });
+    expect(alerts.map((a) => a.key)).toEqual(["dsr_due:r20", "dsr_due:r31"]);
+    expect(alerts[0]).toMatchObject({
+      type: "dsr_due",
+      severity: "high",
+      params: { requestId: "r20", requestType: "erasure", dueAt: "2026-12-15" },
+    });
+    expect(alerts[0].createdAt).toEqual(NOW);
   });
 });
 

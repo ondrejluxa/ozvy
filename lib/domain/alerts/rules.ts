@@ -11,6 +11,8 @@ export type AlertType =
   | "campaign_failed"
   | "sms_failure_rate"
   | "import_needs_review"
+  | "import_stuck"
+  | "dsr_due"
   | "provider_paused"
   | "awaiting_approval"
   | "no_campaign_running"
@@ -38,6 +40,19 @@ export interface AlertImportInput {
   invalid: number;
 }
 
+export interface AlertDsrInput {
+  id: string;
+  type: string;
+  createdAt: Date;
+  dueAt: string;
+}
+
+/** An import still parsing, validating or committing after this long is stuck (its job died). */
+export const IMPORT_STUCK_MINUTES = 30;
+const IMPORT_IN_PROGRESS = ["parsing", "validating", "committing"];
+/** Data subject requests are due in 30 days; the operator is warned from day 20. */
+export const DSR_ALERT_DAY = 20;
+
 export interface AlertInput {
   companyId: string;
   companyStatus: string;
@@ -49,8 +64,10 @@ export interface AlertInput {
   /** ROI of the previous two full months, most recent first. */
   roiPreviousMonths: [number | null, number | null];
   topOpportunity: { presetKey: string; expectedRevenueMinor: number; eligible: number } | null;
-  /** Imports waiting for review, or recently committed ones (spec §10 "Import needs review"). */
+  /** Imports waiting for review, recently committed, or still being processed. */
   imports?: AlertImportInput[];
+  /** Open data subject requests (spec §21: alert at day 20 of 30). */
+  dataSubjectRequests?: AlertDsrInput[];
   now: Date;
 }
 
@@ -115,6 +132,19 @@ export function evaluateAlerts(input: AlertInput): Alert[] {
 
   for (const i of input.imports ?? []) {
     const invalidRate = i.rows > 0 ? i.invalid / i.rows : 0;
+    if (IMPORT_IN_PROGRESS.includes(i.status)) {
+      if (now.getTime() - i.updatedAt.getTime() > IMPORT_STUCK_MINUTES * 60_000) {
+        alerts.push({
+          key: `import_stuck:${i.id}`,
+          type: "import_stuck",
+          severity: "high",
+          companyId,
+          createdAt: i.updatedAt,
+          params: { importId: i.id, minutes: Math.floor((now.getTime() - i.updatedAt.getTime()) / 60_000) },
+        });
+      }
+      continue;
+    }
     if (i.status === "needs_review" || invalidRate > 0.1) {
       alerts.push({
         key: `import_needs_review:${i.id}`,
@@ -125,6 +155,18 @@ export function evaluateAlerts(input: AlertInput): Alert[] {
         params: { importId: i.id, rate: invalidRate },
       });
     }
+  }
+
+  for (const r of input.dataSubjectRequests ?? []) {
+    if (daysBetween(r.createdAt, now) < DSR_ALERT_DAY) continue;
+    alerts.push({
+      key: `dsr_due:${r.id}`,
+      type: "dsr_due",
+      severity: "high",
+      companyId,
+      createdAt: addDays(r.createdAt, DSR_ALERT_DAY),
+      params: { requestId: r.id, requestType: r.type, dueAt: r.dueAt },
+    });
   }
 
   if (input.recentDeliveryRate !== null && input.recentDeliveryRate < 0.9) {
@@ -196,4 +238,9 @@ export function sortAlerts<T extends Pick<Alert, "severity" | "createdAt">>(aler
       SEVERITY_ORDER.indexOf(a.severity) - SEVERITY_ORDER.indexOf(b.severity) ||
       a.createdAt.getTime() - b.createdAt.getTime(),
   );
+}
+
+/** True when an import has been parsing, validating or committing without progress for 30 minutes. */
+export function isImportStuck(status: string, updatedAt: Date, now: Date): boolean {
+  return IMPORT_IN_PROGRESS.includes(status) && now.getTime() - updatedAt.getTime() > IMPORT_STUCK_MINUTES * 60_000;
 }

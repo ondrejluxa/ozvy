@@ -17,6 +17,8 @@
     "adminArea": "Administrace",
     "clientArea": "Klientský účet",
     "menu": "Menu",
+    "skipToContent": "Přeskočit na obsah",
+    "mainMenu": "Hlavní menu",
     "openMenu": "Otevřít menu",
     "close": "Zavřít",
     "operator": "Operátor (vy)",
@@ -30,7 +32,8 @@
       "overview": "Přehled",
       "customers": "Zákazníci",
       "campaigns": "Kampaně",
-      "results": "Výsledky"
+      "results": "Výsledky",
+      "settings": "Nastavení"
     }
   },
   "supportView": {
@@ -222,6 +225,16 @@
       "action": "Otevřít import",
       "digest": "Import čeká na kontrolu"
     },
+    "import_stuck": {
+      "title": "Import se nezpracovává už {minutes} min – úloha se pravděpodobně zastavila",
+      "action": "Otevřít import",
+      "digest": "Import se zasekl při zpracování"
+    },
+    "dsr_due": {
+      "title": "Žádost o osobní údaje ({requestType}) – lhůta do {dueAt}",
+      "action": "Vyřídit žádost",
+      "digest": "Žádost o osobní údaje se blíží lhůtě 30 dní"
+    },
     "checkNow": "Zkontrolovat teď",
     "checkQueued": "Kontrola běží.",
     "lastCheck": "Poslední kontrola {time}",
@@ -276,7 +289,9 @@
       "settings": "Nastavení",
       "imports": "Import",
       "services": "Služby",
-      "vocatives": "Oslovení"
+      "vocatives": "Oslovení",
+      "privacy": "Ochrana údajů",
+      "audit": "Historie změn"
     },
     "meta": {
       "customers": "{count, plural, one {# zákazník} few {# zákazníci} other {# zákazníků}}",
@@ -771,6 +786,7 @@
     "backHome": "Zpět na přehled",
     "boundaryTitle": "Stránku se nepodařilo načíst",
     "retry": "Zkusit znovu",
+    "errorId": "Kód chyby",
     "forbidden": "K této akci nemáte oprávnění.",
     "unauthenticated": "Přihlaste se prosím znovu.",
     "sending_blocked_dpa_missing": "Odesílání lze zapnout až po potvrzení zpracovatelské smlouvy.",
@@ -803,14 +819,229 @@
     "conversion_wrong_stage": "Tento krok teď nejde. Obnovte stránku.",
     "conversion_revenue_required": "Zadejte částku zakázky.",
     "rate_limited": "Příliš mnoho požadavků. Zkuste to prosím za chvíli.",
-    "support_view_read_only": "V režimu podpory jsou změny zablokované. Nejdřív režim podpory ukončete."
+    "support_view_read_only": "V režimu podpory jsou změny zablokované. Nejdřív režim podpory ukončete.",
+    "last_owner": "Servis musí mít aspoň jednoho majitele. Nejdřív jmenujte majitelem někoho jiného.",
+    "not_member": "Uživatel už v servisu není. Obnovte stránku.",
+    "save_failed": "Změnu se nepodařilo uložit. Zkuste to znovu.",
+    "dsr_already_open": "Pro tohoto zákazníka už stejná žádost čeká na vyřízení.",
+    "dsr_not_open": "Žádost už je vyřízená. Obnovte stránku."
   },
   "common": {
     "perMonth": "{value} / měsíc",
     "none": "—",
     "showAll": "Zobrazit vše",
     "open": "Otevřít",
-    "detail": "Detail"
+    "detail": "Detail",
+    "cancel": "Zrušit",
+    "close": "Zavřít",
+    "previous": "Předchozí",
+    "next": "Další",
+    "page": "Strana {page}"
+  },
+  "dsr": {
+    "title": "Žádosti o osobní údaje",
+    "description": "Žádosti zákazníků podle GDPR. Lhůta pro vyřízení je 30 dní; od 20. dne upozorní Přehled.",
+    "empty": "Žádná žádost. Když zákazník požádá o výpis nebo smazání údajů, zapište žádost v jeho detailu.",
+    "emptyClient": "Žádná žádost. O výpis nebo smazání údajů zákazníka požádáte v jeho detailu.",
+    "types": {
+      "access": "výpis údajů",
+      "erasure": "smazání",
+      "rectification": "oprava",
+      "objection": "námitka proti marketingu"
+    },
+    "statuses": {
+      "open": "Čeká",
+      "completed": "Vyřízeno",
+      "rejected": "Zamítnuto"
+    },
+    "sources": {
+      "operator": "Zapsal operátor",
+      "shop": "Požádal servis"
+    },
+    "columns": {
+      "type": "Žádost",
+      "customer": "Zákazník",
+      "source": "Zdroj",
+      "created": "Přijato",
+      "due": "Lhůta",
+      "status": "Stav"
+    },
+    "erased": "Smazaný zákazník",
+    "daysLeft": "{days, plural, one {zbývá # den} few {zbývají # dny} other {zbývá # dní}}",
+    "overdue": "po lhůtě",
+    "record": "Zapsat žádost",
+    "recordTitle": "Nová žádost o osobní údaje",
+    "recordDescription": "Zapište žádost, kterou zákazník poslal servisu nebo vám (e-mail, telefon, dopis). Lhůta je 30 dní.",
+    "type": "Typ žádosti",
+    "recorded": "Žádost je zapsaná.",
+    "requestAccess": "Požádat o výpis údajů",
+    "requestAccessTitle": "Požádat o výpis údajů zákazníka?",
+    "requestAccessText": "Operátor připraví výpis všech údajů, které o zákazníkovi vedeme, do 30 dní.",
+    "requestErasure": "Požádat o smazání",
+    "requestErasureTitle": "Požádat o smazání zákazníka?",
+    "requestErasureText": "Operátor zákazníka do 30 dní trvale smaže včetně vozidel, návštěv a textů zpráv. Jeho číslo zůstane jen jako anonymní otisk, aby mu už nepřišla žádná SMS. Smazání nejde vrátit.",
+    "requested": "Žádost je odeslaná operátorovi.",
+    "send": "Odeslat žádost",
+    "export": "Stáhnout výpis (JSON)",
+    "complete": "Vyřídit",
+    "completeTitle": "Označit žádost jako vyřízenou?",
+    "completeAccess": "Výpis stáhněte a předejte servisu nebo zákazníkovi dřív, než žádost uzavřete.",
+    "completeRectification": "Opravte údaje zákazníka v jeho detailu dřív, než žádost uzavřete.",
+    "completeObjection": "Číslo zákazníka se přidá na seznam odhlášených pro tento servis a naplánované zprávy se zruší.",
+    "completeErasure": "Zákazník se trvale smaže včetně vozidel, návštěv a zapsaných návratů. Texty zpráv a čísla se v historii nahradí „[redacted]“; jeho číslo zůstane jen jako anonymní otisk na seznamu odhlášených. Nejde to vrátit.",
+    "completeConfirm": "Vyřídit žádost",
+    "eraseConfirm": "Trvale smazat zákazníka",
+    "completed": "Žádost je vyřízená.",
+    "reject": "Zamítnout",
+    "rejectTitle": "Zamítnout žádost?",
+    "rejectText": "Použijte jen tehdy, když žádost nejde ověřit nebo je zjevně neoprávněná. Důvod sdělte žadateli.",
+    "rejected": "Žádost je zamítnutá.",
+    "forCustomer": "Žádosti tohoto zákazníka",
+    "noneForCustomer": "Zatím žádná žádost. Když o výpis nebo smazání údajů požádá zákazník, použijte tlačítka níže."
+  },
+  "retention": {
+    "title": "Zákazníci určení ke smazání",
+    "description": "Zákazníci bez návštěvy 5 let a bez oslovení 2 roky se po 30 dnech automaticky smažou (zásady uchovávání). Pokud je chcete ponechat, dejte vědět.",
+    "none": "Žádný zákazník teď není určený ke smazání.",
+    "count": "{count, plural, one {# zákazník bude smazán} few {# zákazníci budou smazáni} other {# zákazníků bude smazáno}} od {date}.",
+    "lastVisit": "poslední návštěva {date}",
+    "noVisit": "bez návštěvy",
+    "more": "a {count} dalších",
+    "keep": "Ponechat všechny",
+    "keepTitle": "Ponechat zákazníky určené ke smazání?",
+    "keepText": "Zákazníci zůstanou další rok. Ponechte je jen tehdy, když k nim máte oprávněný důvod (např. záruka nebo otevřená zakázka).",
+    "keepConfirm": "Ponechat",
+    "kept": "Zákazníci zůstávají další rok."
+  },
+  "members": {
+    "you": "vy",
+    "role": "Role",
+    "changeRole": "Role uživatele {name}",
+    "roleChanged": "Role je změněná.",
+    "remove": "Odebrat",
+    "removeTitle": "Odebrat uživatele {name}?",
+    "removeText": "Uživatel ztratí přístup k servisu hned. Jeho účet zůstane; znovu ho můžete pozvat.",
+    "removeSelfText": "Ztratíte přístup k tomuto servisu hned. Vrátit vás může jen jiný majitel nebo operátor.",
+    "removeConfirm": "Odebrat",
+    "removed": "Uživatel je odebraný.",
+    "revoke": "Zrušit pozvánku",
+    "revokeTitle": "Zrušit pozvánku pro {email}?",
+    "revokeText": "Odkaz v e-mailu přestane platit.",
+    "revoked": "Pozvánka je zrušená.",
+    "lastOwnerHint": "Jediného majitele nejde odebrat ani změnit na vedoucího."
+  },
+  "auditLog": {
+    "title": "Historie změn",
+    "description": "Kdo co kdy udělal. Záznamy nejdou upravit ani smazat a uchovávají se 24 měsíců.",
+    "descriptionClient": "Důležité změny ve vašem servisu za posledních 24 měsíců.",
+    "systemTitle": "Auditní log",
+    "systemDescription": "Celý auditní log včetně přihlášení a událostí bez servisu.",
+    "filters": {
+      "action": "Událost",
+      "allActions": "Všechny události",
+      "from": "Od",
+      "to": "Do",
+      "apply": "Filtrovat",
+      "reset": "Zrušit filtr"
+    },
+    "columns": {
+      "when": "Kdy",
+      "who": "Kdo",
+      "action": "Událost",
+      "details": "Podrobnosti",
+      "shop": "Servis"
+    },
+    "actors": {
+      "admin": "Operátor",
+      "user": "Uživatel",
+      "system": "Systém"
+    },
+    "empty": "Žádný záznam pro zvolený filtr. Zkuste delší období nebo jinou událost.",
+    "groups": {
+      "auth": "Přihlášení a účty",
+      "user": "Uživatelé",
+      "company": "Servis a smlouvy",
+      "import": "Importy",
+      "customer": "Zákazníci",
+      "campaign": "Kampaně",
+      "conversion": "Návraty",
+      "dsr": "Žádosti o údaje",
+      "admin": "Přístupy operátora",
+      "system": "Systém"
+    }
+  },
+  "auditActions": {
+    "auth_login": "Přihlášení",
+    "auth_login_failed": "Neúspěšné přihlášení",
+    "auth_mfa_enrolled": "Nastavení dvoufázového ověření",
+    "auth_password_reset_requested": "Žádost o obnovení hesla",
+    "auth_password_changed": "Změna hesla",
+    "user_invited": "Pozvání uživatele",
+    "user_invitation_accepted": "Přijetí pozvánky",
+    "user_invitation_revoked": "Zrušení pozvánky",
+    "user_role_changed": "Změna role uživatele",
+    "user_removed": "Odebrání uživatele",
+    "company_created": "Založení servisu",
+    "company_settings_changed": "Změna nastavení servisu",
+    "company_dpa_confirmed": "Potvrzení zpracovatelské smlouvy",
+    "company_sending_enabled": "Zapnutí nebo vypnutí odesílání",
+    "company_document_downloaded": "Stažení smlouvy",
+    "import_uploaded": "Nahrání importu",
+    "import_committed": "Dokončení importu",
+    "import_failed": "Neúspěšný import",
+    "customer_updated": "Úprava kontaktu zákazníka",
+    "customer_deleted": "Smazání zákazníka",
+    "customer_exported": "Výpis údajů zákazníka",
+    "customer_opted_out": "Odhlášení zákazníka ze zpráv",
+    "customer_retention_kept": "Ponechání zákazníků určených ke smazání",
+    "campaign_created": "Založení kampaně",
+    "campaign_updated": "Úprava kampaně",
+    "campaign_deleted": "Smazání konceptu kampaně",
+    "campaign_submitted": "Odeslání kampaně ke schválení",
+    "campaign_approved": "Schválení kampaně",
+    "campaign_rejected": "Vrácení kampaně k úpravě",
+    "campaign_scheduled": "Naplánování kampaně",
+    "campaign_paused": "Pozastavení kampaně",
+    "campaign_resumed": "Obnovení kampaně",
+    "campaign_cancelled": "Zrušení kampaně",
+    "campaign_returned_to_draft": "Vrácení kampaně do konceptu",
+    "campaign_send_started": "Začátek odesílání kampaně",
+    "campaign_send_completed": "Dokončení kampaně",
+    "campaign_failed": "Selhání kampaně",
+    "conversion_marked": "Zápis návratu (objednávka nebo zakázka)",
+    "conversion_revenue_changed": "Změna hodnoty zakázky",
+    "conversion_reverted": "Zrušení zápisu návratu",
+    "dsr_created": "Přijetí žádosti o osobní údaje",
+    "dsr_completed": "Vyřízení žádosti o osobní údaje",
+    "admin_company_viewed": "Operátor otevřel servis",
+    "admin_support_view_started": "Operátor otevřel účet klienta",
+    "admin_support_view_ended": "Operátor zavřel účet klienta",
+    "system_kill_switch_changed": "Přepnutí hlavního vypínače odesílání",
+    "system_provider_breaker_reset": "Ruční obnovení SMS brány",
+    "system_retention_run": "Noční mazání starých dat",
+    "message_review_resolved": "Vyřešení zprávy ke kontrole",
+    "vocatives_refreshed": "Doplnění oslovení",
+    "vocative_reviewed": "Kontrola oslovení"
+  },
+  "clientSettings": {
+    "title": "Nastavení",
+    "tabs": {
+      "profile": "Profil servisu",
+      "users": "Uživatelé",
+      "data": "Data a soukromí",
+      "history": "Historie změn"
+    },
+    "profileReadOnly": "Údaje servisu upravuje majitel. Odesílatele SMS a cenu nastavuje operátor.",
+    "profileOperator": "Odesílatele SMS, cenu a pravidla kampaní nastavuje operátor. Napište mu, když je potřeba něco změnit.",
+    "sender": "Odesílatel SMS",
+    "dpa": "Zpracovatelská smlouva",
+    "dpaSigned": "Podepsaná {date}",
+    "dpaMissing": "Smlouva ještě není potvrzená. Pošlete ji operátorovi.",
+    "dpaDownload": "Stáhnout smlouvu (PDF)",
+    "dataTitle": "Vaše data",
+    "dataText": "Data zákazníků spravujete jako správce, Návrat je zpracovává podle zpracovatelské smlouvy. Výpis nebo smazání údajů konkrétního zákazníka zadáte v jeho detailu; operátor žádost vyřídí do 30 dní.",
+    "usersManaged": "Uživatele servisu spravuje majitel.",
+    "noUsers": "Zatím žádní další uživatelé. Pozvěte vedoucího, aby mohl zapisovat návraty."
   },
   "auth": {
     "layoutTagline": "Interní nástroj pro řízení reaktivačních kampaní",
@@ -842,6 +1073,7 @@
     "mfa": {
       "title": "Dvoufázové ověření",
       "enrollTitle": "Nastavení dvoufázového ověření",
+      "qrAlt": "QR kód pro aplikaci na ověřování (klíč pro ruční zadání je níže)",
       "enrollDescription": "Účet operátora musí být chráněný druhým faktorem. Naskenujte QR kód v aplikaci Google Authenticator, Microsoft Authenticator nebo 1Password a zadejte 6místný kód.",
       "secret": "Nebo zadejte klíč ručně",
       "verifyDescription": "Zadejte 6místný kód z aplikace pro ověřování.",
@@ -935,7 +1167,7 @@
       "status": "Stav",
       "sending": "Odesílání",
       "created": "Založen",
-      "empty": "Zatím tu nejsou žádní klienti.",
+      "empty": "Zatím tu nejsou žádní klienti. Prvního založíte tlačítkem Nový klient.",
       "sendingOn": "Zapnuto",
       "sendingOff": "Vypnuto",
       "statuses": {
@@ -1138,6 +1370,8 @@
       "failed": "Soubor se nepodařilo nahrát."
     },
     "working": "Zpracovávám… Stránka se obnoví sama.",
+    "stuck": "Zpracování se už 30 minut nepohnulo, úloha se pravděpodobně zastavila. Import zrušte a soubor nahrajte znovu; do zákazníků se zatím nic nezapsalo.",
+    "stuckCommit": "Ukládání se už 30 minut nepohnulo. Úloha se zkusí znovu sama; pokud ne, podívejte se do Inngestu a do runbooku.",
     "failures": {
       "file_missing": "Soubor se v úložišti nenašel. Nahrajte ho znovu.",
       "empty": "Soubor je prázdný.",
@@ -1334,6 +1568,7 @@
   },
   "campaignList": {
     "empty": "Zatím žádná kampaň. Začněte segmentem nebo předvolbou.",
+    "emptyAll": "Zatím žádná kampaň u žádného servisu. Kampaň založíte v detailu servisu.",
     "groups": {
       "prepared": "Připravené",
       "active": "Aktivní",
@@ -1341,6 +1576,7 @@
     },
     "columns": {
       "name": "Kampaň",
+      "shop": "Servis",
       "segment": "Segment",
       "sendAt": "Odeslání",
       "recipients": "Příjemci",
@@ -1384,7 +1620,7 @@
     "settingsLink": "Nastavení",
     "reviewTitle": "Ke kontrole",
     "reviewDescription": "Nejisté návrhy. Upravte tvar nebo rod a schvalte. Dokud tvar neschválíte, zákazník dostane „Dobrý den,“.",
-    "nothingToReview": "Nic ke kontrole.",
+    "nothingToReview": "Nic ke kontrole. Nová příjmení se doplní po dalším importu.",
     "vocativeFor": "Oslovení pro {surname}",
     "genderFor": "Rod pro {surname}",
     "gender": {
@@ -1463,7 +1699,7 @@
     "oldestQueued": "Nejstarší zpráva ve frontě: {at}",
     "reviewTitle": "Zprávy ke kontrole",
     "reviewHint": "Zprávy, u kterých není jisté, jestli odešly (výpadek během odesílání). Nikdy se neposílají znovu automaticky. Ověřte stav v SMS bráně a označte výsledek.",
-    "reviewEmpty": "Žádné zprávy ke kontrole.",
+    "reviewEmpty": "Žádné zprávy ke kontrole. Zpráva, u které brána neodpověděla, se objeví tady.",
     "columns": {
       "company": "Servis",
       "campaign": "Kampaň",
@@ -1513,7 +1749,7 @@
       "revenue": "Tržba"
     },
     "holdoutBadge": "Kontrolní",
-    "empty": "V tomto filtru nikdo není.",
+    "empty": "V tomto filtru nikdo není. Zvolte jiný filtr.",
     "prev": "← Předchozí",
     "next": "Další →",
     "page": "Strana {page} z {pages}"

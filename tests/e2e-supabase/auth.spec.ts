@@ -109,9 +109,10 @@ test.describe.serial("auth on real Supabase", () => {
     await page.getByLabel("Ověřovací kód").fill(await freshTotp(adminSecret, usedSteps));
     await page.getByRole("button", { name: "Ověřit" }).click();
     await expect(page).toHaveURL(/\/admin$/);
-    // Screens not yet on real data are clearly unavailable, never demo data.
+    // Every operator screen now reads real data, never demo data (ADR-018: all campaigns).
     await page.goto("/admin/campaigns");
-    await expect(page.getByRole("heading", { name: "Tato část se připravuje" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Kampaně", level: 1 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Tato část se připravuje" })).toHaveCount(0);
   });
 
   test("shop manager sees only their own company and never /admin", async ({ page }) => {

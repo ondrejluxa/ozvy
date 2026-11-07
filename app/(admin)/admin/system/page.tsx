@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { KillSwitch, ResetBreakerButton, ReviewButtons, RunQueueButton } from "@/components/admin/system-controls";
 import { PageHeader } from "@/components/shell/page-header";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
 import { requirePageContext } from "@/lib/auth/context";
@@ -25,11 +27,20 @@ export default async function SystemPage() {
   if (env.DATA_SOURCE !== "supabase") notFound();
   await requirePageContext({ permission: "admin.access" }, "/admin/system");
   const [t, overview] = await Promise.all([getTranslations("system"), getSystemOverview()]);
+  const tAudit = await getTranslations("auditLog");
   const { killSwitch, breaker, queue, review } = overview;
 
   return (
     <>
-      <PageHeader title={t("title")} description={t("description")} />
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        actions={
+          <Button asChild variant="outline" size="sm">
+            <Link href="/admin/system/audit">{tAudit("systemTitle")}</Link>
+          </Button>
+        }
+      />
       <div className="space-y-6">
         <Card>
           <CardHeader>

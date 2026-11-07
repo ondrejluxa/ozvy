@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, Building2, LayoutDashboard, Menu, Send, ShieldAlert, Users } from "lucide-react";
+import { BarChart3, Building2, LayoutDashboard, Menu, Send, Settings, ShieldAlert, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -15,6 +15,7 @@ const ICONS = {
   customers: Users,
   results: BarChart3,
   system: ShieldAlert,
+  settings: Settings,
 } as const;
 
 export interface NavItem {
@@ -27,8 +28,9 @@ export interface NavItem {
 
 function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate?: () => void }) {
   const pathname = usePathname();
+  const t = useTranslations("nav");
   return (
-    <nav className="flex flex-col gap-0.5">
+    <nav aria-label={t("mainMenu")} className="flex flex-col gap-0.5">
       {items.map((item) => {
         const Icon = ICONS[item.icon];
         const active = item.exact

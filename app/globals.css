@@ -17,7 +17,7 @@
   --color-ink: #18181b;
   --color-ink-2: #3f3f46;
   --color-muted: #6b6b73;
-  --color-faint: #9b9ba3;
+  --color-faint: #73737b; /* 4.7:1 on white, 4.5:1 on canvas (WCAG AA text) */
 
   --color-accent: #0f7b53;
   --color-accent-strong: #0b5f40;

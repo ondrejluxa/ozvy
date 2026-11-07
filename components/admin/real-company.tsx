@@ -49,6 +49,8 @@ export async function RealCompanyHeader({ company }: { company: CompanyDetail })
           { href: `${base}/services`, label: t("tabs.services") },
           { href: `${base}/vocatives`, label: t("tabs.vocatives") },
           { href: `${base}/settings`, label: t("tabs.settings") },
+          { href: `${base}/privacy`, label: t("tabs.privacy") },
+          { href: `${base}/audit`, label: t("tabs.audit") },
         ]}
       />
     </>
