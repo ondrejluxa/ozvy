@@ -30,6 +30,8 @@ export default defineConfig({
     url: `http://localhost:${PORT}/login`,
     reuseExistingServer: false,
     timeout: 180_000,
+    // E2E_SERVER_LOG=1 shows the dev server's output (inline job diagnostics).
+    stdout: process.env.E2E_SERVER_LOG ? "pipe" : "ignore",
     // Values set here win over .env.supabase.local.
     env: { NEXT_PUBLIC_APP_URL: `http://localhost:${PORT}`, DATA_SOURCE: "supabase" },
   },

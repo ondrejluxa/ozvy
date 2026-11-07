@@ -33,7 +33,15 @@ export async function enqueue(event: JobEvent): Promise<void> {
   const vocatives = await import("./vocatives");
   const messaging = await import("./messaging");
   const health = await import("./health");
+  // Diagnostics (no personal data): event name, IDs, duration and outcome of
+  // each inline job, so a stuck job can be told apart from a slow or failed one.
+  const ids = Object.values(event.data).filter((v) => typeof v === "string" && /^[0-9a-f-]{36}$/.test(v));
+  const queuedAt = Date.now();
+  console.info(JSON.stringify({ job: event.name, phase: "queued", ids }));
   after(async () => {
+    const startedAt = Date.now();
+    console.info(JSON.stringify({ job: event.name, phase: "started", ids, waitMs: startedAt - queuedAt }));
+    let outcome = "done";
     try {
       if (event.name === "import/parse.requested") await jobs.runParseImport(event.data);
       else if (event.name === "import/validate.requested") await jobs.runValidateImport(event.data);
@@ -44,7 +52,10 @@ export async function enqueue(event: JobEvent): Promise<void> {
       else if (event.name === "messaging/events.requested") await messaging.runProviderEvents();
       else await health.runHealthCheckJob();
     } catch (err) {
+      outcome = "failed";
       console.error("[jobs] inline job failed", event.name, err instanceof Error ? err.message : "");
+    } finally {
+      console.info(JSON.stringify({ job: event.name, phase: outcome, ids, ms: Date.now() - startedAt }));
     }
   });
 }

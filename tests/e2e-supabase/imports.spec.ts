@@ -52,7 +52,18 @@ async function upload(page: Page, company: string, file: string | { name: string
 async function confirmMapping(page: Page) {
   await page.getByLabel(/Majitel servisu písemně potvrdil/).check();
   await page.getByRole("button", { name: "Zkontrolovat data" }).click();
-  await expect(page.getByRole("heading", { name: "Kontrola dat", exact: true })).toBeVisible({ timeout: 60_000 });
+  try {
+    await expect(page.getByRole("heading", { name: "Kontrola dat", exact: true })).toBeVisible({ timeout: 60_000 });
+  } catch (err) {
+    // Diagnostics for the intermittent stall: the database state tells a job
+    // that never finished (still "validating") from a page that never refreshed.
+    const id = /\/imports\/([0-9a-f-]{36})/.exec(page.url())?.[1];
+    const { data } = id
+      ? await service.from("imports").select("status, counts, updated_at").eq("id", id).single()
+      : { data: null };
+    console.error("[import-diag] stalled:", JSON.stringify({ id, db: data, at: new Date().toISOString() }));
+    throw err;
+  }
 }
 
 async function commit(page: Page) {

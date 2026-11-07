@@ -3,6 +3,12 @@
 Production is not deployed from this repository yet. It needs accounts and credentials that
 only the owner can create. This is the checklist for the first deploy and for every later one.
 
+Before the first production deploy, set up staging and run the pilot test:
+
+- `docs/staging-readiness.md`: setup order, per-service checklist, every environment variable,
+  and the Supabase auth settings to recreate;
+- `docs/pilot-test-checklist.md`: the test with your own whitelisted phone.
+
 ## One-time setup (owner)
 
 1. **Supabase:** new project in EU (Frankfurt), Pro plan (daily backups).
