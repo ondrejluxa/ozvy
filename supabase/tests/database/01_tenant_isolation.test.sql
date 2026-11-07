@@ -88,6 +88,9 @@ insert into public.alerts (company_id, type, severity, dedupe_key, title) values
 insert into public.name_vocatives (company_id, surname, vocative, gender, confidence, source) values
   ('aaaaaaaa-0000-0000-0000-000000000000', 'Novák', 'Nováku', 'm', 0.95, 'rule'),
   ('bbbbbbbb-0000-0000-0000-000000000000', 'Novák', 'Nováku', 'm', 0.95, 'rule');
+insert into public.data_subject_requests (company_id, customer_id, type, subject_reference) values
+  ('aaaaaaaa-0000-0000-0000-000000000000', 'aaaaaaaa-0000-0000-0000-00000000c001', 'access', 'aaaaaaaa-0000-0000-0000-00000000c001'),
+  ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000c001', 'access', 'bbbbbbbb-0000-0000-0000-00000000c001');
 
 -- ---------- 1. RLS enabled and forced on every public table ----------
 select is(
@@ -146,7 +149,9 @@ insert into tests.tenant_tables values
   ('alerts', 'company_id', $$insert into public.alerts (company_id, type, severity, dedupe_key, title)
       values ('bbbbbbbb-0000-0000-0000-000000000000', 'x', 'low', 'iso-rogue', 'x')$$),
   ('campaign_steps', 'company_id', $$insert into public.campaign_steps (company_id, campaign_id, step_number, body_template)
-      values ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ca01', 1, 'x')$$);
+      values ('bbbbbbbb-0000-0000-0000-000000000000', 'bbbbbbbb-0000-0000-0000-00000000ca01', 1, 'x')$$),
+  ('data_subject_requests', 'company_id', $$insert into public.data_subject_requests (company_id, type, subject_reference, source, requested_by)
+      values ('bbbbbbbb-0000-0000-0000-000000000000', 'erasure', 'bbbbbbbb-0000-0000-0000-00000000c001', 'shop', (select auth.uid()))$$);
 
 select set_eq(
   $$select table_name::text from information_schema.columns

@@ -664,6 +664,7 @@ export type Database = {
           phone_e164: string | null;
           phone_type: string;
           retention_flagged_at: string | null;
+          retention_kept_at: string | null;
           search_name: string | null;
           source_import_id: string | null;
           updated_at: string;
@@ -688,6 +689,7 @@ export type Database = {
           phone_e164?: string | null;
           phone_type?: string;
           retention_flagged_at?: string | null;
+          retention_kept_at?: string | null;
           search_name?: never;
           source_import_id?: string | null;
           updated_at?: string;
@@ -712,6 +714,7 @@ export type Database = {
           phone_e164?: string | null;
           phone_type?: string;
           retention_flagged_at?: string | null;
+          retention_kept_at?: string | null;
           search_name?: never;
           source_import_id?: string | null;
           updated_at?: string;
@@ -724,6 +727,69 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "companies";
             referencedColumns: ["id"];
+          },
+        ];
+      };
+      data_subject_requests: {
+        Row: {
+          company_id: string;
+          completed_at: string | null;
+          created_at: string;
+          customer_id: string | null;
+          due_at: string;
+          handled_by: string | null;
+          id: string;
+          requested_by: string | null;
+          source: string;
+          status: string;
+          subject_reference: string;
+          type: string;
+          updated_at: string;
+        };
+        Insert: {
+          company_id: string;
+          completed_at?: string | null;
+          created_at?: string;
+          customer_id?: string | null;
+          due_at?: string;
+          handled_by?: string | null;
+          id?: string;
+          requested_by?: string | null;
+          source?: string;
+          status?: string;
+          subject_reference: string;
+          type: string;
+          updated_at?: string;
+        };
+        Update: {
+          company_id?: string;
+          completed_at?: string | null;
+          created_at?: string;
+          customer_id?: string | null;
+          due_at?: string;
+          handled_by?: string | null;
+          id?: string;
+          requested_by?: string | null;
+          source?: string;
+          status?: string;
+          subject_reference?: string;
+          type?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "data_subject_requests_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "data_subject_requests_customer_id_company_id_fkey";
+            columns: ["customer_id", "company_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id", "company_id"];
           },
         ];
       };
@@ -1561,6 +1627,7 @@ export type Database = {
           company_id: string;
           company_status: string;
           delivered_recent: number;
+          dsrs: Json;
           imports: Json;
           last_send_at: string;
           undelivered_recent: number;
@@ -1649,6 +1716,7 @@ export type Database = {
           vehicle_model: string;
         }[];
       };
+      erase_customer: { Args: { p_company_id: string; p_customer_id: string }; Returns: Json };
       flag_stuck_messages: { Args: { p_after?: string; p_now: string }; Returns: number };
       hit_rate_limit: {
         Args: { p_increment?: boolean; p_key: string; p_limit: number; p_now?: string; p_window_seconds: number };
@@ -1661,6 +1729,7 @@ export type Database = {
           visits: number;
         }[];
       };
+      keep_flagged_customers: { Args: { p_company_id: string; p_customer_ids?: string[] }; Returns: number };
       list_customers: {
         Args: {
           p_category?: Database["public"]["Enums"]["service_category"];
